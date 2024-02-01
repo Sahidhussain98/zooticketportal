@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+    <meta name="csrf-token" th:content="${_csrf.token}">
+    <title>Establishment Ticket | Home</title>
+    <!-- Included Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Included SweetAlert CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
+    <style>
+        /* custom styles here */
+        .py-4 {
+            padding-top: 4rem;
+            padding-bottom: 4rem;
+        }
+
+        .card {
+            box-shadow: 0 10rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        .form-horizontal {
+            width: 80%;
+            margin: auto;
+        }
+
+        .admin-login-form {
+            display: none;
+        }
+
+        .go-back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .admin-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+    </style>
+</head>
+
+<body class="py-4">
+<!-- Include jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<!-- Included SweetAlert JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.all.min.js"></script>
+
+<a href="#" class="btn btn-outline-primary admin-button" onclick="toggleAdminForm()">
+    <span id="buttonTextSpan" th:text="${buttonText} ? ${buttonText} : 'Admin'"></span>
+</a>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-sm-8 col-xs-12">
+            <div class="card shadow p-3 mb-5 bg-white rounded" id="otpS">
+                <div class="card-body py-xl-5">
+                    <div class="text-center">
+                        <h4 class="text-uppercase p-color">Register / SignIn</h4>
+                        <h6 class="text-uppercase s-color">Tourist / Visitor</h6>
+                    </div>
+                    <hr />
+                    <section id="userLoginForm">
+                    <form class="form-horizontal" role="form" id="sendOtp" th:action="@{/user/verifyOtp}" method="post">
+                        <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+
+                        <div class="form-group">
+                            <label for="mobile_number" class="col-md-12 control-label p-color font-weight-bold">Phone Number</label>
+                            <div class="col-md-12">
+                                <input type="tel" id="mobile_number" class="form-control" maxlength="10"
+                                       pattern="[0-9]{10}"
+                                       name="mobile_number" th:value="${mobile_number}" required>
+                            </div>
+                            <div class="form-group" id="otpInputField" style="display: none;">
+                                <label for="otp" class="col-md-12 control-label p-color font-weight-bold">Enter OTP</label>
+                                <div class="col-md-12">
+                                    <input type="text" id="otp" class="form-control" name="otp" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-12 mt-3">
+                                <button type="button" id="otpButton" class="btn btn-primary btn-block" onclick="getAndCheckOTP()">
+                                    Get OTP
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    </section>
+                    <section id="adminLoginForm" style="display:none;">
+                        <form class="form-horizontal" role="form" th:action="@{/login}" method="post">
+                            <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+
+                            <div class="form-group">
+                                <label for="userId" class="col-md-12 control-label p-color font-weight-bold">User ID</label>
+                                <div class="col-md-12">
+                                    <input type="text" id="userId" class="form-control" name="username" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password" class="col-md-12 control-label p-color font-weight-bold">Password</label>
+                                <div class="col-md-12">
+                                    <input type="password" id="password" class="form-control" name="password" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-md-12 mt-3">
+                                    <button type="submit" class="btn btn-primary btn-block">
+                                        Login
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include Bootstrap JS (popper.js included within Bootstrap) -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script th:inline="javascript">
+    var buttonText = /*[[${initialButtonText}]]*/ 'Admin';
+    function toggleAdminForm() {
+        var userForm = document.getElementById('userLoginForm');
+        var adminForm = document.getElementById('adminLoginForm');
+        var buttonTextSpan = document.getElementById('buttonTextSpan');
+
+        if (adminForm.style.display === 'none') {
+            // Show Admin Login Form
+            adminForm.style.display = 'block';
+            userForm.style.display = 'none';
+            buttonTextSpan.innerText = 'User'; // Update button text dynamically
+        } else {
+            // Show User Login Form
+            adminForm.style.display = 'none';
+            userForm.style.display = 'block';
+            buttonTextSpan.innerText = 'Admin'; // Update button text dynamically
+        }
+    }
+
+    function getAndCheckOTP() {
+        var mobileNumberInput = document.getElementById('mobile_number');
+        var otpInputField = document.getElementById('otpInputField');
+        var otpButton = document.getElementById('otpButton');
+        var otpInput = document.getElementById('otp');
+
+        // Validate the phone number format (you may add your validation logic)
+        var isValidPhoneNumber = /^[0-9]{10}$/.test(mobileNumberInput.value);
+
+        if (isValidPhoneNumber) {
+            if (otpInputField.style.display === 'none') {
+                // Hide the mobile number input field
+                mobileNumberInput.parentNode.style.display = 'none';
+
+                // Show the OTP input field
+                otpInputField.style.display = 'block';
+
+                // Change button text to "Verify OTP"
+                otpButton.innerText = 'Verify OTP';
+
+                // Focus on the OTP input field for better user experience
+                otpInput.focus();
+            } else {
+                // If OTP input field is already visible, call verifyOTP()
+                verifyOTP();
+            }
+        }
+        else {
+            // Show a SweetAlert error message for invalid phone number format
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid Phone Number Format',
+                text: 'Please enter a valid 10-digit phone number.',
+            });
+        }
+    }
+
+    function verifyOTP() {
+        var otpInput = document.getElementById('otp');
+
+        // Validate the OTP format (exactly 6 digits)
+        var isValidOTP = /^[0-9]{6}$/.test(otpInput.value);
+
+        if (isValidOTP) {
+            //Implement     logic for verifying the OTP
+           // For now, just display a success message
+            Swal.fire({
+                icon: 'success',
+                title: 'OTP Verified!',
+                text: 'You can now proceed.',
+            });
+
+            console.log("OTP VALID")
+            $('#sendOtp').submit()
+            // window.location.href = /*[[@{/userpage}]]*/ '';
+        } else {
+            // Show a SweetAlert error message for invalid OTP format
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid OTP Format',
+                text: 'Please enter a valid 6-digit OTP.',
+            });
+        }
+    }
+
+
+</script>
+</body>
+
+</html>
