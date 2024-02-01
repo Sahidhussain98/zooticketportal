@@ -1,8 +1,6 @@
-package com.zoo.controllers;
+package com.practice.zooticketportal.controllers;
 
-
-import com.zoo.entity.MasterEstablishment;
-import com.zoo.service.MasterEstablishmentService;
+import com.practice.zooticketportal.entity.MasterEstablishment;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +14,10 @@ import java.io.FileNotFoundException;
 @RequestMapping("/establishments")
 public class MasterEstablishmentController {
     @Autowired
-    private MasterEstablishmentService masterEstablishmentService;
+    private com.zoo.service.MasterEstablishmentService masterEstablishmentService;
 
     @Autowired
-    public MasterEstablishmentController(MasterEstablishmentService masterEstablishmentService) {
+    public MasterEstablishmentController(com.zoo.service.MasterEstablishmentService masterEstablishmentService) {
         this.masterEstablishmentService = masterEstablishmentService;
     }
 

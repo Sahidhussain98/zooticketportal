@@ -1,4 +1,4 @@
-package com.zoo.service;
+package com.practice.zooticketportal.service;
 
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.http.ResponseEntity;

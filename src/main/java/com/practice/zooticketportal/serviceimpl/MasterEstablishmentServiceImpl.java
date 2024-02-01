@@ -1,8 +1,8 @@
-package com.zoo.serviceimpl;
+package com.practice.zooticketportal.serviceimpl;
 
 
-import com.zoo.entity.MasterEstablishment;
-import com.zoo.repositories.MasterEstablishmentRepository;
+import com.practice.zooticketportal.entity.MasterEstablishment;
+import com.practice.zooticketportal.repositories.MasterEstablishmentRepository;
 import com.zoo.service.MasterEstablishmentService;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;

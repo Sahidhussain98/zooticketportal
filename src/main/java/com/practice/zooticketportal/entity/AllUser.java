@@ -1,20 +1,25 @@
 package com.practice.zooticketportal.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "AllUser")
 public class AllUser {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long allUserId;
     private String username;
     private String password;
     private Long phoneNumber;
+    private Date onCreate;
+    private Date onUpdate;
 
 
 //    @Transient
@@ -37,39 +42,33 @@ public class AllUser {
         roles.clear();
         roles.add(citizenRole);
     }
-    public void setAllUserId(Long allUserId) {
-        this.allUserId = allUserId;
+
+    @PrePersist
+    public void onCreate() {
+        Calendar cal = Calendar.getInstance();
+        Date date = new Date();
+        this.setOnCreate(date);
+        this.setOnUpdate(date);
     }
 
-    public String getUsername() {
-        return username;
+    @PreUpdate
+    public void onUpdate() {
+        Calendar cal = Calendar.getInstance();
+        Date date = new Date();
+        this.setOnUpdate(date);
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AllUser allUser = (AllUser) o;
+        return Objects.equals(allUserId, allUser.allUserId);
     }
 
-    public String getPassword() {
-        return password;
+    @Override
+    public int hashCode() {
+        return Objects.hash(allUserId);
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Long getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(Long phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public Set<Roles> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Roles> roles) {
-        this.roles = roles;
-    }
 }

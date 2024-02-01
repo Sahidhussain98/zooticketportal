@@ -1,4 +1,4 @@
-package com.zoo.entity;
+package com.practice.zooticketportal.entity;
 
 import jakarta.persistence.*;
 import org.antlr.v4.runtime.misc.NotNull;

@@ -1,6 +1,7 @@
-package com.zoo.repositories;
+package com.practice.zooticketportal.repositories;
 
-import com.zoo.entity.Village;
+
+import com.practice.zooticketportal.entity.Village;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface VillageRepo extends JpaRepository<Village,Long> {

@@ -3,7 +3,8 @@ package com.zoo.service;
 
 
 
-import com.zoo.entity.MasterEstablishment;
+
+import com.practice.zooticketportal.entity.MasterEstablishment;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

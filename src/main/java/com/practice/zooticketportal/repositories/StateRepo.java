@@ -1,6 +1,7 @@
-package com.zoo.repositories;
+package com.practice.zooticketportal.repositories;
 
-import com.zoo.entity.State;
+
+import com.practice.zooticketportal.entity.State;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StateRepo extends JpaRepository<State,Long> {

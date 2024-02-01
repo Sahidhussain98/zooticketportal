@@ -1,6 +1,6 @@
-package com.zoo.repositories;
+package com.practice.zooticketportal.repositories;
 
-import com.zoo.entity.Block;
+import com.practice.zooticketportal.entity.Block;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BlockRepo extends JpaRepository<Block,Long> {

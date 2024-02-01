@@ -38,10 +38,11 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/","/user/verifyOtp").permitAll()
+                        .requestMatchers("/","/user/verifyOtp","/showCheckoutForm").permitAll()
                         .requestMatchers("/audit").hasAnyRole("ADMIN","OFFICER")
                         .requestMatchers("/establishments").hasAnyRole("ADMIN","OFFICER")
                         .requestMatchers("/edit-establishments").hasAnyRole("ADMIN","OFFICER")
+                        .requestMatchers("/establishments/edit/{id}").hasAnyRole("ADMIN","OFFICER")
                         .requestMatchers("/create-establishments").hasAnyRole("ADMIN","OFFICER")
                         .requestMatchers("/adminpage").hasAnyRole("ADMIN","OFFICER")
                         .requestMatchers("/officerpage").hasAnyRole("OFFICER","ADMIN")

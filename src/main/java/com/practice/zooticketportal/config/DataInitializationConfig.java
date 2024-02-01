@@ -1,8 +1,7 @@
-package com.zoo.config;
+package com.practice.zooticketportal.config;
 
 
-
-import com.zoo.repositories.MasterEstablishmentRepository;
+import com.practice.zooticketportal.repositories.MasterEstablishmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;

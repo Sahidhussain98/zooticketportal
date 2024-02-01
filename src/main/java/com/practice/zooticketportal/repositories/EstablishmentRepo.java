@@ -1,6 +1,7 @@
-package com.zoo.repositories;
+package com.practice.zooticketportal.repositories;
 
-import com.zoo.entity.Establishment;
+
+import com.practice.zooticketportal.entity.Establishment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EstablishmentRepo extends JpaRepository<Establishment,Long> {

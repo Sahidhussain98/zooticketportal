@@ -1,9 +1,9 @@
-package com.zoo.serviceimpl;
+package com.practice.zooticketportal.serviceimpl;
 
 
-import com.zoo.entity.Ticket;
-import com.zoo.repositories.TicketRepository;
-import com.zoo.service.TicketService;
+import com.practice.zooticketportal.entity.Ticket;
+import com.practice.zooticketportal.repositories.TicketRepository;
+import com.practice.zooticketportal.service.TicketService;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.http.ResponseEntity;

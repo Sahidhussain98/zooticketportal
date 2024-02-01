@@ -1,6 +1,7 @@
-package com.zoo.repositories;
+package com.practice.zooticketportal.repositories;
 
-import com.zoo.entity.Images;
+
+import com.practice.zooticketportal.entity.Images;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ImageRepo extends JpaRepository<Images,Byte> {

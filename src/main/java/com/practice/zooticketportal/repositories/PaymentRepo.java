@@ -1,6 +1,7 @@
-package com.zoo.repositories;
+package com.practice.zooticketportal.repositories;
 
-import com.zoo.entity.Payment;
+
+import com.practice.zooticketportal.entity.Payment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PaymentRepo extends JpaRepository<Payment,Long> {
