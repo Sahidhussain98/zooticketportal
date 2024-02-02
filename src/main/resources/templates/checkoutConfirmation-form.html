@@ -169,11 +169,11 @@
 
             <input type="hidden" th:name="ticketId" th:value="${theTicket.id}" />
             <input type="submit" value="Edit" />
-            <div class="col-lg-12 mt-3">
-                <a th:href="@{/export/pdf}" class="btn btn-success">Download PDF Report</a>
-
-            </div>
         </form>
+        <div class="col-lg-12 mt-3">
+            <a th:href="@{/export/pdf}" class="btn btn-success">Download PDF Report</a>
+
+        </div>
 
 
 <!--        <form th:action="@{/proceed}" th:method="POST">-->
