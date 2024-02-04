@@ -13,7 +13,7 @@ public class AuditAspect {
     @Autowired
     private AuditService auditService;
 
-    @Before("execution(* com.zoo.loginServices.*.*(..))")
+    @Before("execution(* com.practice.zooticketportal.loginServices.*.*(..))")
     public void beforeServiceMethod(JoinPoint joinPoint) {
         String methodName = joinPoint.getSignature().getName();
         String entityName = getEntityName(joinPoint);

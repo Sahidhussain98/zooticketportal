@@ -28,7 +28,7 @@ public class TicketServiceImpl implements TicketService {
     }
     @Override
     public ResponseEntity<String> exportReport(String format) throws FileNotFoundException, JRException {
-        String path="C:\\Users\\HP1\\IdeaProjects\\reports";
+        String path="D:\\reports";
         List<Ticket> ticket= ticketRepository.findAll();//getAllStudents();
         //Load file and compile it
         File file = ResourceUtils.getFile("classpath:tickets.jrxml");
