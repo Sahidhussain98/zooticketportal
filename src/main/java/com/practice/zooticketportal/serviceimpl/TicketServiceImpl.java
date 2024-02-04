@@ -35,9 +35,9 @@ public class TicketServiceImpl implements TicketService {
     public Ticket getTicketById(Long id) {
         return ticketRepository.findTicketById(id);
     }
+
     @Override
-    public ResponseEntity<byte[]> exportReport(String format, Ticket ticket) throws JRException, FileNotFoundException {
-        // Load file and compile it
+    public ResponseEntity<byte[]> exportReport(String format, Ticket ticket) throws FileNotFoundException, JRException {
         File file = ResourceUtils.getFile("classpath:tickets.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
 
@@ -63,6 +63,12 @@ public class TicketServiceImpl implements TicketService {
 
         return ResponseEntity.badRequest().body("Invalid Report format specified.".getBytes());
     }
+    }
 
 
-}
+
+
+
+
+
+

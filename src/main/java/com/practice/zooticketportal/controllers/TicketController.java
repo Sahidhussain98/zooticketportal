@@ -99,20 +99,15 @@ public class TicketController {
         return "checkoutConfirmation-form";
     }
     @GetMapping("/export/pdf")
-    public ResponseEntity<String> exportPdfReport() throws JRException, FileNotFoundException {
-//        System.out.println("pdf");
-        return ticketService.exportReport("pdf");
+    public ResponseEntity<byte[]> exportPdfReport(@RequestParam("id") Long id ) throws JRException, FileNotFoundException {
+        Ticket ticket = ticketRepository.findTicketById(id);
+        if (ticket == null) {
+            // Handle the case where the ticket with the given ID is not found
+            return ResponseEntity.badRequest().body(("Ticket not found for ID: " + id).getBytes());
+        }
+        return ticketService.exportReport("pdf", ticket);
     }
 
 
 
-
 }
-
-
-
-
-
-
-
-

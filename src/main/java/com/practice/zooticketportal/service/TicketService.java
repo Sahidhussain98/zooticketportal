@@ -11,5 +11,7 @@ import java.util.List;
 public interface TicketService {
     List<Ticket> getAllTicket();
 
-    ResponseEntity<String> exportReport(String format) throws FileNotFoundException, JRException;
+    Ticket getTicketById(Long id);
+
+    ResponseEntity<byte[]> exportReport(String format, Ticket ticket) throws FileNotFoundException, JRException;
 }
