@@ -7,6 +7,9 @@ import com.practice.zooticketportal.service.TicketService;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
@@ -25,30 +28,41 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public List<Ticket> getAllTicket() {
         return ticketRepository.findAll();
+
+    }
+
+    @Override
+    public Ticket getTicketById(Long id) {
+        return ticketRepository.findTicketById(id);
     }
     @Override
-    public ResponseEntity<String> exportReport(String format) throws FileNotFoundException, JRException {
-        String path="D:\\reports";
-        List<Ticket> ticket= ticketRepository.findAll();//getAllStudents();
-        //Load file and compile it
+    public ResponseEntity<byte[]> exportReport(String format, Ticket ticket) throws JRException, FileNotFoundException {
+        // Load file and compile it
         File file = ResourceUtils.getFile("classpath:tickets.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
-        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(ticket);
-        Map<String,Object> parameters = new HashMap<String, Object>();
-        parameters.put("createdBy", "Admin");
+
+        // Create a map to store parameters
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("id", ticket.getId());
+
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(List.of(ticket));
 
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
 
-        if(format.equalsIgnoreCase("html")){
-            JasperExportManager.exportReportToHtmlFile(jasperPrint, path+"\\ticket.html");
-            return ResponseEntity.ok("Report generated successfully in HTML format. Path:" + path + "\\ticket.html");
-        }
-        if(format.equalsIgnoreCase("pdf")){
-            JasperExportManager.exportReportToPdfFile(jasperPrint, path+"\\ticket.pdf");
-            return ResponseEntity.ok("Report generated successfully in PDF format. Path:" + path +"\\ticket.pdf");
+        byte[] reportBytes;
 
+        if (format.equalsIgnoreCase("pdf")) {
+            reportBytes = JasperExportManager.exportReportToPdf(jasperPrint);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", "ticket.pdf");
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+
+            return new ResponseEntity<>(reportBytes, headers, HttpStatus.OK);
         }
-        return ResponseEntity.badRequest().body("Invalid Report format specified.");
+
+        return ResponseEntity.badRequest().body("Invalid Report format specified.".getBytes());
     }
+
 
 }
