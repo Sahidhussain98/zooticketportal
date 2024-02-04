@@ -9,37 +9,12 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
+
+
+
 <body class="py-4">
-<!-- Navigation Menu -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">Admin Panel</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="#">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Users</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/establishments}">Establishments</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/audit">Audit</a>
-                </li>
-            </ul>
-            <!-- Logout form using Thymeleaf -->
-            <form th:action="@{/logout}" method="post" class="form-inline my-2 my-lg-0">
-                <input type="submit" class="btn btn-danger" value="Logout"/>
-            </form>
-        </div>
-    </div>
-</nav>
+<div th:replace="fragments/adminNavMenu :: header"></div>
+
 
 <!-- Page Content -->
 
@@ -57,31 +32,7 @@
         </div>
     </div>
 </section>
-<!--    &lt;!&ndash; Audit Section &ndash;&gt;-->
-<!--    &lt;!&ndash; Audit Section &ndash;&gt;-->
-<!--    <div id="auditSection" th:style="${#lists.isEmpty(auditLogs) ? 'display: none;' : ''}">-->
-<!--        <h3 class="text-center">Audit Logs</h3>-->
-<!--        <table class="table">-->
-<!--            <thead>-->
-<!--            <tr>-->
-<!--                <th scope="col">Action</th>-->
-<!--                <th scope="col">Entity</th>-->
-<!--                <th scope="col">Entity ID</th>-->
-<!--                <th scope="col">Username</th>-->
-<!--                <th scope="col">Timestamp</th>-->
-<!--            </tr>-->
-<!--            </thead>-->
-<!--            <tbody>-->
-<!--            <tr th:each="log : ${auditLogs}">-->
-<!--                <td th:text="${log.action}"></td>-->
-<!--                <td th:text="${log.entityName}"></td>-->
-<!--                <td th:text="${log.entityId}"></td>-->
-<!--                <td th:text="${log.username}"></td>-->
-<!--                <td th:text="${#dates.format(log.timestamp, 'yyyy-MM-dd HH:mm:ss')}"></td>-->
-<!--            </tr>-->
-<!--            </tbody>-->
-<!--        </table>-->
-<!--    </div>-->
+
 
 </div>
 

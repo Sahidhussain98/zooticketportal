@@ -7,41 +7,8 @@
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
 <body>
+<div th:replace="fragments/adminNavMenu :: header"></div>
 
-<nav class="navbar navbar-expand-md bg-dark navbar-dark">
-    <!-- Brand -->
-    <a class="navbar-brand" href="#">Zoo Reservation System</a>
-
-    <!-- Toggler/collapsibe Button -->
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-
-
-    <!-- Navbar links -->
-    <div class="collapse navbar-collapse" id="collapsibleNavbar">
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" th:href="@{/establishments.html}">Gallery</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" th:href="@{/establishments.html}">Details</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" th:href="@{/establishments.html}">Zoo Animals</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" th:href="@{/establishments.html}">Link</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" th:href="@{/establishments.html}">Link</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" th:href="@{/establishments.html}">Link</a>
-            </li>
-        </ul>
-    </div>
-</nav>
 <br>
 <br>
 
@@ -101,6 +68,9 @@
 
 
 </div>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 </body>
 </html>
