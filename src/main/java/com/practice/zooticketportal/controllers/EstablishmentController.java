@@ -30,6 +30,13 @@ public class EstablishmentController {
         model.addAttribute("establishmentList", establishments);
         return "establishments";
     }
+//    @GetMapping("/userpage")
+//    public String displayUserPage(Model model) {
+//        List<Establishment> userEstablishments = establishmentService.getAllEstablishments();
+//        System.out.println("Number of establishments: " + userEstablishments.size()); // Add this line for debugging
+//        model.addAttribute("establishmentList", userEstablishments);
+//        return "userpage";
+//    }
 
 
 
