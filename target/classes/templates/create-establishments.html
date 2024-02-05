@@ -18,14 +18,14 @@
         <div class="col-lg-6 col-md-6 col-sm-6 container justify-content-center card">
             <h1 class ="text-centre"> Create New Establishment</h1>
             <div class = "card-bo">
-                <form th:action="@{/establishments}" th:object = "${masterEstablishment}" method="POST">
+                <form th:action="@{/establishments}" th:object = "${establishment}" method="POST">
 
                     <div class="form-group">
                         <label>Establishment Name </label>
                         <input
                                 type = "text"
                                 name = "establishmentName"
-                                th:field = "*{establishmentName}"
+                                th:field = "*{name}"
                                 class = "form-control"
                                 placeholder="Enter Establishment Name "
                         />
@@ -33,7 +33,7 @@
 
                     <div class="form-group">
                         <label>Establishment Type </label>
-                        <select name="establishmentType" id="establishmentType" class="form-control">
+                        <select name="type" id="type" class="form-control">
                             <option value="option1">Zoological Park</option>
                             <option value="option2">Amusement Park</option>
 <!--                            <option value="option3">option3</option>-->

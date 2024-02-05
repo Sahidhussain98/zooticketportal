@@ -1,11 +1,15 @@
 package com.practice.zooticketportal.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
 @Table(name="Establishment")
 public class Establishment {
     @Id
@@ -13,6 +17,7 @@ public class Establishment {
     private Long establishmentId;
     private String name;
     private String address;
+    private String type;
     private Long price;
     private LocalDateTime openingTime;
     private LocalDateTime closingTime;

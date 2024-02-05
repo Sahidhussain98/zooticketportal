@@ -11,7 +11,7 @@ public class MasterEstablishment {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Column(name = "establishmentName", nullable = false)
+    @Column(name = "establishmentName")
     private String establishmentName;
 
     @Column(name = "establishmentType")

@@ -1,9 +1,10 @@
 package com.practice.zooticketportal.serviceimpl;
 
 
+import com.practice.zooticketportal.entity.Establishment;
 import com.practice.zooticketportal.entity.MasterEstablishment;
-import com.practice.zooticketportal.repositories.MasterEstablishmentRepository;
-import com.zoo.service.MasterEstablishmentService;
+import com.practice.zooticketportal.repositories.EstablishmentRepo;
+import com.practice.zooticketportal.service.EstablishmentService;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,30 +22,30 @@ import java.util.Optional;
 
 
 @Service
-public class MasterEstablishmentServiceImpl implements MasterEstablishmentService {
+public class EstablishmentServiceImpl implements EstablishmentService{
 
     @Autowired
-    private MasterEstablishmentRepository masterEstablishmentRepository;
+    private EstablishmentRepo establishmentRepository;
 
 
-    public MasterEstablishmentServiceImpl(MasterEstablishmentRepository masterEstablishmentRepository) {
-        this.masterEstablishmentRepository = masterEstablishmentRepository;
+    public EstablishmentServiceImpl(EstablishmentRepo stablishmentRepository) {
+        this.establishmentRepository = establishmentRepository;
     }
 
 
     @Override
-    public List<MasterEstablishment> getAllMasterEstablishments() {
-        return masterEstablishmentRepository.findAll();
+    public List<Establishment> getAllEstablishments() {
+        return establishmentRepository.findAll();
     }
 
     @Override
-    public MasterEstablishment saveMasterEstablishment(MasterEstablishment masterEstablishment) {
-        return masterEstablishmentRepository.save(masterEstablishment);
+    public Establishment saveEstablishment(Establishment establishment) {
+        return establishmentRepository.save(establishment);
     }
 
     @Override
-    public MasterEstablishment getMasterEstablishmentById(Long id) {
-        Optional<MasterEstablishment> optionalEstablishment = masterEstablishmentRepository.findById(id);
+    public Establishment getEstablishmentById(Long id) {
+        Optional<Establishment> optionalEstablishment = establishmentRepository.findById(id);
         return optionalEstablishment.orElse(null);
     }
 
@@ -52,22 +53,22 @@ public class MasterEstablishmentServiceImpl implements MasterEstablishmentServic
 
 
     @Override
-    public MasterEstablishment updateMasterEstablishment(MasterEstablishment masterEstablishment) {
+    public Establishment updateEstablishment(Establishment establishment) {
         // Use the repository to save the updated entity
-        return masterEstablishmentRepository.save(masterEstablishment);
+        return establishmentRepository.save(establishment);
     }
     @Override
-    public void deleteMasterEstablishmentById(Long id) {
-        masterEstablishmentRepository.deleteById(id);
+    public void deleteEstablishmentById(Long id) {
+        establishmentRepository.deleteById(id);
     }
     //Methods for downloading reports
     public ResponseEntity<String> exportReport(String format) throws FileNotFoundException, JRException {
         String path="C:\\Users\\HP1\\IdeaProjects\\reports";
-        List<MasterEstablishment> masterestablishments= masterEstablishmentRepository.findAll();//getAllStudents();
+        List<Establishment> establishments= establishmentRepository.findAll();//getAllStudents();
         //Load file and compile it
         File file = ResourceUtils.getFile("classpath:masterestablishments.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
-        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(masterestablishments);
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(establishments);
         Map<String,Object> parameters = new HashMap<String, Object>();
         parameters.put("createdBy", "Admin");
 

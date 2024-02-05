@@ -1,7 +1,7 @@
 package com.practice.zooticketportal.config;
 
 
-import com.practice.zooticketportal.repositories.MasterEstablishmentRepository;
+import com.practice.zooticketportal.repositories.MasterEstablishmentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -16,20 +16,20 @@ import org.springframework.context.annotation.Configuration;
 public class DataInitializationConfig {
 
     @Autowired
-    private MasterEstablishmentRepository masterEstablishmentRepository;
+    private MasterEstablishmentRepo masterEstablishmentRepo;
 
     @Bean
     public CommandLineRunner initializeData() {
         return args -> {
             //Your initialization logic goes here
 //            MasterEstablishment establishment1 = new MasterEstablishment("School A", "Type A", "Admin A");
-//            masterEstablishmentRepository.save(establishment1);
+//            masterEstablishmentRepo.save(establishment1);
 //
 //            MasterEstablishment establishment2 = new MasterEstablishment("School B", "Type B", "Admin B");
-//            masterEstablishmentRepository.save(establishment2);
+//            masterEstablishmentRepo.save(establishment2);
 //
 //            MasterEstablishment establishment3 = new MasterEstablishment("School C", "Type C", "Admin C");
-//            masterEstablishmentRepository.save(establishment3);
+//            masterEstablishmentRepo.save(establishment3);
 //
 //            // You can add more initialization logic as needed
 //        };
