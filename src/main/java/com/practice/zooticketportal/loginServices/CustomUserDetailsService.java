@@ -41,13 +41,13 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
         String encodedPassword = user.getPassword();
 
-        System.out.println("password got");
+//        System.out.println("password got");
 
         List<GrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRoleName()))
                 .collect(Collectors.toList());
         auditService.audit("LOAD_USER_BY_USERNAME", "AllUser", user.getAllUserId(), username);
-        System.out.println("got roles");
+//        System.out.println("got roles");
 
         // You can customize the UserDetails creation based on your AllUser entity
         return org.springframework.security.core.userdetails.User

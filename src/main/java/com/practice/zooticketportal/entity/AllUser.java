@@ -21,7 +21,12 @@ public class AllUser {
     private Date onCreate;
     private Date onUpdate;
 
+    @ManyToOne
+    @JoinColumn(name = "establishment_id")
+    private Establishment establishment;
 
+    @OneToMany(mappedBy = "user")
+    private List<Ticket> tickets = new ArrayList<>();
 //    @Transient
 //    private Long otp;
 //

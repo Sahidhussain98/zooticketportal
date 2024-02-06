@@ -1,10 +1,14 @@
 package com.practice.zooticketportal.controllers;
 
 import com.practice.zooticketportal.entity.Establishment;
+import com.practice.zooticketportal.entity.MasterEstablishment;
+import com.practice.zooticketportal.repositories.MasterEstablishmentRepo;
 import com.practice.zooticketportal.service.EstablishmentService;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +24,10 @@ public class EstablishmentController {
     private EstablishmentService establishmentService;
 
     @Autowired
+    private MasterEstablishmentRepo masterEstablishmentRepo;
+
+
+    @Autowired
     public EstablishmentController(EstablishmentService establishmentService) {
         this.establishmentService = establishmentService;
     }
@@ -30,18 +38,14 @@ public class EstablishmentController {
         model.addAttribute("establishmentList", establishments);
         return "establishments";
     }
-//    @GetMapping("/userpage")
-//    public String displayUserPage(Model model) {
-//        List<Establishment> userEstablishments = establishmentService.getAllEstablishments();
-//        System.out.println("Number of establishments: " + userEstablishments.size()); // Add this line for debugging
-//        model.addAttribute("establishmentList", userEstablishments);
-//        return "userpage";
-//    }
+
 
 
 
     @GetMapping("/new")
     public String createEstablishmentForm(Model model) {
+        List<MasterEstablishment> establishmentTypes = masterEstablishmentRepo.findAll();
+        model.addAttribute("establishmentTypes", establishmentTypes);
         Establishment establishment = new Establishment();
         model.addAttribute("establishment", establishment);
         return "create-establishments";
@@ -49,6 +53,9 @@ public class EstablishmentController {
 
     @PostMapping
     public String saveEstablishment(@ModelAttribute("establishment") Establishment establishment) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String enteredBy = authentication.getName();
+        establishment.setEnteredBy(enteredBy);
         establishmentService.saveEstablishment(establishment);
         return "redirect:/establishments";
     }

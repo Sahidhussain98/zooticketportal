@@ -29,11 +29,14 @@ public class Establishment {
     @ManyToOne
     @JoinColumn(name = "village", referencedColumnName="villageCode")
     private Village village;
-//    @OneToMany(mappedBy = "establishment")
-//    private List<Ticket> tickets;
+    @OneToMany(mappedBy = "establishment")
+    private List<AllUser> users;
     @OneToMany(mappedBy = "establishment")
     private List<NonWorkingDays> nonWorkingDays;
     @OneToMany(mappedBy = "establishment")
     private List<Images> images;
+
+    @OneToMany(mappedBy = "establishment")
+    private List<Ticket> tickets;
 
 }
