@@ -16,13 +16,12 @@
 <!-- Page Content -->
 <div class="container">
     <div class="card-deck">
-        <div th:if="${establishmentList}" th:each="establishment : ${establishmentList}"
-             class="card">
+        <a th:if="${establishmentList}" th:each="establishment : ${establishmentList}" th:href="@{/showCheckoutForm}" class="card">
             <div class="card-body">
                 <h5 class="card-title" th:text="${establishment.name}"></h5>
                 <!-- Add other properties if needed -->
             </div>
-        </div>
+        </a>
     </div>
 </div>
 
