@@ -18,52 +18,63 @@
         <div class="col-lg-6 col-md-6 col-sm-6 container justify-content-center card">
             <h1 class ="text-centre"> Create New Establishment</h1>
             <div class = "card-bo">
-                <form th:action="@{/establishments}" th:object="${establishment}" method="POST" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <label>Establishment Name</label>
-                        <input type="text" name="name" th:field="*{name}" class="form-control" placeholder="Enter Establishment Name"/>
-                    </div>
+                <form th:action="@{/establishments}" th:object="${establishment}" method="POST" enctype="multipart/form-data" id="establishmentForm">
+
 
                     <div class="form-group">
-                        <label>Establishment Type</label>
-                        <select name="type" id="type" class="form-control">
-                            <option th:each="establishmentType : ${establishmentTypes}"
-                                    th:value="${establishmentType.establishmentType}"
-                                    th:text="${establishmentType.establishmentType}"></option>
-                        </select>
-                    </div>
-                    <div class="form-group">
                         <label>State</label>
-                        <select id="state" name="stateId" class="form-control" onchange="loadDistricts()">
-                            <option th:each="state : ${states}" th:value="${state.stateId}" th:text="${state.stateName}"></option>
+                        <select id="state" name="stateId" class="form-control" disabled>
+                            <!-- Option with state ID 16 selected and disabled -->
+                            <option value="16" selected th:text="${stateName}"></option>
                         </select>
+                        <!-- Hidden input field to submit state ID -->
+                        <input type="hidden" name="stateId" value="16">
                     </div>
+
 
                     <div class="form-group">
                         <label>District</label>
                         <select id="district" name="districtId" class="form-control" onchange="loadBlocks()">
+                            <option value="" selected>--SELECT DISTRICT--</option>
                         </select>
                     </div>
 
 
                     <div class="form-group">
                         <label>Block</label>
-                        <select id="block" name="blockId" class="form-control">
+                        <select id="block" name="blockId" class="form-control" onchange="loadVillages()">
                             <!-- Block options will be populated dynamically -->
                         </select>
                     </div>
 
-<!--                    <div class="form-group">-->
-<!--                        <label>Village</label>-->
-<!--                        <select name="villageId" class="form-control">-->
-<!--                            <option th:each="village : ${villages}" th:value="${village.villageId}" th:text="${village.villageName}"></option>-->
-<!--                        </select>-->
-<!--                    </div>-->
+                    <div class="form-group">
+                        <label>Village</label>
+                        <select id="village" name="villageId" class="form-control">
+                            <!-- Village options will be populated dynamically -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Establishment Name</label>
+                        <input type="text" name="name" th:field="*{name}" class="form-control" placeholder="Enter Establishment Name"/>
+                    </div>
+
+                    <div class="form-group">
+                    <label>Establishment Type</label>
+                    <select name="typeId" id="typeId" class="form-control">
+                        <option value="">--SELECT ESTABLISHMENT TYPE--</option>
+                        <option th:each="establishmentType : ${establishmentTypes}"
+                                th:value="${establishmentType.id}"
+                                th:text="${establishmentType.establishmentType}"></option>
+                    </select>
+                </div>
 
                     <div class="form-group">
                         <label>Upload Image</label>
                         <input type="file" name="image" class="form-control-file"/>
                     </div>
+
+
 
                     <div class="box-footer">
                         <button type="submit" class="btn btn-primary">Submit</button>
@@ -84,6 +95,11 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script th:inline="javascript">
+    function resetForm() {
+        document.getElementById("establishmentForm").reset();
+    }
+
+
     function loadDistricts() {
         var stateCode = document.getElementById('state').value;
         console.log('State Code:', stateCode); // Add this line to log stateCode
@@ -93,7 +109,11 @@
             success: function (data) {
                 console.log('Districts:', data); // Add this line to log received data
                 var districtDropdown = document.getElementById('district');
-                districtDropdown.innerHTML = '';
+
+                // Clear existing options except the default one
+                districtDropdown.innerHTML = '<option value="" selected>--SELECT DISTRICT--</option>';
+
+                // Add districts dynamically
                 data.forEach(function(district) {
                     var option = document.createElement('option');
                     option.value = district.districtId;
@@ -106,6 +126,7 @@
             }
         });
     }
+
     function loadBlocks() {
         var districtId = document.getElementById('district').value;
         console.log('District ID:', districtId); // Add this line to log districtId
@@ -115,7 +136,11 @@
             success: function (data) {
                 console.log('Received blocks:', data);
                 var blockDropdown = document.getElementById('block');
-                blockDropdown.innerHTML = '';
+
+                // Clear existing options except the default one
+                blockDropdown.innerHTML = '<option value="" selected>--SELECT BLOCK--</option>';
+
+                // Add blocks dynamically
                 data.forEach(function(block) {
                     var option = document.createElement('option');
                     option.value = block.blockId;
@@ -128,6 +153,34 @@
             }
         });
     }
+    function loadVillages() {
+        var blockId = document.getElementById('block').value;
+        console.log('Block ID:', blockId); // Add this line to log blockId
+        $.ajax({
+            type: 'GET',
+            url: '/establishments/villages/' + blockId,
+            success: function (data) {
+                console.log('Received villages:', data);
+                var villageDropdown = document.getElementById('village');
+
+                // Clear existing options except the default one
+                villageDropdown.innerHTML = '<option value="" selected>--SELECT VILLAGE--</option>';
+
+                // Add villages dynamically
+                data.forEach(function(village) {
+                    var option = document.createElement('option');
+                    option.value = village.villageId;
+                    option.text = village.villageName;
+                    villageDropdown.appendChild(option);
+                });
+            },
+            error: function () {
+                console.log('Error loading villages');
+            }
+        });
+    }
+
+    window.onload = loadDistricts;
 </script>
 
 

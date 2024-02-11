@@ -19,7 +19,6 @@ public class Establishment {
     private Long establishmentId;
     private String name;
     private String address;
-    private String type;
     private Long price;
     private LocalDateTime openingTime;
     private LocalDateTime closingTime;
@@ -42,24 +41,4 @@ public class Establishment {
     private List<Ticket> tickets;
 
 
-//    @Override
-//    public String toString() {
-//        return "Establishment{" +
-//                "establishmentId=" + establishmentId +
-//                ", name='" + name + '\'' +
-//                ", address='" + address + '\'' +
-//                ", type='" + type + '\'' +
-//                ", price=" + price +
-//                ", openingTime=" + openingTime +
-//                ", closingTime=" + closingTime +
-//                ", enteredOn=" + enteredOn +
-//                ", enteredBy='" + enteredBy + '\'' +
-//                ", masterEstablishment=" + masterEstablishment +
-//                ", village=" + village +
-//                ", users=" + users +
-//                ", nonWorkingDays=" + nonWorkingDays +
-//                ", images=" + images +
-//                ", tickets=" + tickets +
-//                '}';
-//    }
 }

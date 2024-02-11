@@ -1,5 +1,7 @@
 package com.practice.zooticketportal.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,11 +20,15 @@ public class Village {
     private String villageName;
     @Column(unique=true)
     private  Long villageCode;
-    @ManyToOne
-    @JoinColumn(name = "block", referencedColumnName = "blockCode")
+
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "blockCode")
+    @JsonManagedReference
     private Block block;
 
     @OneToMany(mappedBy = "village")
+    @JsonIgnore
     private List<Establishment> establishment;
 
 }

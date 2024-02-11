@@ -38,16 +38,5 @@ public class District {
     @JsonIgnore // Add this annotation to prevent serialization of this field
     private List<Block> block;
 
-//    @Override
-//    public String toString() {
-//        return "District{" +
-//                "districtId=" + districtId +
-//                ", districtName='" + districtName + '\'' +
-//                ", districtCode=" + districtCode +
-//                ", state=" + state +
-//                ", block=" + block +
-//                '}';
-//    }
-//
-    // Constructors, getters, setters, etc.
+
 }

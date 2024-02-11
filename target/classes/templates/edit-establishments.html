@@ -32,12 +32,13 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Establishment Type </label>
-                        <input type="text" name="establishmentType" \
-                               th:field="*{type}"
+                        <label>Establishment Type</label>
+                        <input type="text"
+                               th:value="${establishment.masterEstablishment.establishmentType}"
                                class="form-control"
-                               placeholder="Enter Establishment Type" />
+                               placeholder="Enter Establishment Type" disabled/>
                     </div>
+
 
 
                     <div class = "box-footer">

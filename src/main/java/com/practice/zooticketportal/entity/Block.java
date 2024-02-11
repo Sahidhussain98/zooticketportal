@@ -29,7 +29,6 @@ public class Block {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "districtCode")
-//    @JsonIgnore
     @JsonManagedReference // Add this annotation to indicate the "owning" side of the relationship
     private District district;
 
@@ -37,14 +36,4 @@ public class Block {
     @JsonIgnore
     private List<Village> village;
 
-//    @Override
-//    public String toString() {
-//        return "Block{" +
-//                "blockId=" + blockId +
-//                ", blockName='" + blockName + '\'' +
-//                ", blockCode=" + blockCode +
-//                ", district=" + district +
-//                ", village=" + village +
-//                '}';
-//    }
 }

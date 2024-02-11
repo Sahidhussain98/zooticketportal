@@ -2,6 +2,7 @@ package com.practice.zooticketportal.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lowagie.text.ExceptionConverter;
 import com.practice.zooticketportal.entity.*;
 import com.practice.zooticketportal.repositories.*;
 import com.practice.zooticketportal.service.EstablishmentService;
@@ -42,6 +43,8 @@ public class EstablishmentController {
 
     @Autowired
     private BlockRepo blockRepo;
+    @Autowired
+    private VillageRepo villageRepo;
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -63,28 +66,33 @@ public class EstablishmentController {
     @GetMapping("/new")
     public String createEstablishmentForm(Model model) {
         List<MasterEstablishment> establishmentTypes = masterEstablishmentRepo.findAll();
-        List<State> states = stateRepo.findAll();
-
-
+        Optional<State> state = stateRepo.findById(16L); // Fetch state with ID 16 from the database
+        String stateName = state.isPresent() ? state.get().getStateName() : "Unknown"; // Get the state name, or use a default value
         model.addAttribute("establishmentTypes", establishmentTypes);
-        model.addAttribute("states", states);
-
-
+        model.addAttribute("stateName", stateName); // Pass the state name to the model
         Establishment establishment = new Establishment();
         model.addAttribute("establishment", establishment);
         return "create-establishments";
     }
 
+
     @PostMapping
     public String saveEstablishment(@RequestParam("name") String name,
-                                    @RequestParam("type") String type,
+                                    @RequestParam("typeId") Long typeId, // Change type parameter to typeId
+                                    @RequestParam("villageId") Long villageId,
                                     @RequestParam("image") MultipartFile imageFile,
                                     Model model) {
         try {
             // Create the establishment object
             Establishment establishment = new Establishment();
             establishment.setName(name);
-            establishment.setType(type);
+
+            // Fetch the MasterEstablishment entity by typeId
+            MasterEstablishment masterEstablishment = masterEstablishmentRepo.findById(typeId)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid establishment type id"));
+            establishment.setMasterEstablishment(masterEstablishment);
+
+            establishment.setVillage(villageRepo.findById(villageId).orElse(null));
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String enteredBy = authentication.getName();
             establishment.setEnteredBy(enteredBy);
@@ -105,6 +113,7 @@ public class EstablishmentController {
 
         return "redirect:/establishments"; // Redirect to the home page or any other appropriate page
     }
+
     @GetMapping("/districts/{stateCode}")
     @ResponseBody
     public ResponseEntity<List<District>> getDistrictsByStateCode(@PathVariable Long stateCode) {
@@ -115,31 +124,16 @@ public class EstablishmentController {
         List<District> districts = state.getDistrict();
         return ResponseEntity.ok(districts);
     }
-
-    @GetMapping("get")
-    public ResponseEntity<?> get(){
-        return ResponseEntity.ok("bhhbc");
-    }
     @GetMapping("/blocks/{districtId}")
     public ResponseEntity<?> getBlocksByDistrictId(@PathVariable Long districtId) throws Exception {
-
-        //System.out.println(districtId);
-//        District district = districtRepo.findByDistrictId(districtId);
-//        System.out.println(district);
-//        if (district == null){
-//            return ResponseEntity.notFound().build();
-//        }
-//        List<Block> blocks = district.getBlock();
-//        for(Block b : blocks){
-//            System.out.println(b);
-//        }
-
-//        List<Block> blocks=blockRepo.findByDistrictDistrictId(districtId);
-//        for (Block b : blocks){
-//            System.out.println(b);
-//        }
         List<Block> blocks=Optional.ofNullable(blockRepo.findByDistrictDistrictId(districtId)).orElseThrow(()->new Exception("District not Found"));
         return ResponseEntity.ok(blocks);
+    }
+
+    @GetMapping("/villages/{blockId}")
+    public ResponseEntity<?> getVillageByBlockId(@PathVariable Long blockId) throws Exception {
+        List<Village> villages=Optional.ofNullable(villageRepo.findByBlockBlockId(blockId)).orElseThrow(()->new Exception("Block id not found"));
+        return ResponseEntity.ok(villages);
     }
     @GetMapping("/edit/{id}")
     public String editEstablishmentForm(@PathVariable Long id, Model model) {
@@ -152,16 +146,16 @@ public class EstablishmentController {
 
     @PostMapping("/{id}")
     public String updateEstablishment(@PathVariable Long id,
-                                            @ModelAttribute("establishment") Establishment establishment) {
+                                      @ModelAttribute("establishment") Establishment establishment) {
         Establishment existingEstablishment = establishmentService.getEstablishmentById(id);
         existingEstablishment.setName(establishment.getName());
-        existingEstablishment.setType(establishment.getType());
-//        existingEstablishment.setEnteredBy(establishment.getEnteredBy());
+        // Remove setting type here since it's not part of the Establishment entity
 
         establishmentService.updateEstablishment(existingEstablishment);
         System.out.printf("update1");
         return "redirect:/establishments";
     }
+
 
 
     @GetMapping("/delete/{id}")
@@ -182,8 +176,3 @@ public class EstablishmentController {
         return establishmentService.exportReport("pdf");
     }
 }
-
-
-
-
-

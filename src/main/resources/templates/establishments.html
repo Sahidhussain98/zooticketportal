@@ -36,6 +36,7 @@
         <tr>
             <th>Establishment  Name</th>
             <th>Establishment Type</th>
+            <th>Village</th>
             <th>Establishment Entered By</th>
             <th>Actions</th>
         </tr>
@@ -44,7 +45,8 @@
         <tbody>
         <tr th:each="establishment: ${establishmentList}">
             <td th:text="${establishment.name}"></td>
-            <td th:text="${establishment.type}"></td>
+            <td th:text="${establishment.masterEstablishment.establishmentType}"></td>
+            <td th:text="${establishment.village.villageName}"></td>
             <td th:text="${establishment.enteredBy}"></td>
 
 
