@@ -30,7 +30,7 @@ public class Ticket {
     @JoinColumn(name = "user_id")  // Assuming this column exists in the Ticket table
     private AllUser user;
     @ManyToOne
-    @JoinColumn(name = "establishment_id") // Assuming this column exists in the Ticket table
+    @JoinColumn(name = "establishment") // Assuming this column exists in the Ticket table
     private Establishment establishment;
     @OneToOne(mappedBy = "ticket", cascade = CascadeType.ALL)
     private Payment payment;
