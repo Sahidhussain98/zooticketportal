@@ -3,6 +3,7 @@ package com.practice.zooticketportal.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@ToString
 @Table(name="Establishment")
 public class Establishment {
     @Id
@@ -33,10 +35,31 @@ public class Establishment {
     private List<AllUser> users;
     @OneToMany(mappedBy = "establishment")
     private List<NonWorkingDays> nonWorkingDays;
-    @OneToMany(mappedBy = "establishment")
+    @OneToMany(mappedBy = "establishment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Images> images;
 
     @OneToMany(mappedBy = "establishment")
     private List<Ticket> tickets;
 
+
+//    @Override
+//    public String toString() {
+//        return "Establishment{" +
+//                "establishmentId=" + establishmentId +
+//                ", name='" + name + '\'' +
+//                ", address='" + address + '\'' +
+//                ", type='" + type + '\'' +
+//                ", price=" + price +
+//                ", openingTime=" + openingTime +
+//                ", closingTime=" + closingTime +
+//                ", enteredOn=" + enteredOn +
+//                ", enteredBy='" + enteredBy + '\'' +
+//                ", masterEstablishment=" + masterEstablishment +
+//                ", village=" + village +
+//                ", users=" + users +
+//                ", nonWorkingDays=" + nonWorkingDays +
+//                ", images=" + images +
+//                ", tickets=" + tickets +
+//                '}';
+//    }
 }

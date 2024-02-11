@@ -98,9 +98,10 @@
                             <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
 
                             <div class="form-group">
-                                <label for="userId" class="col-md-12 control-label p-color font-weight-bold">User ID</label>
+                                <label for="phoneNumber" class="col-md-12 control-label p-color font-weight-bold">Phone Number</label>
                                 <div class="col-md-12">
-                                    <input type="text" id="userId" class="form-control" name="username" required>
+                                    <input type="text" id="phoneNumber" class="form-control" name="phoneNumber" maxlength="10" required pattern="[0-9]{10}" title="Please enter a 10-digit phone number" inputmode="numeric">
+                                    <small class="form-text text-muted">Please enter a 10-digit phone number using only numbers.</small>
                                 </div>
                             </div>
 
@@ -214,6 +215,18 @@
     }
 
 
+</script>
+<script>
+    document.getElementById('phoneNumber').addEventListener('input', function(event) {
+        // Get the entered value
+        let input = event.target.value;
+
+        // Remove any non-numeric characters
+        input = input.replace(/\D/g, '');
+
+        // Update the input value
+        event.target.value = input;
+    });
 </script>
 </body>
 

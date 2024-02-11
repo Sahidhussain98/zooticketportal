@@ -14,8 +14,8 @@ public class Images {
     private Long imageId;
 
     @Lob
-    @Column(name = "image_data", nullable = false)
     private byte[] imageData;
+
     @ManyToOne
     @JoinColumn(name = "establishment",referencedColumnName="establishmentId")
     private Establishment establishment;

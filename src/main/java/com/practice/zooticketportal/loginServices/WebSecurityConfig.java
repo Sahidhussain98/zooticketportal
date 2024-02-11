@@ -38,7 +38,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/","/user/verifyOtp","/adminpage").permitAll()
+                        .requestMatchers("/","/user/verifyOtp").permitAll()
                         .requestMatchers("/audit").hasAnyRole("ADMIN","OFFICER")
                         .requestMatchers("/establishments").hasAnyRole("ADMIN","OFFICER")
                         .requestMatchers("/edit-establishments").hasAnyRole("ADMIN","OFFICER")
@@ -51,6 +51,8 @@ public class WebSecurityConfig {
                 .formLogin((form) -> form
                         .loginPage("/login")
                         .successHandler(authenticationSuccessHandler())
+                        .usernameParameter("phoneNumber") // Specify the parameter name for phone number
+                        .passwordParameter("password") // Specify the parameter name for password
                         .permitAll()
 
                 )

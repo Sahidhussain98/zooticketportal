@@ -34,10 +34,10 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AllUser user = userRepository.findByUsername(username);
+    public UserDetails loadUserByUsername(String phoneNumber) throws UsernameNotFoundException {
+        AllUser user = userRepository.findByPhoneNumber(Long.valueOf(phoneNumber));
         if (user == null) {
-            throw new UsernameNotFoundException("User not found with username: " + username);
+            throw new UsernameNotFoundException("User not found with phone number: " + phoneNumber);
         }
         String encodedPassword = user.getPassword();
 
@@ -46,7 +46,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         List<GrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRoleName()))
                 .collect(Collectors.toList());
-        auditService.audit("LOAD_USER_BY_USERNAME", "AllUser", user.getAllUserId(), username);
+        auditService.audit("LOAD_USER_BY_USERNAME", "AllUser", user.getAllUserId(), phoneNumber);
 //        System.out.println("got roles");
 
         // You can customize the UserDetails creation based on your AllUser entity
