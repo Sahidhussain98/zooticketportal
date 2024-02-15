@@ -281,5 +281,12 @@ public class EstablishmentController {
 //        System.out.println("pdf");
         return establishmentService.exportReport("pdf");
     }
+    @GetMapping("/establishmentDetails/{establishmentId}")
+    public String showEstablishmentImageDetails(@PathVariable Long establishmentId, Model model) {
+        // Logic to retrieve establishment details using establishmentId
+        Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
+        model.addAttribute("establishment", establishment);
+        return "establishmentDetails"; // return the name of the HTML page for establishment details
+    }
 
 }
