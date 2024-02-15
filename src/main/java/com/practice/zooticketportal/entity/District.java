@@ -13,8 +13,6 @@ import java.io.Serializable;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
 @ToString
 @NoArgsConstructor
 @Table(name = "District")
@@ -38,5 +36,43 @@ public class District {
     @JsonIgnore // Add this annotation to prevent serialization of this field
     private List<Block> block;
 
+    public Long getDistrictId() {
+        return districtId;
+    }
 
+    public void setDistrictId(Long districtId) {
+        this.districtId = districtId;
+    }
+
+    public String getDistrictName() {
+        return districtName;
+    }
+
+    public void setDistrictName(String districtName) {
+        this.districtName = districtName;
+    }
+
+    public Long getDistrictCode() {
+        return districtCode;
+    }
+
+    public void setDistrictCode(Long districtCode) {
+        this.districtCode = districtCode;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
+    }
+
+    public List<Block> getBlock() {
+        return block;
+    }
+
+    public void setBlock(List<Block> block) {
+        this.block = block;
+    }
 }

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Zoo Reservation System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
+    <style>
+        /* Custom Styles */
+        body {
+            background-color: #f8f9fa; /* Set background color */
+            padding: 20px;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.1);
+        }
+
+        .highlight-required {
+            border-color: red; /* Change the border color to red */
+            /* Add any other styling as needed */
+        }
+
+        .submit-btn {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .submit-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="form-container">
+        <h1 class="mb-4">Enter Further Details</h1>
+
+        <div th:if="${establishment != null}">
+
+            <div>
+                <p>Establishment Name: <span th:text="${establishment.name}"></span></p>
+                <p>Establishment Village: <span th:text="${establishment.village.villageName}"></span></p>
+                <!-- Add more details here as needed -->
+            </div>
+            <form th:action="@{/establishments/save2}" th:object="${establishment}" method="POST"
+                  enctype="multipart/form-data" id="establishmentForm2" onsubmit="return validateForm()">
+                <input type="hidden" name="establishmentId" th:value="${establishment.establishmentId}" />
+                <fieldset>
+                    <legend>Part 1: Establishment Information</legend>
+                <div class="form-container">
+                    <div class="form-group">
+                        <label>Establishment Address<span class="text-danger">*</span></label>
+                        <input type="text" name="address" th:field="*{address}" class="form-control" placeholder="Enter Establishment Address" required/>
+                    </div>
+                    <div class="form-group">
+                        <label>Establishment Opening Time<span class="text-danger">*</span></label>
+                        <input type="time" name="openingTime" th:field="*{openingTime}" class="form-control" required/>
+                    </div>
+                    <div class="form-group">
+                        <label>Establishment Closing Time<span class="text-danger">*</span></label>
+                        <input type="time" name="closingTime" th:field="*{closingTime}" class="form-control" required/>
+                    </div>
+                    <div class="form-group">
+                        <label>Upload Additional Images<span class="text-danger">*</span></label>
+                        <input type="file" name="image" class="form-control-file" />
+                    </div>
+                </div>
+                </fieldset>
+                <fieldset>
+                    <legend>Part 2: Additional Information</legend>
+                    <div class="form-container">
+                    <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="nationality">Nationality<span class="text-danger">*</span></label>
+                        <select id="nationality" name="nationalityId" class="form-control" required>
+                            <option value="">--SELECT NATIONALITY--</option>
+                            <option th:each="nationality : ${nationalities}" th:value="${nationality.nationalityId}"
+                                    th:text="${nationality.nationalityType}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="category">Category<span class="text-danger">*</span></label>
+                        <select id="category" name="categoryId" class="form-control" required>
+                            <option value="">--SELECT CATEGORY--</option>
+                            <option th:each="category : ${categories}" th:value="${category.categoryId}"
+                                    th:text="${category.categoryName}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="entryFee">Entry Fee<span class="text-danger">*</span></label>
+                        <input type="number" step="1" class="form-control" id="entryFee" name="entryFee"
+                               placeholder="Enter Entry Fee" required>
+                    </div>
+                    </div>
+                    </div>
+                </fieldset>
+                <button type="submit" class="submit-btn">Submit</button>
+            </form>
+        </div>
+        <div th:if="${establishment == null}">
+            <p>No establishment found.</p>
+            <!-- You can customize this message as needed -->
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script th:inline="javascript">
+    function validateForm() {
+        var requiredFields = document.querySelectorAll('form#establishmentForm [required]');
+        var isValid = true;
+
+        requiredFields.forEach(function (field) {
+            if (!field.value.trim()) {
+                isValid = false;
+                field.classList.add('highlight-required'); // Add CSS class to highlight required fields
+            } else {
+                field.classList.remove('highlight-required'); // Remove CSS class if field is filled
+            }
+        });
+
+        if (!isValid) {
+            // Show SweetAlert popup
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Please enter data in the required fields!',
+            });
+
+            // Scroll to the first empty required field for better visibility
+            var firstEmptyField = document.querySelector('form#establishmentForm [required]:not(:valid)');
+            if (firstEmptyField) {
+                firstEmptyField.focus();
+                firstEmptyField.scrollIntoView({behavior: 'smooth', block: 'center'});
+            }
+        }
+
+        return isValid;
+    }
+
+</script>
+</body>
+</html>

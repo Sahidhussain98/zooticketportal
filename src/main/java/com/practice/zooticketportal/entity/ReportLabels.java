@@ -20,24 +20,6 @@ public class ReportLabels {
     private LocalDateTime enteredOn;
     @Column(name="entered_by")
     private String enteredBy;
-    //constructors
-
-    public ReportLabels() {
-    }
-
-    //Constructors
-
-    public ReportLabels(Long reportId, String fieldName, String fieldLabel, LocalDateTime eneteredOn, String enteredBy) {
-        this.reportId = reportId;
-        this.fieldName = fieldName;
-        this.fieldLabel = fieldLabel;
-        this.enteredOn = enteredOn;
-        this.enteredBy = enteredBy;
-    }
-
-
-    //Getter and Setters
-
 
     public Long getReportId() {
         return reportId;

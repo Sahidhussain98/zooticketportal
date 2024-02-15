@@ -4,8 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-@Setter
-@Getter
+
 @Entity
 @Table(name ="MasterEstablishment")
 public class MasterEstablishment {
@@ -31,7 +30,29 @@ public class MasterEstablishment {
         this.enteredBy = enteredBy;
     }
 
+    public long getId() {
+        return id;
+    }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getEstablishmentType() {
+        return establishmentType;
+    }
+
+    public void setEstablishmentType(String establishmentType) {
+        this.establishmentType = establishmentType;
+    }
+
+    public String getEnteredBy() {
+        return enteredBy;
+    }
+
+    public void setEnteredBy(String enteredBy) {
+        this.enteredBy = enteredBy;
+    }
 }
 
 

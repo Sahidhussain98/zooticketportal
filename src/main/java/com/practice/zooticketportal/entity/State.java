@@ -11,8 +11,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
 @ToString
 @NoArgsConstructor
 @Table(name="State")
@@ -31,16 +29,35 @@ public class State {
     @JsonIgnore // Add this annotation to prevent serialization of this field
     private List<District> district;
 
-    // Constructors, getters, setters, etc.
+    public Long getStateId() {
+        return stateId;
+    }
 
+    public void setStateId(Long stateId) {
+        this.stateId = stateId;
+    }
 
-//    @Override
-//    public String toString() {
-//        return "State{" +
-//                "stateId=" + stateId +
-//                ", stateName='" + stateName + '\'' +
-//                ", stateCode=" + stateCode +
-//                ", district=" + district +
-//                '}';
-//    }
+    public String getStateName() {
+        return stateName;
+    }
+
+    public void setStateName(String stateName) {
+        this.stateName = stateName;
+    }
+
+    public Long getStateCode() {
+        return stateCode;
+    }
+
+    public void setStateCode(Long stateCode) {
+        this.stateCode = stateCode;
+    }
+
+    public List<District> getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(List<District> district) {
+        this.district = district;
+    }
 }

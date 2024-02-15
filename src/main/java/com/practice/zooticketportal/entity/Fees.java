@@ -3,6 +3,7 @@ package com.practice.zooticketportal.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 //Table name
@@ -12,7 +13,8 @@ public class Fees {
     @Id
     //Auto generation of primary key
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @Column(name ="fees_id")
+    private Long feesId;
     @Column(name="entry_fee")
     private Double entryFee;
     @Column(name="entered_on")
@@ -21,13 +23,69 @@ public class Fees {
     private String enteredBy;
     //Constructor
 
-    public Fees() {
+    @ManyToOne
+    @JoinColumn(name = "nationality_id")
+    private Nationality nationality;
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+    @ManyToOne
+    @JoinColumn(name = "establishmentId") // Assuming the name of the column in Fees table referring to Establishment
+    private Establishment establishment;
+
+    public Long getFeesId() {
+        return feesId;
     }
-    //constructors for all fields
 
-
-
-    //Getter and setters
-
-
+    public void setFeesId(Long feesId) {
+        this.feesId = feesId;
     }
+
+    public Double getEntryFee() {
+        return entryFee;
+    }
+
+    public void setEntryFee(Double entryFee) {
+        this.entryFee = entryFee;
+    }
+
+    public LocalDateTime getEnteredOn() {
+        return enteredOn;
+    }
+
+    public void setEnteredOn(LocalDateTime enteredOn) {
+        this.enteredOn = enteredOn;
+    }
+
+    public String getEnteredBy() {
+        return enteredBy;
+    }
+
+    public void setEnteredBy(String enteredBy) {
+        this.enteredBy = enteredBy;
+    }
+
+    public Nationality getNationality() {
+        return nationality;
+    }
+
+    public void setNationality(Nationality nationality) {
+        this.nationality = nationality;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public Establishment getEstablishment() {
+        return establishment;
+    }
+
+    public void setEstablishment(Establishment establishment) {
+        this.establishment = establishment;
+    }
+}

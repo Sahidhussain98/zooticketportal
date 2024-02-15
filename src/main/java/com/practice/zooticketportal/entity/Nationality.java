@@ -17,17 +17,30 @@ public class Nationality {
     private Long nationalityId;
     @Column(name="nationalityType")
     private String nationalityType;
-    @Column(name="entered_on")
-    private LocalDateTime enteredOn;
-    @Column(name="entered_by")
-    private String enteredBy;
+    @OneToMany(mappedBy = "nationality", cascade = CascadeType.ALL)
+    private List<Fees> fees;
 
+    public Long getNationalityId() {
+        return nationalityId;
+    }
 
-    //Constructors
+    public void setNationalityId(Long nationalityId) {
+        this.nationalityId = nationalityId;
+    }
 
+    public String getNationalityType() {
+        return nationalityType;
+    }
 
+    public void setNationalityType(String nationalityType) {
+        this.nationalityType = nationalityType;
+    }
 
+    public List<Fees> getFees() {
+        return fees;
+    }
 
-    //Getter and Setters
-
+    public void setFees(List<Fees> fees) {
+        this.fees = fees;
+    }
 }

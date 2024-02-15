@@ -9,8 +9,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+
 @Entity
 public class Audit {
 
@@ -24,5 +23,51 @@ public class Audit {
     private String username;
     private LocalDateTime timestamp;
 
-    // Getters and Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public String getEntityName() {
+        return entityName;
+    }
+
+    public void setEntityName(String entityName) {
+        this.entityName = entityName;
+    }
+
+    public Long getEntityId() {
+        return entityId;
+    }
+
+    public void setEntityId(Long entityId) {
+        this.entityId = entityId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
 }

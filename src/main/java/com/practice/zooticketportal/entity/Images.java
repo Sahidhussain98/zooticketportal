@@ -4,8 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
+
 @Entity
 @Table(name="Images")
 public class Images {
@@ -20,4 +19,27 @@ public class Images {
     @JoinColumn(name = "establishment",referencedColumnName="establishmentId")
     private Establishment establishment;
 
+    public Long getImageId() {
+        return imageId;
+    }
+
+    public void setImageId(Long imageId) {
+        this.imageId = imageId;
+    }
+
+    public byte[] getImageData() {
+        return imageData;
+    }
+
+    public void setImageData(byte[] imageData) {
+        this.imageData = imageData;
+    }
+
+    public Establishment getEstablishment() {
+        return establishment;
+    }
+
+    public void setEstablishment(Establishment establishment) {
+        this.establishment = establishment;
+    }
 }

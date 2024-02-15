@@ -6,8 +6,6 @@ import lombok.Setter;
 
 import java.util.*;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "AllUser")
 public class AllUser {
@@ -76,4 +74,71 @@ public class AllUser {
         return Objects.hash(allUserId);
     }
 
+    public void setAllUserId(Long allUserId) {
+        this.allUserId = allUserId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Long getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(Long phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public Date getOnCreate() {
+        return onCreate;
+    }
+
+    public void setOnCreate(Date onCreate) {
+        this.onCreate = onCreate;
+    }
+
+    public Date getOnUpdate() {
+        return onUpdate;
+    }
+
+    public void setOnUpdate(Date onUpdate) {
+        this.onUpdate = onUpdate;
+    }
+
+    public Establishment getEstablishment() {
+        return establishment;
+    }
+
+    public void setEstablishment(Establishment establishment) {
+        this.establishment = establishment;
+    }
+
+    public List<Ticket> getTickets() {
+        return tickets;
+    }
+
+    public void setTickets(List<Ticket> tickets) {
+        this.tickets = tickets;
+    }
+
+    public Set<Roles> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Roles> roles) {
+        this.roles = roles;
+    }
 }

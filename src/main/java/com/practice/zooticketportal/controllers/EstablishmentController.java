@@ -1,8 +1,6 @@
 package com.practice.zooticketportal.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lowagie.text.ExceptionConverter;
 import com.practice.zooticketportal.entity.*;
 import com.practice.zooticketportal.repositories.*;
 import com.practice.zooticketportal.service.EstablishmentService;
@@ -19,10 +17,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.Time;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@ Controller
+@Controller
 @RequestMapping("/establishments")
 public class EstablishmentController {
 
@@ -46,12 +51,24 @@ public class EstablishmentController {
     @Autowired
     private VillageRepo villageRepo;
 
-    ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private NationalityRepo nationalityRepo;
+
+    @Autowired
+    private CategoryRepo categoryRepo;
+
+    @Autowired
+    private FeesRepo feesRepo;
+
+    @Autowired
+    private EstablishmentRepo establishmentRepo;
+    ObjectMapper objectMapper = new ObjectMapper();// needed to load establishmnet page
 
     @Autowired
     public EstablishmentController(EstablishmentService establishmentService) {
         this.establishmentService = establishmentService;
     }
+
 
     @GetMapping
     public String listEstablishments(Model model) {
@@ -61,14 +78,16 @@ public class EstablishmentController {
     }
 
 
-
-
     @GetMapping("/new")
     public String createEstablishmentForm(Model model) {
         List<MasterEstablishment> establishmentTypes = masterEstablishmentRepo.findAll();
+        List<Nationality> nationalities = nationalityRepo.findAll();
+        List<Category> categories = categoryRepo.findAll();
         Optional<State> state = stateRepo.findById(16L); // Fetch state with ID 16 from the database
         String stateName = state.isPresent() ? state.get().getStateName() : "Unknown"; // Get the state name, or use a default value
         model.addAttribute("establishmentTypes", establishmentTypes);
+        model.addAttribute("nationalities", nationalities);
+        model.addAttribute("categories", categories);
         model.addAttribute("stateName", stateName); // Pass the state name to the model
         Establishment establishment = new Establishment();
         model.addAttribute("establishment", establishment);
@@ -76,11 +95,14 @@ public class EstablishmentController {
     }
 
 
+
+
     @PostMapping
     public String saveEstablishment(@RequestParam("name") String name,
                                     @RequestParam("typeId") Long typeId, // Change type parameter to typeId
                                     @RequestParam("villageId") Long villageId,
                                     @RequestParam("image") MultipartFile imageFile,
+
                                     Model model) {
         try {
             // Create the establishment object
@@ -99,12 +121,93 @@ public class EstablishmentController {
 
             // Save the establishment first
             establishmentService.saveEstablishment(establishment);
+            establishment.getEstablishmentId();
 
             // Save the image and get its imageId
             Long imageId = storageService.uploadImage(imageFile, establishment.getEstablishmentId()); // Pass the establishment ID to link the image with the establishment
 
-            // Optionally, you can add a success message to the model
             model.addAttribute("message", "Establishment created successfully!");
+//            return ResponseEntity.ok(String.valueOf(establishment.getEstablishmentId()));
+            //showEstablishmentDetails(establishment.getEstablishmentId());
+            System.out.println(establishment.getEstablishmentId());
+            return "redirect:/establishments/show?id=" + establishment.getEstablishmentId();
+
+        } catch (IOException e) {
+            // Handle file upload error
+            model.addAttribute("error", "Failed to upload image. Please try again.");
+            return "errorPage"; // Return an error page or handle the error accordingly
+        }
+
+//        return "redirect:/establishments"; // Redirect to the home page or any other appropriate page
+    }
+    @GetMapping("/show")
+    public String showEstablishmentDetails(@RequestParam("id") Long establishmentId, Model model) {
+        Establishment establishment = establishmentRepo.findById(establishmentId).orElse(null);
+
+        if (establishment != null) {
+            model.addAttribute("establishment", establishment);
+
+            // Retrieve additional data from createEstablishmentForm2 method
+            List<Category> categories = categoryRepo.findAll();
+            List<Nationality> nationalities1 = nationalityRepo.findAll();
+            model.addAttribute("categories", categories);
+            model.addAttribute("nationalities", nationalities1);
+
+            return "createestablishment2"; // Return the HTML template with the establishment details
+        } else {
+            // Handle case where establishment is not found
+            return "error"; // For example, return an error page
+        }
+    }
+
+
+    @PostMapping("/save2")
+    public String saveEstablishment2(@RequestParam("establishmentId") Long establishmentId,
+                                     @RequestParam("address") String address,
+                                     @RequestParam("openingTime") String openingTimeStr,
+                                     @RequestParam("closingTime") String closingTimeStr,
+                                     @RequestParam("image") MultipartFile imageFile,
+                                     @RequestParam("nationalityId") Long nationalityId,
+                                     @RequestParam("categoryId") Long categoryId,
+                                     @RequestParam("entryFee") Double entryFee,
+                                     Model model) {
+        try {
+            // Fetch the existing establishment object from the database
+            Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
+
+            System.out.println(establishment);
+            SimpleDateFormat hM = new SimpleDateFormat("HH:mm");
+            // Update the establishment object with the new data
+            establishment.setAddress(address);// Convert String to LocalDateTime
+            LocalTime openingTime = LocalTime.parse(openingTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
+            LocalTime closingTime = LocalTime.parse(closingTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
+
+            establishment.setOpeningTime(openingTime);
+            establishment.setClosingTime(closingTime);
+
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String enteredBy = authentication.getName();
+            establishment.setEnteredBy(enteredBy);
+
+            // Save the establishment first
+            establishmentService.saveEstablishment(establishment);
+
+            // Save the image and get its imageId
+            Long imageId = storageService.uploadImage(imageFile, establishmentId); // Pass the establishment ID to link the image with the establishment
+
+            Fees fees = new Fees();
+            fees.setEntryFee(entryFee);
+            fees.setEnteredOn(LocalDateTime.now());
+            fees.setEnteredBy(enteredBy);
+            fees.setNationality(nationalityRepo.findById(nationalityId).orElse(null));
+            fees.setCategory(categoryRepo.findById(categoryId).orElse(null));
+
+            // Link the establishment to the fees
+            fees.setEstablishment(establishment);
+
+            feesRepo.save(fees);            // Optionally, you can add a success message to the model
+            model.addAttribute("message", "Establishment updated successfully!");
         } catch (IOException e) {
             // Handle file upload error
             model.addAttribute("error", "Failed to upload image. Please try again.");
@@ -113,6 +216,9 @@ public class EstablishmentController {
 
         return "redirect:/establishments"; // Redirect to the home page or any other appropriate page
     }
+
+
+
 
     @GetMapping("/districts/{stateCode}")
     @ResponseBody
@@ -175,4 +281,5 @@ public class EstablishmentController {
 //        System.out.println("pdf");
         return establishmentService.exportReport("pdf");
     }
+
 }

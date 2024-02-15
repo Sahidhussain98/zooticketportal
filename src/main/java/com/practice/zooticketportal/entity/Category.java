@@ -17,18 +17,30 @@ public class Category {
     private Long categoryId;
     @Column(name="category_name")
     private String categoryName;
-    @Column(name="entered_on")
-    private LocalDateTime enteredOn;
-    @Column(name="entered_by")
-    private String enteredBy;
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    private List<Fees> fees;
 
-    //Constructor
-     public Category() {
+    public Long getCategoryId() {
+        return categoryId;
     }
-    //Constructors
 
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
 
+    public String getCategoryName() {
+        return categoryName;
+    }
 
-    //Getter Setter
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
 
+    public List<Fees> getFees() {
+        return fees;
+    }
+
+    public void setFees(List<Fees> fees) {
+        this.fees = fees;
+    }
 }

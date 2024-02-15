@@ -14,8 +14,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
 @ToString
 @NoArgsConstructor
 @Table(name="Block")
@@ -36,4 +34,43 @@ public class Block {
     @JsonIgnore
     private List<Village> village;
 
+    public Long getBlockId() {
+        return blockId;
+    }
+
+    public void setBlockId(Long blockId) {
+        this.blockId = blockId;
+    }
+
+    public String getBlockName() {
+        return blockName;
+    }
+
+    public void setBlockName(String blockName) {
+        this.blockName = blockName;
+    }
+
+    public Long getBlockCode() {
+        return blockCode;
+    }
+
+    public void setBlockCode(Long blockCode) {
+        this.blockCode = blockCode;
+    }
+
+    public District getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(District district) {
+        this.district = district;
+    }
+
+    public List<Village> getVillage() {
+        return village;
+    }
+
+    public void setVillage(List<Village> village) {
+        this.village = village;
+    }
 }

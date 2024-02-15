@@ -5,6 +5,13 @@
     <title>Zoo Reservation System</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+        /* Style for highlighting required fields */
+        .highlight-required {
+            border-color: red; /* Change the border color to red */
+            /* Add any other styling as needed */
+        }
+    </style>
 </head>
 <body>
 <div th:replace="fragments/adminNavMenu :: header"></div>
@@ -13,90 +20,155 @@
 <br>
 
 
-<div class = "container">
-    <div class ="row">
-        <div class="col-lg-6 col-md-6 col-sm-6 container justify-content-center card">
-            <h1 class ="text-centre"> Create New Establishment</h1>
-            <div class = "card-bo">
-                <form th:action="@{/establishments}" th:object="${establishment}" method="POST" enctype="multipart/form-data" id="establishmentForm">
-
-
+<div class="container ">
+    <section id="establishmentSection" class="collapsed">
+        <div class="card">
+            <div class="card-body">
+             <div class="container text-center"><h1 class="text-centre"> Create New Establishment</h1></div>
+                <form th:action="@{/establishments}" th:object="${establishment}" method="POST"
+                      enctype="multipart/form-data" id="establishmentForm" onsubmit="return validateForm()">
                     <div class="form-group">
-                        <label>State</label>
+                        <label>State<span class="text-danger">*</span></label>
                         <select id="state" name="stateId" class="form-control" disabled>
                             <!-- Option with state ID 16 selected and disabled -->
                             <option value="16" selected th:text="${stateName}"></option>
                         </select>
                         <!-- Hidden input field to submit state ID -->
-                        <input type="hidden" name="stateId" value="16">
+                        <input type="hidden" name="stateId" value="16" required>
                     </div>
 
 
                     <div class="form-group">
-                        <label>District</label>
-                        <select id="district" name="districtId" class="form-control" onchange="loadBlocks()">
+                        <label>District<span class="text-danger">*</span></label>
+                        <select id="district" name="districtId" class="form-control" onchange="loadBlocks()" required>
                             <option value="" selected>--SELECT DISTRICT--</option>
                         </select>
                     </div>
 
 
                     <div class="form-group">
-                        <label>Block</label>
-                        <select id="block" name="blockId" class="form-control" onchange="loadVillages()">
+                        <label>Block<span class="text-danger">*</span></label>
+                        <select id="block" name="blockId" class="form-control" onchange="loadVillages()" required>
                             <!-- Block options will be populated dynamically -->
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label>Village</label>
-                        <select id="village" name="villageId" class="form-control">
+                        <label>Village<span class="text-danger">*</span></label>
+                        <select id="village" name="villageId" class="form-control" required>
                             <!-- Village options will be populated dynamically -->
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label>Establishment Name</label>
-                        <input type="text" name="name" th:field="*{name}" class="form-control" placeholder="Enter Establishment Name"/>
+                        <label>Establishment Name<span class="text-danger">*</span></label>
+                        <input type="text" name="name" th:field="*{name}" class="form-control" placeholder="Enter Establishment Name" required/>
                     </div>
 
                     <div class="form-group">
-                    <label>Establishment Type</label>
-                    <select name="typeId" id="typeId" class="form-control">
-                        <option value="">--SELECT ESTABLISHMENT TYPE--</option>
-                        <option th:each="establishmentType : ${establishmentTypes}"
-                                th:value="${establishmentType.id}"
-                                th:text="${establishmentType.establishmentType}"></option>
-                    </select>
-                </div>
+                        <label>Establishment Type <span class="text-danger">*</span></label>
+                        <select name="typeId" id="typeId" class="form-control" required>
+                            <option value="">--SELECT ESTABLISHMENT TYPE--</option>
+                            <option th:each="establishmentType : ${establishmentTypes}"
+                                    th:value="${establishmentType.id}"
+                                    th:text="${establishmentType.establishmentType}"></option>
+                        </select>
+                    </div>
 
                     <div class="form-group">
-                        <label>Upload Image</label>
-                        <input type="file" name="image" class="form-control-file"/>
+                        <label>Upload Profile Image<span class="text-danger">*</span></label>
+                        <input type="file" name="image" class="form-control-file" />
                     </div>
 
-
-
-                    <div class="box-footer">
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                    </div>
                 </form>
-
-
-
+                <div class="box-footer">
+                    <button type="submit" class="btn btn-primary" onclick="submitForms()">Submit</button>
+                </div>
             </div>
-
         </div>
-
-    </div>
-
-
+    </section>
 </div>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script th:inline="javascript">
-    function resetForm() {
-        document.getElementById("establishmentForm").reset();
+    function validateForm() {
+        var requiredFields = document.querySelectorAll('form#establishmentForm [required]');
+        var isValid = true;
+
+        requiredFields.forEach(function(field) {
+            if (!field.value.trim()) {
+                isValid = false;
+                field.classList.add('highlight-required'); // Add CSS class to highlight required fields
+            } else {
+                field.classList.remove('highlight-required'); // Remove CSS class if field is filled
+            }
+        });
+
+        if (!isValid) {
+            // Show SweetAlert popup
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Please enter data in the required fields!',
+            });
+
+            // Scroll to the first empty required field for better visibility
+            var firstEmptyField = document.querySelector('form#establishmentForm [required]:not(:valid)');
+            if (firstEmptyField) {
+                firstEmptyField.focus();
+                firstEmptyField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        return isValid;
+    }
+
+    function submitForms() {
+        // Validate the form
+        if (!validateForm()) {
+            return; // If validation fails, do not submit the form
+        }
+        // document.getElementById('establishmentForm').submit();
+        var formData = new FormData(document.getElementById('establishmentForm'));
+        // Show SweetAlert popup with two options
+        $.ajax({
+            type: 'POST',
+            url: '/establishments',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                var establishmentId = response; // Assuming the API returns the establishment ID
+
+                // Check if establishmentId is not null and is a valid ID
+                if (establishmentId !== null && establishmentId !== undefined && establishmentId !== "") {
+                    // Show SweetAlert popup with two options
+                    Swal.fire({
+                        title: 'Choose an action',
+                        showCancelButton: true,
+                        confirmButtonText: 'Redirect to Show Page',
+                        cancelButtonText: 'Redirect to New Page',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Redirect to the show page with establishment ID
+                            window.location.href = '/establishments/show?id=' + establishmentId;
+                        } else if (result.dismiss === Swal.DismissReason.cancel) {
+                            // Redirect to the new page
+                            window.location.href = '/establishments';
+                        }
+                    });
+                } else {
+                    console.log('Error: establishmentId is null or invalid');
+                }
+            },
+
+            error: function () {
+                console.log('Error submitting form');
+            }
+        });
     }
 
 
