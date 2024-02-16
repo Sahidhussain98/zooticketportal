@@ -11,6 +11,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+
+import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
@@ -24,6 +28,9 @@ import java.util.Map;
 public class TicketServiceImpl implements TicketService {
     @Autowired
     private TicketRepository ticketRepository;
+    @Autowired
+    private JavaMailSender javaMailSender;
+
 
     @Override
     public List<Ticket> getAllTicket() {
@@ -63,7 +70,24 @@ public class TicketServiceImpl implements TicketService {
 
         return ResponseEntity.badRequest().body("Invalid Report format specified.".getBytes());
     }
+
+    @Override
+    public void confirmBooking(String toEmail) {
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+            mailMessage.setTo(toEmail);
+            System.out.println(toEmail);
+            mailMessage.setSubject("Booking Confirmed");
+            mailMessage.setText("Your booking is confirmed. Thank you for your attention.");
+
+            try {
+                javaMailSender.send(mailMessage);
+            } catch (MailException e) {
+                e.printStackTrace();
+            }
+
+
     }
+}
 
 
 

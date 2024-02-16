@@ -14,4 +14,5 @@ public interface TicketService {
     Ticket getTicketById(Long id);
 
     ResponseEntity<byte[]> exportReport(String format, Ticket ticket) throws FileNotFoundException, JRException;
+    void confirmBooking(String toEmail);
 }
