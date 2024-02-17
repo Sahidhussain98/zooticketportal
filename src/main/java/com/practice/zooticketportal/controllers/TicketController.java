@@ -126,7 +126,9 @@ public ResponseEntity<byte[]> exportPdfReport(@RequestParam("id") Long id) {
         // Export PDF report
         ResponseEntity<byte[]> pdfResponse = ticketService.exportReport("pdf", ticket);
         // If the PDF export is successful, send confirmation email
-        ticketService.confirmBooking(ticket.getEmail());
+//        ticketService.confirmBooking(ticket.getEmail());
+        // If the PDF export is successful, send confirmation email
+        ticketService.confirmBooking(ticket.getEmail(), pdfResponse.getBody());
         // Return the PDF as an attachment in the response
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
