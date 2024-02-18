@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Base64;
+
 
 @Entity
 @Table(name="Images")
@@ -12,12 +14,21 @@ public class Images {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long imageId;
 
-    @Lob
+
+
     private byte[] imageData;
 
     @ManyToOne
     @JoinColumn(name = "establishment",referencedColumnName="establishmentId")
     private Establishment establishment;
+
+    public Images() {
+    }
+
+    public Images(byte[] imageData, Establishment establishment) {
+        this.imageData = imageData;
+        this.establishment = establishment;
+    }
 
     public Long getImageId() {
         return imageId;

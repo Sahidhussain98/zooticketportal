@@ -7,6 +7,9 @@ import com.practice.zooticketportal.service.TicketService;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -98,16 +101,58 @@ public class TicketController {
 
         return "checkoutConfirmation-form";
     }
-    @GetMapping("/export/pdf")
-    public ResponseEntity<byte[]> exportPdfReport(@RequestParam("id") Long id ) throws JRException, FileNotFoundException {
-        Ticket ticket = ticketRepository.findTicketById(id);
-        if (ticket == null) {
-            // Handle the case where the ticket with the given ID is not found
-            return ResponseEntity.badRequest().body(("Ticket not found for ID: " + id).getBytes());
-        }
-        return ticketService.exportReport("pdf", ticket);
+//    @GetMapping("/export/pdf")
+//    public ResponseEntity<byte[]> exportPdfReport(@RequestParam("id") Long id ) throws JRException, FileNotFoundException {
+//        Ticket ticket = ticketRepository.findTicketById(id);
+//        if (ticket == null) {
+//            // Handle the case where the ticket with the given ID is not found
+//            return ResponseEntity.badRequest().body(("Ticket not found for ID: " + id).getBytes());
+//        }
+//        // Send confirmation email
+//        sendConfirmationEmail(ticket.getEmail());
+//        return ResponseEntity.ok("Confirmation email sent for ticket ID: " + id);
+//
+////        return ticketService.exportReport("pdf", ticket);
+//    }
+@GetMapping("/export/pdf")
+public ResponseEntity<byte[]> exportPdfReport(@RequestParam("id") Long id) {
+    Ticket ticket = ticketRepository.findTicketById(id);
+    if (ticket == null) {
+        // Handle the case where the ticket with the given ID is not found
+        return ResponseEntity.badRequest().body(("Ticket not found for ID: " + id).getBytes());
     }
 
+    try {
+        // Export PDF report
+        ResponseEntity<byte[]> pdfResponse = ticketService.exportReport("pdf", ticket);
+        // If the PDF export is successful, send confirmation email
+//        ticketService.confirmBooking(ticket.getEmail());
+        // If the PDF export is successful, send confirmation email
+        ticketService.confirmBooking(ticket.getEmail(), pdfResponse.getBody());
+        // Return the PDF as an attachment in the response
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "ticket.pdf");
+        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+
+        // Add a custom header to indicate that the email has been sent
+        headers.add("X-Email-Sent", "true");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfResponse.getBody());
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error exporting PDF report or sending confirmation email".getBytes());
+    }
+}
 
 
 }
+
+
+
+
+
+
