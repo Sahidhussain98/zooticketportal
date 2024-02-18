@@ -1,11 +1,7 @@
 package com.practice.zooticketportal.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
-
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Date;
@@ -42,7 +38,7 @@ public class Establishment {
     @OneToMany(mappedBy = "establishment")
     private List<Ticket> tickets;
     @OneToMany(mappedBy = "establishment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Fees> Fees;
+    private List<Fees> fees;
 
 
     @PrePersist
@@ -50,7 +46,14 @@ public class Establishment {
         Calendar cal = Calendar.getInstance();
         Date date = new Date();
         this.setEnteredOn(date);
+
+        if (name != null && address != null && openingTime != null && closingTime != null &&
+                enteredBy != null && masterEstablishment != null && village != null && users != null &&
+                nonWorkingDays != null && images != null && tickets != null && fees != null) {
+            this.setStatus(true);
+        }
     }
+
 
 
     public LocalTime getOpeningTime() {
@@ -82,11 +85,11 @@ public class Establishment {
     }
 
     public List<com.practice.zooticketportal.entity.Fees> getFees() {
-        return Fees;
+        return fees;
     }
 
     public void setFees(List<com.practice.zooticketportal.entity.Fees> fees) {
-        Fees = fees;
+        fees = fees;
     }
 
     public void setEstablishmentId(Long establishmentId) {

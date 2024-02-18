@@ -121,7 +121,7 @@ public class EstablishmentController {
 
             // Save the establishment first
             establishmentService.saveEstablishment(establishment);
-            establishment.getEstablishmentId();
+            Long establishmentId = establishment.getEstablishmentId();
 
             // Save the image and get its imageId
             Long imageId = storageService.uploadImage(imageFile, establishment.getEstablishmentId()); // Pass the establishment ID to link the image with the establishment

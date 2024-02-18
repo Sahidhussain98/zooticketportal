@@ -131,8 +131,10 @@
         if (!validateForm()) {
             return; // If validation fails, do not submit the form
         }
+
         // document.getElementById('establishmentForm').submit();
         var formData = new FormData(document.getElementById('establishmentForm'));
+
         // Show SweetAlert popup with two options
         $.ajax({
             type: 'POST',
@@ -141,7 +143,11 @@
             contentType: false,
             processData: false,
             success: function (response) {
-                var establishmentId = response; // Assuming the API returns the establishment ID
+                console.log('Response from API:', response);
+
+                // Extract establishment ID from HTML response
+                var establishmentId = extractEstablishmentIdFromHTML(response);
+                console.log('Establishment ID:', establishmentId);
 
                 // Check if establishmentId is not null and is a valid ID
                 if (establishmentId !== null && establishmentId !== undefined && establishmentId !== "") {
@@ -164,13 +170,27 @@
                     console.log('Error: establishmentId is null or invalid');
                 }
             },
-
             error: function () {
                 console.log('Error submitting form');
             }
         });
     }
 
+    function extractEstablishmentIdFromHTML(html) {
+        var establishmentId = "";
+
+        // Create a temporary div element to parse the HTML response
+        var tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+
+        // Find the element containing the establishment ID
+        var establishmentIdElement = tempDiv.querySelector('input[name="establishmentId"]');
+        if (establishmentIdElement) {
+            establishmentId = establishmentIdElement.value;
+        }
+
+        return establishmentId;
+    }
 
     function loadDistricts() {
         var stateCode = document.getElementById('state').value;
