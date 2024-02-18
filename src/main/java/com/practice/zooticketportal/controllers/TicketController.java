@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.FileNotFoundException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 
@@ -35,6 +37,39 @@ public class TicketController {
 
     @Value("${categories}")
     private List<String> categories;
+
+//    @GetMapping("/showCheckoutForm")
+//    public String showCheckoutForm(Model theModel) {
+//        // Create a ticket object
+//        Ticket theTicket = new Ticket();
+//
+//        // Generate booking ID
+//        String bookingId = generateBookingId(theTicket.getEstablishment().getName(), LocalDateTime.now());
+//
+//        // Set booking ID to the ticket
+//        theTicket.setBookingId(bookingId);
+//
+//        // Add ticket object to the model
+//        theModel.addAttribute("theTicket", theTicket);
+//
+//        // Add the list of countries to the model
+//        theModel.addAttribute("countries", countries);
+//
+//        // Add the list of categories to the model
+//        theModel.addAttribute("categories", categories);
+//
+//        return "checkout-form";
+//    }
+//
+//    private String generateBookingId(String establishmentName, LocalDateTime bookingDateTime) {
+//        // Generate booking ID based on establishment name, booking date/time, and a serial number
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+//        String formattedDateTime = bookingDateTime.format(formatter);
+//        // You can add additional logic to generate a unique serial number
+//        String serialNumber = "001"; // For example, you can start with 001
+//        return establishmentName.substring(0, 3) + formattedDateTime + serialNumber;
+//    }
+
 
     @GetMapping("/showCheckoutForm")
     public String showCheckoutForm(Model theModel) {
@@ -95,13 +130,13 @@ public class TicketController {
         existingTicket.setDateTime(updatedTicket.getDateTime());
 
 
-
         // Save the updated ticket to the database
         ticketRepository.save(existingTicket);
 
         return "checkoutConfirmation-form";
     }
-//    @GetMapping("/export/pdf")
+
+    //    @GetMapping("/export/pdf")
 //    public ResponseEntity<byte[]> exportPdfReport(@RequestParam("id") Long id ) throws JRException, FileNotFoundException {
 //        Ticket ticket = ticketRepository.findTicketById(id);
 //        if (ticket == null) {
@@ -114,42 +149,42 @@ public class TicketController {
 //
 ////        return ticketService.exportReport("pdf", ticket);
 //    }
-@GetMapping("/export/pdf")
-public ResponseEntity<byte[]> exportPdfReport(@RequestParam("id") Long id) {
-    Ticket ticket = ticketRepository.findTicketById(id);
-    if (ticket == null) {
-        // Handle the case where the ticket with the given ID is not found
-        return ResponseEntity.badRequest().body(("Ticket not found for ID: " + id).getBytes());
-    }
+    @GetMapping("/export/pdf")
+    public ResponseEntity<byte[]> exportPdfReport(@RequestParam("id") Long id) {
+        Ticket ticket = ticketRepository.findTicketById(id);
+        if (ticket == null) {
+            // Handle the case where the ticket with the given ID is not found
+            return ResponseEntity.badRequest().body(("Ticket not found for ID: " + id).getBytes());
+        }
 
-    try {
-        // Export PDF report
-        ResponseEntity<byte[]> pdfResponse = ticketService.exportReport("pdf", ticket);
-        // If the PDF export is successful, send confirmation email
+        try {
+            // Export PDF report
+            ResponseEntity<byte[]> pdfResponse = ticketService.exportReport("pdf", ticket);
+            // If the PDF export is successful, send confirmation email
 //        ticketService.confirmBooking(ticket.getEmail());
-        // If the PDF export is successful, send confirmation email
-        ticketService.confirmBooking(ticket.getEmail(), pdfResponse.getBody());
-        // Return the PDF as an attachment in the response
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("attachment", "ticket.pdf");
-        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+//         If the PDF export is successful, send confirmation email
+            ticketService.confirmBooking(ticket.getEmail(), pdfResponse.getBody());
+            // Return the PDF as an attachment in the response
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", "ticket.pdf");
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
 
-        // Add a custom header to indicate that the email has been sent
-        headers.add("X-Email-Sent", "true");
+            // Add a custom header to indicate that the email has been sent
+            headers.add("X-Email-Sent", "true");
 
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(pdfResponse.getBody());
-    } catch (Exception e) {
-        e.printStackTrace();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Error exporting PDF report or sending confirmation email".getBytes());
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(pdfResponse.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error exporting PDF report or sending confirmation email".getBytes());
+        }
     }
 }
 
 
-}
 
 
 
