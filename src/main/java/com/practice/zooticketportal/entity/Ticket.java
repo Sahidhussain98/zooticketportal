@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
 
 @Entity
 @Table(name = "tickets")
@@ -12,18 +15,20 @@ public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+//    private String bookingId;
     private String firstName;
     private String lastName;
     private String country;
     private String category;
     private String email;
-    private String phoneNumber;
-    private String totalPersons;
-    private String totalCameras;
+    private Long phoneNumber;
+    private Long totalPersons;
+    private Long totalCameras;
     private String serviceFee;
     private String totalAmount;
-    private String dateTime;
+    private LocalDateTime dateTime;
+    private LocalDateTime enteredBy;
+    private String enteredOn;
     @ManyToOne
     @JoinColumn(name = "user_id")  // Assuming this column exists in the Ticket table
     private AllUser user;
@@ -32,13 +37,13 @@ public class Ticket {
     private Establishment establishment;
     @OneToOne(mappedBy = "ticket", cascade = CascadeType.ALL)
     private Payment payment;
-    public Ticket() {
 
+    public Ticket() {
     }
 
-    public Ticket(String firstName, String lastName, String country, String category, String email,
-                  String phoneNumber, String totalPersons, String totalCameras, String serviceFee,
-                  String totalAmount, String dateTime) {
+    public Ticket(Long id, String firstName, String lastName, String country, String category, String email,Long phoneNumber, Long totalPersons, Long totalCameras, String serviceFee, String totalAmount, LocalDateTime dateTime, LocalDateTime enteredBy, String enteredOn, AllUser user, Establishment establishment, Payment payment) {
+        this.id = id;
+//        this.bookingId = bookingId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.country = country;
@@ -50,6 +55,11 @@ public class Ticket {
         this.serviceFee = serviceFee;
         this.totalAmount = totalAmount;
         this.dateTime = dateTime;
+        this.enteredBy = enteredBy;
+        this.enteredOn = enteredOn;
+        this.user = user;
+        this.establishment = establishment;
+        this.payment = payment;
     }
 
     public Long getId() {
@@ -59,6 +69,14 @@ public class Ticket {
     public void setId(Long id) {
         this.id = id;
     }
+
+//    public String getBookingId() {
+//        return bookingId;
+//    }
+//
+//    public void setBookingId(String bookingId) {
+//        this.bookingId = bookingId;
+//    }
 
     public String getFirstName() {
         return firstName;
@@ -100,27 +118,27 @@ public class Ticket {
         this.email = email;
     }
 
-    public String getPhoneNumber() {
+    public Long getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
+    public void setPhoneNumber(Long phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getTotalPersons() {
+    public Long getTotalPersons() {
         return totalPersons;
     }
 
-    public void setTotalPersons(String totalPersons) {
+    public void setTotalPersons(Long totalPersons) {
         this.totalPersons = totalPersons;
     }
 
-    public String getTotalCameras() {
+    public Long getTotalCameras() {
         return totalCameras;
     }
 
-    public void setTotalCameras(String totalCameras) {
+    public void setTotalCameras(Long totalCameras) {
         this.totalCameras = totalCameras;
     }
 
@@ -140,12 +158,28 @@ public class Ticket {
         this.totalAmount = totalAmount;
     }
 
-    public String getDateTime() {
+    public LocalDateTime getDateTime() {
         return dateTime;
     }
 
-    public void setDateTime(String dateTime) {
+    public void setDateTime(LocalDateTime dateTime) {
         this.dateTime = dateTime;
+    }
+
+    public LocalDateTime getEnteredBy() {
+        return enteredBy;
+    }
+
+    public void setEnteredBy(LocalDateTime enteredBy) {
+        this.enteredBy = enteredBy;
+    }
+
+    public String getEnteredOn() {
+        return enteredOn;
+    }
+
+    public void setEnteredOn(String enteredOn) {
+        this.enteredOn = enteredOn;
     }
 
     public AllUser getUser() {

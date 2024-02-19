@@ -78,6 +78,10 @@
 
 
         <form th:action="@{/processCheckoutForm}" th:object="${theTicket}" method="POST" onsubmit="return validateForm()">
+<!--            <label for="bookingId">Booking ID:</label>-->
+<!--            <input type="hidden" id="bookingId" th:value="${bookingId}" th:field="*{bookingId}" />-->
+
+
             <label for="firstName">First Name:</label>
             <input type="text" id="firstName" th:field="*{firstName}" required />
 
