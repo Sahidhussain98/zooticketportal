@@ -77,7 +77,7 @@
 
                     <div class="form-group">
                         <label>Upload Profile Image<span class="text-danger">*</span></label>
-                        <input type="file" name="image" class="form-control-file" />
+                        <input type="file" name="image" class="form-control-file" required/>
                     </div>
 
                 </form>
@@ -154,9 +154,10 @@
                     // Show SweetAlert popup with two options
                     Swal.fire({
                         title: 'Choose an action',
+                        text: 'If further details are not set, the Establishment will not be activated unless all required details are filled.',
                         showCancelButton: true,
-                        confirmButtonText: 'Redirect to Show Page',
-                        cancelButtonText: 'Redirect to New Page',
+                        confirmButtonText: 'Enter Further Details',
+                        cancelButtonText: 'Establishment Dashboard',
                     }).then((result) => {
                         if (result.isConfirmed) {
                             // Redirect to the show page with establishment ID

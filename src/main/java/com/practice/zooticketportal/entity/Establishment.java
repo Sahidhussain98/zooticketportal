@@ -47,10 +47,14 @@ public class Establishment {
         Date date = new Date();
         this.setEnteredOn(date);
 
+    }
+    public void updateStatus() {
         if (name != null && address != null && openingTime != null && closingTime != null &&
                 enteredBy != null && masterEstablishment != null && village != null && users != null &&
                 nonWorkingDays != null && images != null && tickets != null && fees != null) {
             this.setStatus(true);
+        } else {
+            this.setStatus(false);
         }
     }
 

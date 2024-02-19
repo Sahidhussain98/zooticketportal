@@ -1,65 +1,196 @@
 <!DOCTYPE html>
-<html lang="en" xmlns :th="http://www.thymeleaf.org" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Zoo Reservation System</title>
+    <title>Establishment Profile</title>
+    <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
-          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+    <style>
+        /* Custom CSS for establishment profile page */
+        .profile-container {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 100%; /* Set the maximum width to 100% */
+            margin: 0 auto; /* Center the container horizontally */
+            overflow-x: auto; /* Enable horizontal scrolling if needed */
+        }
+
+
+        .profile-image {
+            max-width: 200px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-details {
+            margin-bottom: 30px;
+        }
+
+        .profile-field {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        /* Styling for buttons */
+        .edit-button {
+            margin-top: 10px;
+        }
+
+        .save-button {
+            margin-top: 10px;
+        }
+        input[readonly] {
+            background-color: #f8f9fa; /* Light gray background color */
+            border: 1px solid #ced4da; /* Gray border */
+            padding: 5px; /* Padding to make it more visible */
+        }
+
+        /* Style for editable input fields */
+        input:not([readonly]) {
+            background-color: #fff; /* White background color */
+            border: 1px solid #007bff; /* Blue border */
+            padding: 5px; /* Padding to make it more visible */
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add shadow for emphasis */
+        }
+    </style>
 </head>
 <body>
+<!-- Include your navigation menu -->
 <div th:replace="fragments/adminNavMenu :: header"></div>
 <br>
-<br>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="profile-container">
+                <h1 class="text-center mb-4">Establishment Profile</h1>
+                <div class="text-center">
+                    <!-- Display profile image -->
+                    <img th:src="@{/establishments/user/{establishmentId}(establishmentId=${establishment.establishmentId})}" alt="Profile Image" class="profile-image">
+                </div>
+                <div class="profile-details">
+                    <form id="editForm" th:action="@{/establishments/{id}(id=${establishment.establishmentId})}" th:object="${establishment}" method="POST">
+                        <input type="hidden" name="establishmentId" th:value="${establishment.establishmentId}" />
+                        <p class="profile-field">Entered On: <span th:text="${establishment.enteredOn}"></span></p>
+                        <p class="profile-field">Entered By: <span th:text="${establishment.enteredBy}"></span></p>
+                        <p class="profile-field">Village : <span th:text="${establishment.village.villageName}"></span></p>
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>NATIONALITY</th>
+                                <th>CATEGORY</th>
+                                <th>FEE</th>
+                                <th>ENTERED ON</th>
+                                <th>ENTERED BY</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <!-- Check if establishment fees are empty -->
+                            <th:block th:if="${#lists.isEmpty(establishment.fees)}">
+                                <tr>
+                                    <td colspan="5" class="text-center">No fees added, add at least one to make establishment active</td>
+                                </tr>
+                            </th:block>
+                            <!-- Iterate over fees if they exist -->
+                            <tr th:each="fee : ${establishment.fees}">
+                                <td th:text="${fee.getNationality().getNationalityType()}"></td>
+                                <td th:text="${fee.getCategory().getCategoryName()}"></td>
+                                <td th:text="${fee.entryFee}"></td>
+                                <td th:text="${fee.enteredOn}"></td>
+                                <td th:text="${fee.enteredBy}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <p class="profile-field">Status: <span th:text="${establishment.status} ? 'Active' : 'Inactive'"></span></p>
+                        <p class="profile-field">Name: <input type="text" name="name" th:value="${establishment.name}" readonly /></p>
+                        <p class="profile-field">Address: <input type="text" name="address" th:value="${establishment.address}" readonly /></p>
+                        <p class="profile-field">Opening Time: <input type="time" name="openingTime" th:value="${establishment.openingTime}" readonly /></p>
+                        <p class="profile-field">Closing Time: <input type="time" name="closingTime" th:value="${establishment.closingTime}" readonly /></p>
+                        <!-- Add more input fields for other editable fields as needed -->
 
+                        <button type="submit" id="saveButton" class="btn btn-primary save-button" style="display: none;">Save</button>
+                    </form>
 
-<div class = "container">
-    <div class ="row">
-        <div class="col-lg-6 col-md-6 col-sm-6 container justify-content-center card">
-            <h1 class ="text-centre"> Update New Establishment</h1>
-            <div class = "card-bo">
-                <form th:action="@{/establishments/{id}(id=${establishment.establishmentId})}" th:object="${establishment}" method="POST">
-
-
-
-                <div class="form-group">
-                        <label>Establishment Name </label>
-                    <input type="text"
-                           name="establishmentName"
-                           th:field="*{name}"
-                           class="form-control"
-                           placeholder="Enter Establishment Name" />
-
-                    </div>
-
-                    <div class="form-group">
-                        <label>Establishment Type</label>
-                        <input type="text"
-                               th:value="${establishment.masterEstablishment.establishmentType}"
-                               class="form-control"
-                               placeholder="Enter Establishment Type" disabled/>
-                    </div>
-
-
-
-                    <div class = "box-footer">
-                        <button type ="submit" class="btn btn-primary">Submit</button>
-
-                    </div>
-
-                </form>
-
-
+                    <button type="button" id="editButton" class="btn btn-secondary edit-button">Edit</button>
+                </div>
+                <div><h6>If additional Data is not already submitted click on the button below </h6></div>
+                <button type="button" class="btn btn-primary" onclick="showEstablishmentDetails()">Add Additional Establishment Details</button>
             </div>
-
         </div>
-
     </div>
-
-
 </div>
+
+<!-- Include Bootstrap JS and jQuery -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- Include SweetAlert library -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
+    function showEstablishmentDetails() {
+        // Retrieve establishment ID from the input field
+        var establishmentId = extractEstablishmentIdFromHTML();
+
+        // Make sure establishment ID is valid
+        if (establishmentId) {
+            // Redirect to "createestablishment2" page with establishment ID included in the URL
+            window.location.href = '/establishments/show?id=' + establishmentId;
+        } else {
+            console.error("Error: Establishment ID not found in input field");
+        }
+    }
+
+    function extractEstablishmentIdFromHTML() {
+        // Retrieve establishment ID directly from the input field
+        var establishmentId = $("input[name='establishmentId']").val();
+        return establishmentId;
+    }
+
+
+
+
+
+    document.getElementById("editButton").addEventListener("click", function() {
+        var inputs = document.querySelectorAll("#editForm input[type='text'], #editForm input[type='time']"); // Select both text and time inputs
+        var saveButton = document.getElementById("saveButton");
+
+        if (this.textContent === "Edit") {
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].removeAttribute("readonly");
+            }
+            saveButton.style.display = "inline-block";
+            this.textContent = "Cancel edit";
+        } else {
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].setAttribute("readonly", true);
+            }
+            saveButton.style.display = "none";
+            this.textContent = "Edit";
+        }
+    });
+
+    document.getElementById("saveButton").addEventListener("click", function(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        // Show SweetAlert confirmation
+        Swal.fire({
+            title: "Confirm updates?",
+            showCancelButton: true,
+            confirmButtonText: "Confirm",
+            cancelButtonText: "Cancel"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // If user confirms, submit the form
+                document.getElementById("editForm").submit();
+            }
+        });
+    });
+</script>
 
 </body>
 </html>

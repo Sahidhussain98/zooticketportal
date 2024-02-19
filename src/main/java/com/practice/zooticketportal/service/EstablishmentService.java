@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 @Service
 public interface EstablishmentService {
@@ -26,7 +27,9 @@ public interface EstablishmentService {
     void deleteEstablishmentById(Long id);
     ResponseEntity<String> exportReport(String format) throws FileNotFoundException, JRException;
 
+    byte[] getEstablishmentImageById(Long id) throws IOException;
 
+    void updateStatus(Long establishmentId);
 }
 
 

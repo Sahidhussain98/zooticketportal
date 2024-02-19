@@ -14,6 +14,7 @@ import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 
 import java.util.List;
@@ -84,5 +85,27 @@ public class EstablishmentServiceImpl implements EstablishmentService{
 
         }
         return ResponseEntity.badRequest().body("Invalid Report format specified.");
+    }
+    @Override
+    public byte[] getEstablishmentImageById(Long id) throws IOException {
+        Optional<Establishment> optionalEstablishment = establishmentRepository.findById(id);
+        if (optionalEstablishment.isPresent()) {
+            Establishment establishment = optionalEstablishment.get();
+            if (establishment.getProfileImage() != null) {
+                return establishment.getProfileImage();
+            } else {
+                throw new IOException("Profile image not found for establishment with ID: " + id);
+            }
+        } else {
+            throw new IOException("Establishment not found with ID: " + id);
+        }
+    }
+    @Override
+    public void updateStatus(Long establishmentId) {
+        Establishment establishment = establishmentRepository.findById(establishmentId).orElse(null);
+        if (establishment != null) {
+            establishment.updateStatus();
+            establishmentRepository.save(establishment);
+        }
     }
 }
