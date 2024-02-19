@@ -16,22 +16,17 @@
             padding: 20px;
         }
     </style>
-
 </head>
 <body>
-<!--<header>-->
-<!--    <h1>Welcome, <span th:text="${user.username}"></span>!</h1>-->
-<!--</header>-->
 <header>
     <h1>Welcome</h1>
 </header>
 
-<div th:if="${user != null}">
-    <p><strong>Username:</strong> <span th:text="${user.username}"></span></p>
-    <p><strong>PhoneNumber:</strong> <span th:text="${user.phoneNumber}"></span></p>
+<div th:if="${allUser != null}">
+    <p><strong>Username:</strong> <span th:text="${allUser.username}"></span></p>
     <!-- Add more user details here -->
 </div>
-<div th:unless="${user != null}">
+<div th:unless="${allUser != null}">
     <p>No user logged in.</p>
 </div>
 </body>

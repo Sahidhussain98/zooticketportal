@@ -100,13 +100,13 @@ public class WebSecurityConfig {
                 // Redirect based on user roles
                 if (authentication != null) {
                     UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-                    String username = userDetails.getUsername();
+                    String phoneNumber = userDetails.getUsername();
                     // Fetch user details based on the phone number
-                    AllUser user = allUserRepo.findByPhoneNumber(Long.parseLong(username));
+                    AllUser allUser = allUserRepo.findByPhoneNumber(Long.parseLong(phoneNumber));
 
                     // Now you can use 'user' to display user details as needed
                     // For example:
-                    request.getSession().setAttribute("loggedInUser", user);
+                    request.getSession().setAttribute("loggedInUser", allUser);
 
 
                     if (authentication.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"))) {
