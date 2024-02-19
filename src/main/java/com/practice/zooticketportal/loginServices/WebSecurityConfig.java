@@ -49,8 +49,11 @@ public class WebSecurityConfig {
                         .requestMatchers("/edit-establishments").hasAnyRole("ADMIN","OFFICER")
                         .requestMatchers("/establishments/edit/{id}").hasAnyRole("ADMIN","OFFICER")
                         .requestMatchers("/create-establishments").hasAnyRole("ADMIN","OFFICER")
+                        .requestMatchers("/establishments/show").hasAnyRole("ADMIN","OFFICER")
                         .requestMatchers("/adminpage").hasAnyRole("ADMIN","OFFICER")
                         .requestMatchers("/officerpage").hasAnyRole("OFFICER","ADMIN")
+                        //.requestMatchers()
+                        // ADD CSP,CSRF, XSS
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form

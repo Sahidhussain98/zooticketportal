@@ -12,7 +12,7 @@
         }
 
         .form-container {
-            max-width: 600px;
+            max-width: 1000px;
             margin: auto;
             background: #fff;
             padding: 30px;
@@ -37,6 +37,20 @@
         .submit-btn:hover {
             background-color: #0056b3;
         }
+        /* Customize the delete button */
+        .removeFields {
+            border-radius: 5px; /* Adjust border radius to make the button rounder */
+            background-color: #dc3545; /* Change background color */
+            color: #fff; /* Change text color */
+            padding: 8px 16px; /* Adjust padding for better appearance */
+            margin-left: 10px; /* Adjust margin as needed */
+            border: none; /* Remove default button border */
+        }
+
+        .removeFields:hover {
+            background-color: #c82333; /* Change background color on hover */
+        }
+
     </style>
 </head>
 <body>
@@ -75,33 +89,37 @@
                     </div>
                 </div>
                 </fieldset>
-                <fieldset>
-                    <legend>Part 2: Additional Information</legend>
+                <fieldset id="additionalInfo">
+                <legend>Part 2: Additional Information</legend>
                     <div class="form-container">
-                    <div class="form-row">
-                    <div class="form-group col-md-4">
+                     <div class="form-row" id="fieldSet1">
+                     <div class="form-group col-md-4">
                         <label for="nationality">Nationality<span class="text-danger">*</span></label>
                         <select id="nationality" name="nationalityId" class="form-control" required>
                             <option value="">--SELECT NATIONALITY--</option>
                             <option th:each="nationality : ${nationalities}" th:value="${nationality.nationalityId}"
                                     th:text="${nationality.nationalityType}"></option>
                         </select>
-                    </div>
-                    <div class="form-group col-md-4">
+                      </div>
+                      <div class="form-group col-md-4">
                         <label for="category">Category<span class="text-danger">*</span></label>
                         <select id="category" name="categoryId" class="form-control" required>
                             <option value="">--SELECT CATEGORY--</option>
                             <option th:each="category : ${categories}" th:value="${category.categoryId}"
                                     th:text="${category.categoryName}"></option>
                         </select>
-                    </div>
-                    <div class="form-group col-md-4">
+                       </div>
+                      <div class="form-group col-md-3">
                         <label for="entryFee">Entry Fee<span class="text-danger">*</span></label>
                         <input type="number" step="1" class="form-control" id="entryFee" name="entryFee"
                                placeholder="Enter Entry Fee" required>
+                         </div>
+                      </div>
+                        <div class="button-group">
+                        <button type="button" class="btn btn-primary" id="addFields">Add</button>
+                        </div>
                     </div>
-                    </div>
-                    </div>
+
                 </fieldset>
                 <button type="submit" class="submit-btn">Submit</button>
             </form>
@@ -119,37 +137,63 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script th:inline="javascript">
-    function validateForm() {
-        var requiredFields = document.querySelectorAll('form#establishmentForm [required]');
-        var isValid = true;
+    $(document).ready(function() {
+        var counter = 1;
 
-        requiredFields.forEach(function (field) {
-            if (!field.value.trim()) {
-                isValid = false;
-                field.classList.add('highlight-required'); // Add CSS class to highlight required fields
-            } else {
-                field.classList.remove('highlight-required'); // Remove CSS class if field is filled
-            }
+        // Function to add fields dynamically
+        $("#addFields").click(function() {
+            counter++;
+            var newFields = $("#fieldSet1").clone();
+            newFields.attr("id", "fieldSet" + counter);
+            newFields.find("input, select").val(""); // Clear input values
+            newFields.find("select").prop('selectedIndex', 0); // Reset select fields
+            newFields.find("legend").text("Part " + counter + ": Additional Information");
+
+            // Add delete button
+            var deleteButton = $("<button/>", {
+                type: "button",
+                class: "btn btn-danger removeFields",
+                text: "Delete"
+            });
+            deleteButton.appendTo(newFields);
+
+            newFields.appendTo("#additionalInfo .form-container");
         });
 
-        if (!isValid) {
+        // Function to remove fields dynamically
+        $(document).on("click", ".removeFields", function() {
+            $(this).closest('.form-row').remove();
+            counter--;
+        });
+    });
+
+
+
+    // Adjust validateForm() function to include newly added fields
+    function validateForm() {
+        // Existing validation logic
+
+        // Additional logic to ensure at least one set of fields is filled
+        var fieldSets = document.querySelectorAll('.form-row');
+        var isAnyFieldSetFilled = Array.from(fieldSets).some(function(fieldSet) {
+            return Array.from(fieldSet.querySelectorAll('input, select')).some(function(field) {
+                return field.value.trim();
+            });
+        });
+
+        if (!isAnyFieldSetFilled) {
             // Show SweetAlert popup
             Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
-                text: 'Please enter data in the required fields!',
+                text: 'Please fill at least one set of nationality, category, and fees fields!',
             });
-
-            // Scroll to the first empty required field for better visibility
-            var firstEmptyField = document.querySelector('form#establishmentForm [required]:not(:valid)');
-            if (firstEmptyField) {
-                firstEmptyField.focus();
-                firstEmptyField.scrollIntoView({behavior: 'smooth', block: 'center'});
-            }
+            return false;
         }
 
         return isValid;
     }
+
 
 </script>
 </body>

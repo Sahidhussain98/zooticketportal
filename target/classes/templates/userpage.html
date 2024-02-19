@@ -50,8 +50,9 @@
 <div class="container">
     <div class="row">
         <div th:if="${establishmentList}" th:each="establishment, iterStat : ${establishmentList}" class="col-md-4 mb-4">
-            <div class="card shadow-sm rounded-3 square-card" th:style="'background-image: url(/images/' + ${establishment.establishmentId} + '); background-size: cover; background-position: center;'">
-                <!-- White stripe behind the text -->
+            <div class="card shadow-sm rounded-3 square-card" th:style="'background-image: url(/establishments/user/' + ${establishment.establishmentId} + '); background-size: cover;'">
+
+            <!-- White stripe behind the text -->
                 <div class="stripe"></div>
                 <!-- Content inside the card -->
                 <div class="card-content">
@@ -65,10 +66,13 @@
         </div>
     </div>
 </div>
+
 <!-- Include Bootstrap JS (popper.js included within Bootstrap) -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
 </body>
 
 </html>

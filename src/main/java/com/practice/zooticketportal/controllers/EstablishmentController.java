@@ -7,6 +7,9 @@ import com.practice.zooticketportal.service.EstablishmentService;
 import com.practice.zooticketportal.service.StorageService;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -119,12 +122,16 @@ public class EstablishmentController {
             String enteredBy = authentication.getName();
             establishment.setEnteredBy(enteredBy);
 
+            // Read image data from MultipartFile
+            byte[] imageData = imageFile.getBytes();
+            establishment.setProfileImage(imageData); // Set image data to the profileImage field
+
+
             // Save the establishment first
             establishmentService.saveEstablishment(establishment);
-            Long establishmentId = establishment.getEstablishmentId();
+
 
             // Save the image and get its imageId
-            Long imageId = storageService.uploadImage(imageFile, establishment.getEstablishmentId()); // Pass the establishment ID to link the image with the establishment
 
             model.addAttribute("message", "Establishment created successfully!");
 //            return ResponseEntity.ok(String.valueOf(establishment.getEstablishmentId()));
@@ -140,6 +147,7 @@ public class EstablishmentController {
 
 //        return "redirect:/establishments"; // Redirect to the home page or any other appropriate page
     }
+
     @GetMapping("/show")
     public String showEstablishmentDetails(@RequestParam("id") Long establishmentId, Model model) {
         Establishment establishment = establishmentRepo.findById(establishmentId).orElse(null);
@@ -167,25 +175,22 @@ public class EstablishmentController {
                                      @RequestParam("openingTime") String openingTimeStr,
                                      @RequestParam("closingTime") String closingTimeStr,
                                      @RequestParam("image") MultipartFile imageFile,
-                                     @RequestParam("nationalityId") Long nationalityId,
-                                     @RequestParam("categoryId") Long categoryId,
-                                     @RequestParam("entryFee") Double entryFee,
+                                     @RequestParam("nationalityId") List<Long> nationalityIds,
+                                     @RequestParam("categoryId") List<Long> categoryIds,
+                                     @RequestParam("entryFee") List<Double> entryFees,
                                      Model model) {
         try {
             // Fetch the existing establishment object from the database
             Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
 
-            System.out.println(establishment);
             SimpleDateFormat hM = new SimpleDateFormat("HH:mm");
             // Update the establishment object with the new data
             establishment.setAddress(address);// Convert String to LocalDateTime
             LocalTime openingTime = LocalTime.parse(openingTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
             LocalTime closingTime = LocalTime.parse(closingTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
-
             establishment.setOpeningTime(openingTime);
             establishment.setClosingTime(closingTime);
-
-
+            establishment.updateStatus();
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String enteredBy = authentication.getName();
             establishment.setEnteredBy(enteredBy);
@@ -196,17 +201,21 @@ public class EstablishmentController {
             // Save the image and get its imageId
             Long imageId = storageService.uploadImage(imageFile, establishmentId); // Pass the establishment ID to link the image with the establishment
 
-            Fees fees = new Fees();
-            fees.setEntryFee(entryFee);
-            fees.setEnteredOn(LocalDateTime.now());
-            fees.setEnteredBy(enteredBy);
-            fees.setNationality(nationalityRepo.findById(nationalityId).orElse(null));
-            fees.setCategory(categoryRepo.findById(categoryId).orElse(null));
+            for (int i = 0; i < nationalityIds.size(); i++) {
+                Long nationalityId = nationalityIds.get(i);
+                Long categoryId = categoryIds.get(i);
+                Double entryFee = entryFees.get(i);
 
-            // Link the establishment to the fees
-            fees.setEstablishment(establishment);
+                // Create Fees object and link to establishment
+                Fees fees = new Fees();
+                fees.setEntryFee(entryFee);
+                fees.setNationality(nationalityRepo.findById(nationalityId).orElse(null));
+                fees.setCategory(categoryRepo.findById(categoryId).orElse(null));
+                fees.setEstablishment(establishment);
 
-            feesRepo.save(fees);            // Optionally, you can add a success message to the model
+                feesRepo.save(fees);
+            }
+            // Optionally, you can add a success message to the model
             model.addAttribute("message", "Establishment updated successfully!");
         } catch (IOException e) {
             // Handle file upload error
@@ -287,6 +296,20 @@ public class EstablishmentController {
         Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
         model.addAttribute("establishment", establishment);
         return "establishmentDetails"; // return the name of the HTML page for establishment details
+    }
+
+    @GetMapping("user/{establishmentId}")
+    public ResponseEntity<byte[]> getEstablishmentImage(@PathVariable Long establishmentId) {
+        try {
+            byte[] imageData = establishmentService.getEstablishmentImageById(establishmentId);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.IMAGE_JPEG); // Set content type as JPEG image
+            return new ResponseEntity<>(imageData, headers, HttpStatus.OK);
+        } catch (IOException e) {
+            // Handle the IOException
+            e.printStackTrace(); // Print the stack trace for debugging purposes
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Return an appropriate response
+        }
     }
 
 }
