@@ -8,7 +8,7 @@ import java.util.*;
 
 @Entity
 @Table(name = "AllUser")
-public class AllUser {
+public class  AllUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -72,6 +72,21 @@ public class AllUser {
     @Override
     public int hashCode() {
         return Objects.hash(allUserId);
+    }
+
+    public AllUser() {
+    }
+
+    public AllUser(Long allUserId, String username, String password, Long phoneNumber, Date onCreate, Date onUpdate, Establishment establishment, List<Ticket> tickets, Set<Roles> roles) {
+        this.allUserId = allUserId;
+        this.username = username;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.onCreate = onCreate;
+        this.onUpdate = onUpdate;
+        this.establishment = establishment;
+        this.tickets = tickets;
+        this.roles = roles;
     }
 
     public void setAllUserId(Long allUserId) {
