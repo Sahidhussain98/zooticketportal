@@ -19,6 +19,21 @@ public class Category {
     private String categoryName;
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private List<Fees> fees;
+    @Column(name="entered_on")
+    private String enteredOn;
+    @Column(name="entered_by")
+    private String enteredBy;
+
+    public Category() {
+    }
+
+    public Category(Long categoryId, String categoryName, List<Fees> fees, String enteredOn, String enteredBy) {
+        this.categoryId = categoryId;
+        this.categoryName = categoryName;
+        this.fees = fees;
+        this.enteredOn = enteredOn;
+        this.enteredBy = enteredBy;
+    }
 
     public Long getCategoryId() {
         return categoryId;
@@ -42,5 +57,21 @@ public class Category {
 
     public void setFees(List<Fees> fees) {
         this.fees = fees;
+    }
+
+    public String getEnteredOn() {
+        return enteredOn;
+    }
+
+    public void setEnteredOn(String enteredOn) {
+        this.enteredOn = enteredOn;
+    }
+
+    public String getEnteredBy() {
+        return enteredBy;
+    }
+
+    public void setEnteredBy(String enteredBy) {
+        this.enteredBy = enteredBy;
     }
 }

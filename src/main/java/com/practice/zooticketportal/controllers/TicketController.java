@@ -1,8 +1,14 @@
 package com.practice.zooticketportal.controllers;
 
 
+import com.practice.zooticketportal.entity.Category;
+import com.practice.zooticketportal.entity.Establishment;
+import com.practice.zooticketportal.entity.Nationality;
 import com.practice.zooticketportal.entity.Ticket;
+import com.practice.zooticketportal.repositories.CategoryRepo;
+import com.practice.zooticketportal.repositories.NationalityRepo;
 import com.practice.zooticketportal.repositories.TicketRepository;
+import com.practice.zooticketportal.service.EstablishmentService;
 import com.practice.zooticketportal.service.TicketService;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
@@ -31,12 +34,14 @@ public class TicketController {
     private TicketRepository ticketRepository;
     @Autowired
     private TicketService ticketService;
+    @Autowired
+    private EstablishmentService establishmentService;
 
-    @Value("${countries}")
-    private List<String> countries;
+    @Autowired
+    private CategoryRepo categoryRepo;
 
-    @Value("${categories}")
-    private List<String> categories;
+    @Autowired
+    private NationalityRepo nationalityRepo;
 
 //    @GetMapping("/showCheckoutForm")
 //    public String showCheckoutForm(Model theModel) {
@@ -71,26 +76,31 @@ public class TicketController {
 //    }
 
 
-    @GetMapping("/showCheckoutForm")
-    public String showCheckoutForm(Model theModel) {
+    @GetMapping("/showCheckoutForm/{establishmentId}")
+    public String showCheckoutForm(@PathVariable Long establishmentId, Model model) {
+        // Here, you can add logic to retrieve the establishment details
+        // based on the establishmentId from the database
+        Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
 
-        // create a student object
-        Ticket theTicket = new Ticket();
+        // Create a ticket object
+        Ticket ticket = new Ticket();
 
-        // add student object to the model
-        theModel.addAttribute("theTicket", theTicket);
-
+        // Add ticket and establishment objects to the model
+        model.addAttribute("theTicket", ticket);
+        model.addAttribute("establishment", establishment);
         // add the list of countries to the model
-        theModel.addAttribute("countries", countries);
+        List<Category> categories = categoryRepo.findAll();
+        List<Nationality> nationalities1 = nationalityRepo.findAll();
+        model.addAttribute("categories", categories);
+        model.addAttribute("nationalities", nationalities1);
 
-        //   add the list of categories to the model
-        theModel.addAttribute("categories", categories);
+
 
 
         return "checkout-form";
     }
 
-    @PostMapping("/processCheckoutForm")
+    @PostMapping("/processCheckoutForm/{establishmentId}")
     public String processForm(@ModelAttribute("theTicket") Ticket theTicket) {
         // Save the ticket details to the database using the repository
         ticketRepository.save(theTicket);
@@ -103,16 +113,17 @@ public class TicketController {
     }
 
     @GetMapping("/showEditForm")
-    public String showEditForm(@RequestParam("ticketId") Long ticketId, Model theModel) {
+    public String showEditForm(@RequestParam("ticketId") Long ticketId, Model model) {
         // Retrieve ticket details by ID
         Ticket theTicket = ticketRepository.findById(ticketId).orElseThrow(() -> new RuntimeException("Ticket not found"));
 
         // Add ticket object to the model
-        theModel.addAttribute("theTicket", theTicket);
+        model.addAttribute("theTicket", theTicket);
+        List<Category> categories = categoryRepo.findAll();
+        List<Nationality> nationalities1 = nationalityRepo.findAll();
+        model.addAttribute("categories", categories);
+        model.addAttribute("nationalities", nationalities1);
 
-        // Add the list of countries and categories to the model
-        theModel.addAttribute("countries", countries);
-        theModel.addAttribute("categories", categories);
 
         return "checkout-form";
     }

@@ -56,9 +56,12 @@
                 <div class="stripe"></div>
                 <!-- Content inside the card -->
                 <div class="card-content">
-                    <a th:href="@{'/establishments/establishmentDetails/' + ${establishment.establishmentId}}" style="display: block; height: 100%;">
+                    <a th:href="@{'/showCheckoutForm/' + ${establishment.establishmentId}}" style="display: block; height: 100%;">
                         <h5 class="card-title p-3" th:text="${establishment.name}"></h5>
                     </a>
+<!--                    <a th:href="@{'/establishments/establishmentDetails/' + ${establishment.establishmentId}}" style="display: block; height: 100%;">-->
+<!--                        <h5 class="card-title p-3" th:text="${establishment.name}"></h5>-->
+<!--                    </a>-->
                 </div>
                 <!-- Start a new row after every 3rd card -->
                 <div th:if="${iterStat.index % 3 == 2}" class="w-100"></div>
