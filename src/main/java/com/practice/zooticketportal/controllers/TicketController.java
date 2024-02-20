@@ -125,8 +125,8 @@ public class TicketController {
         // Update the existing ticket with new details
         existingTicket.setFirstName(updatedTicket.getFirstName());
         existingTicket.setLastName(updatedTicket.getLastName());
-        existingTicket.setCategory(updatedTicket.getCategory());
-        existingTicket.setCountry(updatedTicket.getCountry());
+//        existingTicket.setCategory(updatedTicket.getCategory());
+//        existingTicket.setCountry(updatedTicket.getCountry());
         existingTicket.setDateTime(updatedTicket.getDateTime());
 
 

@@ -47,11 +47,36 @@ public String userDetails(Model model) {
     // Fetch user details from the database based on the phone number
     AllUser allUser = allUserService.findByPhoneNumber(Long.parseLong(phoneNumber));
 
-    // Pass the user details to the Thymeleaf template
-    model.addAttribute("allUser", allUser);
+    // Check if user details were retrieved successfully
+    if(allUser != null) {
+        // Pass the user details to the Thymeleaf template
+        model.addAttribute("allUser", allUser);
+    } else {
+        // User not found, handle this case as needed
+        // For example, you can redirect the user to a login page or display an error message
+        return "redirect:/login"; // Redirect to the login page
+        // OR
+        // model.addAttribute("errorMessage", "User details not found."); // Set error message attribute
+        // return "errorPage"; // Display error page
+    }
 
     return "userDetails"; // Return the name of your Thymeleaf template
 }
+
+//@GetMapping("/user-details")
+//public String userDetails(Model model) {
+//    // Get the currently logged-in user's phone number
+//    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//    String phoneNumber = authentication.getName();
+//
+//    // Fetch user details from the database based on the phone number
+//    AllUser allUser = allUserService.findByPhoneNumber(Long.parseLong(phoneNumber));
+//
+//    // Pass the user details to the Thymeleaf template
+//    model.addAttribute("allUser", allUser);
+//
+//    return "userDetails"; // Return the name of your Thymeleaf template
+//}
 
 
 }

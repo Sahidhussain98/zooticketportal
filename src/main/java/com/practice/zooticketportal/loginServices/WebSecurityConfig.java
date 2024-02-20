@@ -1,7 +1,5 @@
 package com.practice.zooticketportal.loginServices;
 
-import com.practice.zooticketportal.entity.AllUser;
-import com.practice.zooticketportal.repositories.AllUserRepo;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,7 +12,6 @@ import org.springframework.security.config.annotation.web.configurers.LogoutConf
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -36,8 +33,6 @@ public class WebSecurityConfig {
 
     @Autowired
     private OtpService otpService;
-    @Autowired
-    private AllUserRepo allUserRepo; // Declare and inject the repository
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -96,54 +91,26 @@ public class WebSecurityConfig {
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
         return new SimpleUrlAuthenticationSuccessHandler() {
             @Override
-            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+            public void onAuthenticationSuccess(
+                    HttpServletRequest request,
+                    HttpServletResponse response,
+                    Authentication authentication) throws IOException, ServletException {
+
                 // Redirect based on user roles
                 if (authentication != null) {
-                    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-                    String phoneNumber = userDetails.getUsername();
-                    // Fetch user details based on the phone number
-                    AllUser allUser = allUserRepo.findByPhoneNumber(Long.parseLong(phoneNumber));
+                    Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
 
-                    // Now you can use 'user' to display user details as needed
-                    // For example:
-                    request.getSession().setAttribute("loggedInUser", allUser);
-
-
-                    if (authentication.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN"))) {
+                    if (roles.contains("ROLE_ADMIN")) {
                         response.sendRedirect("/adminpage");
-                    } else if (authentication.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_OFFICER"))) {
+                    } else if (roles.contains("ROLE_OFFICER")) {
                         response.sendRedirect("/officerpage");
                     } else {
+                        // Default redirect for other roles
                         response.sendRedirect("/userpage");
                     }
                 }
             }
         };
     }
-
-//    public AuthenticationSuccessHandler authenticationSuccessHandler() {
-//        return new SimpleUrlAuthenticationSuccessHandler() {
-//            @Override
-//            public void onAuthenticationSuccess(
-//                    HttpServletRequest request,
-//                    HttpServletResponse response,
-//                    Authentication authentication) throws IOException, ServletException {
-//
-//                // Redirect based on user roles
-//                if (authentication != null) {
-//                    Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
-//
-//                    if (roles.contains("ROLE_ADMIN")) {
-//                        response.sendRedirect("/adminpage");
-//                    } else if (roles.contains("ROLE_OFFICER")) {
-//                        response.sendRedirect("/officerpage");
-//                    } else {
-//                        // Default redirect for other roles
-//                        response.sendRedirect("/userpage");
-//                    }
-//                }
-//            }
-//        };
-//    }
 
 }

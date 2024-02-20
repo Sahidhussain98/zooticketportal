@@ -18,13 +18,10 @@ public class Ticket {
 //    private String bookingId;
     private String firstName;
     private String lastName;
-    private String country;
-    private String category;
     private String email;
     private Long phoneNumber;
     private Long totalPersons;
     private Long totalCameras;
-    private String serviceFee;
     private String totalAmount;
     private LocalDateTime dateTime;
     private LocalDateTime enteredBy;
@@ -41,18 +38,14 @@ public class Ticket {
     public Ticket() {
     }
 
-    public Ticket(Long id, String firstName, String lastName, String country, String category, String email,Long phoneNumber, Long totalPersons, Long totalCameras, String serviceFee, String totalAmount, LocalDateTime dateTime, LocalDateTime enteredBy, String enteredOn, AllUser user, Establishment establishment, Payment payment) {
+    public Ticket(Long id, String firstName, String lastName, String email, Long phoneNumber, Long totalPersons, Long totalCameras, String totalAmount, LocalDateTime dateTime, LocalDateTime enteredBy, String enteredOn, AllUser user, Establishment establishment, Payment payment) {
         this.id = id;
-//        this.bookingId = bookingId;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.country = country;
-        this.category = category;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.totalPersons = totalPersons;
         this.totalCameras = totalCameras;
-        this.serviceFee = serviceFee;
         this.totalAmount = totalAmount;
         this.dateTime = dateTime;
         this.enteredBy = enteredBy;
@@ -70,14 +63,6 @@ public class Ticket {
         this.id = id;
     }
 
-//    public String getBookingId() {
-//        return bookingId;
-//    }
-//
-//    public void setBookingId(String bookingId) {
-//        this.bookingId = bookingId;
-//    }
-
     public String getFirstName() {
         return firstName;
     }
@@ -92,22 +77,6 @@ public class Ticket {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
     }
 
     public String getEmail() {
@@ -140,14 +109,6 @@ public class Ticket {
 
     public void setTotalCameras(Long totalCameras) {
         this.totalCameras = totalCameras;
-    }
-
-    public String getServiceFee() {
-        return serviceFee;
-    }
-
-    public void setServiceFee(String serviceFee) {
-        this.serviceFee = serviceFee;
     }
 
     public String getTotalAmount() {
