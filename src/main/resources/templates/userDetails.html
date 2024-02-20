@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Welcome</h1>
+</header>
+
+<div th:if="${allUser != null}">
+    <p><strong>Username:</strong> <span th:text="${allUser.username}"></span></p>
+    <!-- Add more user details here -->
+</div>
+<div th:unless="${allUser != null}">
+    <p>No user logged in.</p>
+</div>
+</body>
+</html>
