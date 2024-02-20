@@ -78,7 +78,9 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     // Add event listener to the delete button
-    $(document).on("click", ".btn-danger", function(e) {
+
+        // Add event listener to the delete button within the table
+        $(document).on("click", ".table .btn-danger", function(e) {
         e.preventDefault(); // Prevent the default action of the button
 
         // Reference to the button that was clicked
@@ -86,19 +88,20 @@
 
         // Show SweetAlert confirmation dialog
         Swal.fire({
-            title: 'Are you sure?',
-            text: 'You will not be able to recover this establishment!',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // If user confirms, proceed with deletion
-                window.location.href = deleteButton.attr('href');
-            }
-        });
+        title: 'Are you sure?',
+        text: 'You will not be able to recover this establishment!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+        // If user confirms, proceed with deletion
+        window.location.href = deleteButton.attr('href');
+    }
     });
+    });
+
 </script>
 
 
