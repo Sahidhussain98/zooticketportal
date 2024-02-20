@@ -19,7 +19,7 @@ public class UserPageController {
 
     @GetMapping("/userpage")
     public String displayUserPage(Model model) {
-        List<Establishment> userEstablishments = establishmentService.getAllEstablishments();
+        List<Establishment> userEstablishments = establishmentService.getAllEstablishmentsByStatus(true);
         System.out.println("Number of establishments: " + userEstablishments.size()); // Add this line for debugging
         model.addAttribute("establishmentList", userEstablishments);
         return "userpage";

@@ -51,7 +51,6 @@
     <div class="row">
         <div th:if="${establishmentList}" th:each="establishment, iterStat : ${establishmentList}" class="col-md-4 mb-4">
             <div class="card shadow-sm rounded-3 square-card" th:style="'background-image: url(/establishments/user/' + ${establishment.establishmentId} + '); background-size: cover;'">
-
             <!-- White stripe behind the text -->
                 <div class="stripe"></div>
                 <!-- Content inside the card -->

@@ -30,6 +30,8 @@ public interface EstablishmentService {
     byte[] getEstablishmentImageById(Long id) throws IOException;
 
     void updateStatus(Long establishmentId);
+
+    List<Establishment> getAllEstablishmentsByStatus(boolean status);
 }
 
 

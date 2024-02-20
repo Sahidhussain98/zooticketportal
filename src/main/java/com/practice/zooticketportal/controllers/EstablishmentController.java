@@ -205,13 +205,17 @@ public class EstablishmentController {
                 Long nationalityId = nationalityIds.get(i);
                 Long categoryId = categoryIds.get(i);
                 Double entryFee = entryFees.get(i);
-
                 // Create Fees object and link to establishment
                 Fees fees = new Fees();
                 fees.setEntryFee(entryFee);
                 fees.setNationality(nationalityRepo.findById(nationalityId).orElse(null));
                 fees.setCategory(categoryRepo.findById(categoryId).orElse(null));
                 fees.setEstablishment(establishment);
+
+                fees.setEnteredOn(LocalDateTime.now());
+                Authentication authentication1 = SecurityContextHolder.getContext().getAuthentication();
+                String enteredBy1 = authentication1.getName();
+                fees.setEnteredBy(enteredBy1);
 
                 feesRepo.save(fees);
             }

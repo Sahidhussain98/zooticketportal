@@ -108,4 +108,10 @@ public class EstablishmentServiceImpl implements EstablishmentService{
             establishmentRepository.save(establishment);
         }
     }
+
+    @Override
+    public List<Establishment> getAllEstablishmentsByStatus(boolean status) {
+        return establishmentRepository.findByStatus(status);
+    }
+
 }
