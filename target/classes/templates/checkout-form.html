@@ -119,7 +119,7 @@
             <input type="number" id="totalCameras" th:field="*{totalCameras}" required  min="0"/>
 
             <label for="fees">Fees:</label>
-            <input type="text" id="fees" th:value="${fees}" readonly />
+            <input type="text" id="fees" readonly />
 
             <label for="totalAmount">Total Amount:</label>
             <input type="text" id="totalAmount" th:field="*{totalAmount}" required />
@@ -158,6 +158,27 @@
             }
 
             return true;
+        }
+        function updateFee() {
+            var nationalityId = document.getElementById('nationality').value;
+            var categoryId = document.getElementById('category').value;
+
+            // AJAX call to fetch the fee
+            $.ajax({
+                url: '/fetchFee', // Change this URL to the endpoint that fetches the fee
+                type: 'GET',
+                data: {
+                    nationalityId: nationalityId,
+                    categoryId: categoryId
+                },
+                success: function(response) {
+                    // Update the fee input field with the fetched fee
+                    $('#fees').val(response.fee);
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                }
+            });
         }
     </script>
 
