@@ -43,39 +43,6 @@ public class TicketController {
     @Autowired
     private NationalityRepo nationalityRepo;
 
-//    @GetMapping("/showCheckoutForm")
-//    public String showCheckoutForm(Model theModel) {
-//        // Create a ticket object
-//        Ticket theTicket = new Ticket();
-//
-//        // Generate booking ID
-//        String bookingId = generateBookingId(theTicket.getEstablishment().getName(), LocalDateTime.now());
-//
-//        // Set booking ID to the ticket
-//        theTicket.setBookingId(bookingId);
-//
-//        // Add ticket object to the model
-//        theModel.addAttribute("theTicket", theTicket);
-//
-//        // Add the list of countries to the model
-//        theModel.addAttribute("countries", countries);
-//
-//        // Add the list of categories to the model
-//        theModel.addAttribute("categories", categories);
-//
-//        return "checkout-form";
-//    }
-//
-//    private String generateBookingId(String establishmentName, LocalDateTime bookingDateTime) {
-//        // Generate booking ID based on establishment name, booking date/time, and a serial number
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-//        String formattedDateTime = bookingDateTime.format(formatter);
-//        // You can add additional logic to generate a unique serial number
-//        String serialNumber = "001"; // For example, you can start with 001
-//        return establishmentName.substring(0, 3) + formattedDateTime + serialNumber;
-//    }
-
-
     @GetMapping("/showCheckoutForm/{establishmentId}")
     public String showCheckoutForm(@PathVariable Long establishmentId, Model model) {
         // Here, you can add logic to retrieve the establishment details
