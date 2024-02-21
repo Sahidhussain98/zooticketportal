@@ -73,11 +73,6 @@
 <div th:replace="fragments/userNaveMenu :: header"></div>
 <div class="container-form">
     <h3><span  th:text="${establishment.getName()}"></span> Form</h3>
-    <div></div>
-
-
-
-
 
         <form th:action="@{/processCheckoutForm}" th:object="${theTicket}" method="POST" onsubmit="return validateForm()">
 
@@ -132,36 +127,6 @@
 
     </form>
 
-    <script>
-        function validateForm() {
-            var firstNameInput = document.getElementById('firstName');
-            var lastNameInput = document.getElementById('lastName');
-            var emailInput = document.getElementById('email');
-
-            var nameRegex = /^[A-Za-z]+$/; // Regular expression to match only alphabets
-
-            if (!nameRegex.test(firstNameInput.value)) {
-                alert('First Name should only contain alphabets.');
-                return false;
-            }
-
-            if (!nameRegex.test(lastNameInput.value)) {
-                alert('Last Name should only contain alphabets.');
-                return false;
-            }
-
-            // You can add more email validation if needed
-            var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(emailInput.value)) {
-                alert('Invalid Email address.');
-                return false;
-            }
-
-            return true;
-        }
-    </script>
-
-</div>
 </div>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
