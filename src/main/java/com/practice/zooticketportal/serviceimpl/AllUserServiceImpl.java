@@ -22,4 +22,9 @@ public class AllUserServiceImpl implements AllUserService {
         return allUserRepo.findByPhoneNumber(phoneNumber);
     }
 
+    @Override
+    public  AllUser findByUsername(String username){
+        return allUserRepo.findByUsername(username);
+    }
+
 }

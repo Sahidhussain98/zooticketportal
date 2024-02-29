@@ -75,6 +75,8 @@
     <h3><span  th:text="${establishment.getName()}"></span> Form</h3>
 
         <form th:action="@{/processCheckoutForm}" th:object="${theTicket}" method="POST" onsubmit="return validateForm()">
+            <input type="hidden" id="establishmentId" th:value="${establishment.establishmentId}" />
+
 
             <label for="firstName">First Name:</label>
             <input type="text" id="firstName" th:field="*{firstName}" required />
@@ -91,7 +93,7 @@
 
             <label for="nationality">Nationality:</label>
 
-            <select id="nationality" name="nationalityId" class="form-control" required>
+            <select id="nationality" name="nationalityId" class="form-control" required onchange=" calculateFees()">
                 <option value="">--SELECT NATIONALITY--</option>
                 <option th:each="nationality : ${nationalities}" th:value="${nationality.nationalityId}"
                         th:text="${nationality.nationalityType}"></option>
@@ -99,7 +101,7 @@
 
 
             <label for="category">Categories:</label>
-            <select id="category" name="categoryId" class="form-control" required>
+            <select id="category" name="categoryId" class="form-control" required onchange=" calculateFees()">
                 <option value="">--SELECT CATEGORY--</option>
                 <option th:each="category : ${categories}" th:value="${category.categoryId}"
                         th:text="${category.categoryName}"></option>
@@ -114,7 +116,7 @@
             <input type="number" id="totalCameras" th:field="*{totalCameras}" required  min="0"/>
 
             <label for="fees">Fees:</label>
-            <input type="text" id="fees" readonly />
+            <input type="text" id="fees" readonly onchange=" calculateFees()"/>
 
             <label for="totalAmount">Total Amount:</label>
             <input type="text" id="totalAmount" th:field="*{totalAmount}" required />
@@ -128,6 +130,45 @@
     </form>
 
  </div>
+
+<script>
+    function calculateFees() {
+        var establishmentId = $('#establishmentId').val();
+        var nationalityId = $('#nationality').val();
+        var categoryId = $('#category').val();
+        var numberOfPersons = parseInt($('#totalPersons').val());
+
+        // Check if categoryId is empty or not selected
+        if (!categoryId) {
+            console.error('Category not selected');
+            return; // Stop execution if category is not selected
+        }
+
+        // Construct the URL with query parameters
+        var url = '/fetchFee';
+
+        // Perform AJAX call to fetch fees
+        $.ajax({
+            url: url,
+            type: 'GET',
+            data: {
+                nationalityId: nationalityId,
+                categoryId: categoryId,
+                establishmentId: establishmentId,
+                totalPersons: numberOfPersons
+            },
+            success: function(data) {
+                console.log("AJAX request successful.");
+                $('#fees').val(data.toFixed(2)); // Update the fees field
+            },
+            error: function() {
+                console.error('Error fetching fees');
+            }
+        });
+    }
+
+
+</script>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

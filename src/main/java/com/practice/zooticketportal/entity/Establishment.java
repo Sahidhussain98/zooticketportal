@@ -88,7 +88,7 @@ public class Establishment {
         return establishmentId;
     }
 
-    public List<com.practice.zooticketportal.entity.Fees> getFees() {
+    public List<Fees> getFees() {
         return fees;
     }
 

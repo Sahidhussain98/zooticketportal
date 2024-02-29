@@ -14,13 +14,16 @@
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            <span th:if="${#authorization.expression('isAuthenticated()')}">
+         <span>Welcome <span th:text="${#authentication.name}"></span></span>
+    </span>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item active">
                         <a class="nav-link" th:href="@{/userpage}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/userDetails}">Users</a>
+                        <a id="userDetailsLink" class="nav-link" href="/userDetails">Users</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/showCheckoutForm}">ticket</a>
@@ -34,6 +37,34 @@
         </div>
     </nav>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Find the link element by its ID
+        var userDetailsLink = document.getElementById("userDetailsLink");
+
+        // Add a click event listener to the link
+        userDetailsLink.addEventListener("click", function(event) {
+            // Prevent the default behavior of the link (e.g., navigating to a new page)
+            event.preventDefault();
+
+            // Send an AJAX request to the API endpoint
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/userDetails");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        // Handle the successful response, if needed
+                        console.log(xhr.responseText);
+                    } else {
+                        // Handle errors, if any
+                        console.error("Failed to fetch user details. Status code: " + xhr.status);
+                    }
+                }
+            };
+            xhr.send();
+        });
+    });
+</script>
 
 </body>
 </html>

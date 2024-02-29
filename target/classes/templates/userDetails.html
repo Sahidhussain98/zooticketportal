@@ -19,15 +19,41 @@
 </head>
 <body>
 <header>
-    <h1>Welcome</h1>
+    <span th:if="${#authorization.expression('isAuthenticated()')}">
+         <span>Welcome <span th:text="${#authentication.name}"></span></span>
+    </span>
 </header>
 
-<div th:if="${allUser != null}">
-    <p><strong>Username:</strong> <span th:text="${allUser.username}"></span></p>
-    <!-- Add more user details here -->
+<div id="userDetails">
+<!--    <p>Username: <span th:text="${user.username}"></span></p>-->
+<!--    <p>Email: <span th:text="${userDetails.email}"></span></p>-->
+<!--    <p>Phone Number: <span th:text="${user.phoneNumber}"></span></p>-->
 </div>
-<div th:unless="${allUser != null}">
-    <p>No user logged in.</p>
-</div>
+
+<script th:inline="javascript">
+    function loadUserDetails() {
+        // Make an AJAX request to fetch user details
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/userinfo', true);
+        xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                // Request was successful, update the user details
+                document.getElementById('userDetails').innerHTML = xhr.responseText;
+            } else {
+                // Request failed, handle error
+                console.error('Failed to load user details');
+            }
+        };
+        xhr.onerror = function () {
+            // Network error
+            console.error('Network error occurred');
+        };
+        xhr.send();
+    }
+
+    // Call loadUserDetails function when the page loads
+    window.onload = loadUserDetails;
+</script>
+
 </body>
 </html>

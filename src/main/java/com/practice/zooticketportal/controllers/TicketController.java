@@ -3,10 +3,7 @@ package com.practice.zooticketportal.controllers;
 
 import com.practice.zooticketportal.dto.FeeDTO;
 import com.practice.zooticketportal.entity.*;
-import com.practice.zooticketportal.repositories.CategoryRepo;
-import com.practice.zooticketportal.repositories.FeesRepo;
-import com.practice.zooticketportal.repositories.NationalityRepo;
-import com.practice.zooticketportal.repositories.TicketRepository;
+import com.practice.zooticketportal.repositories.*;
 import com.practice.zooticketportal.service.EstablishmentService;
 import com.practice.zooticketportal.service.TicketService;
 import net.sf.jasperreports.engine.JRException;
@@ -21,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.FileNotFoundException;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -42,6 +40,8 @@ public class TicketController {
 
     @Autowired
     private NationalityRepo nationalityRepo;
+    @Autowired
+    private EstablishmentRepo establishmentRepo;
 
     @GetMapping("/showCheckoutForm/{establishmentId}")
     public String showCheckoutForm(@PathVariable Long establishmentId, Model model) {
@@ -167,32 +167,30 @@ private FeesRepo feesRepo;
     @ResponseBody
     public ResponseEntity<?> fetchFee(@RequestParam("nationalityId") Long nationalityId,
                                       @RequestParam("categoryId") Long categoryId,
-                                      @RequestParam("establishmentId") Long establishmentId) {
+                                      @RequestParam("establishmentId") Long establishmentId,
+                                      @RequestParam("totalPersons") Long totalPersons) {
         System.out.println("-----------");
+
         // Query the database to retrieve the entry fee based on the provided nationality ID, category ID, and establishment ID
         List<Fees> fee = feesRepo.findByNationalityNationalityIdAndCategoryCategoryIdAndEstablishmentEstablishmentId(nationalityId, categoryId, establishmentId);
 
-
-        for(Fees fees:fee){
-            System.out.println(fees.getEntryFee());
-        }
         // Check if the fee is retrieved successfully
         if (fee != null) {
             System.out.println("inside if");
-            // Return the fee amount in the response body
-            return ResponseEntity.ok(
-                    fee.stream().map(
-                            fees -> {
-                                return new FeeDTO(fees.getCategory().getCategoryName(),fees.getNationality().getNationalityType(),fees.getEstablishment().getName(),fees.getEntryFee().toString());
-                            }
-                    ).collect(Collectors.toList())
-            );
+            // Calculate the total fees based on the entry fee and the total number of persons
+            double totalFees = 0.0;
+            for (Fees fees : fee) {
+                totalFees += fees.getEntryFee(); // Add the entry fee for each person
+            }
+            totalFees *= totalPersons; // Multiply by the total number of persons
+
+            // Return the total fees amount in the response body
+            return ResponseEntity.ok(totalFees);
         } else {
             // If the fee cannot be retrieved, return an error response
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
 }
 
 
