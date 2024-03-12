@@ -13,12 +13,12 @@
         <fieldDescription><![CDATA[id]]></fieldDescription>
     </field>
 <!--    <field name="booking_id" class="java.lang.String"/>-->
-    <field name="category" class="java.lang.String">
-        <fieldDescription><![CDATA[category]]></fieldDescription>
-    </field>
-    <field name="country" class="java.lang.String">
-        <fieldDescription><![CDATA[country]]></fieldDescription>
-    </field>
+<!--    <field name="category" class="java.lang.String">-->
+<!--        <fieldDescription><![CDATA[category]]></fieldDescription>-->
+<!--    </field>-->
+<!--    <field name="country" class="java.lang.String">-->
+<!--        <fieldDescription><![CDATA[country]]></fieldDescription>-->
+<!--    </field>-->
 
     <field name="date_time" class="java.lang.String">
         <fieldDescription><![CDATA[dateTime]]></fieldDescription>
@@ -40,9 +40,9 @@
         <fieldDescription><![CDATA[phoneNumber]]></fieldDescription>
     </field>
 
-    <field name="service_fee" class="java.lang.String">
-        <fieldDescription><![CDATA[serviceFee]]></fieldDescription>
-    </field>
+<!--    <field name="service_fee" class="java.lang.String">-->
+<!--        <fieldDescription><![CDATA[serviceFee]]></fieldDescription>-->
+<!--    </field>-->
 
 
     <field name="total_amount" class="java.lang.String">
@@ -89,7 +89,7 @@
                 <reportElement x="403" y="0" width="152" height="114" uuid="935d3652-ef79-41c6-8936-bd4d70f43afd"/>
                 <imageExpression><![CDATA[com.google.zxing.client.j2se.MatrixToImageWriter.toBufferedImage(
 new com.google.zxing.qrcode.QRCodeWriter().encode(
-$F{id}+$F{first_name}+$F{last_name}+$F{country}+$F{category}+$F{email}+$F{phone_number}+$F{total_persons}+$F{total_cameras}+$F{service_fee}+$F{total_amount}+$F{date_time},
+$F{id}+$F{first_name}+$F{last_name}+$F{email}+$F{phone_number}+$F{total_persons}+$F{total_cameras}+$F{total_amount}+$F{date_time},
 com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
             </image>
         </band>
@@ -138,34 +138,34 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
                 </textElement>
                 <text><![CDATA[Last Name]]></text>
             </staticText>
-            <textField>
-                <reportElement x="198" y="100" width="205" height="39" uuid="0764e5e0-f5a0-4ae1-a1df-96d0e6910ddd"/>
-                <textElement verticalAlignment="Middle">
-                    <font size="16"/>
-                </textElement>
-                <textFieldExpression><![CDATA[$F{country}]]></textFieldExpression>
-            </textField>
-            <staticText>
-                <reportElement x="0" y="100" width="198" height="39" uuid="9b5f0bd6-4eda-4837-afa4-22a10c4f4e70"/>
-                <textElement verticalAlignment="Middle">
-                    <font size="16"/>
-                </textElement>
-                <text><![CDATA[Country]]></text>
-            </staticText>
-            <textField>
-                <reportElement x="198" y="139" width="205" height="39" uuid="f852a236-4cf0-4825-8ac3-1964705e9d9f"/>
-                <textElement verticalAlignment="Middle">
-                    <font size="16"/>
-                </textElement>
-                <textFieldExpression><![CDATA[$F{category}]]></textFieldExpression>
-            </textField>
-            <staticText>
-                <reportElement x="0" y="139" width="198" height="39" uuid="c7991919-e026-4b01-95d1-204edb6b3473"/>
-                <textElement verticalAlignment="Middle">
-                    <font size="16"/>
-                </textElement>
-                <text><![CDATA[Category]]></text>
-            </staticText>
+<!--            <textField>-->
+<!--                <reportElement x="198" y="100" width="205" height="39" uuid="0764e5e0-f5a0-4ae1-a1df-96d0e6910ddd"/>-->
+<!--                <textElement verticalAlignment="Middle">-->
+<!--                    <font size="16"/>-->
+<!--                </textElement>-->
+<!--                <textFieldExpression><![CDATA[$F{country}]]></textFieldExpression>-->
+<!--            </textField>-->
+<!--            <staticText>-->
+<!--                <reportElement x="0" y="100" width="198" height="39" uuid="9b5f0bd6-4eda-4837-afa4-22a10c4f4e70"/>-->
+<!--                <textElement verticalAlignment="Middle">-->
+<!--                    <font size="16"/>-->
+<!--                </textElement>-->
+<!--                <text><![CDATA[Country]]></text>-->
+<!--            </staticText>-->
+<!--            <textField>-->
+<!--                <reportElement x="198" y="139" width="205" height="39" uuid="f852a236-4cf0-4825-8ac3-1964705e9d9f"/>-->
+<!--                <textElement verticalAlignment="Middle">-->
+<!--                    <font size="16"/>-->
+<!--                </textElement>-->
+<!--                <textFieldExpression><![CDATA[$F{category}]]></textFieldExpression>-->
+<!--            </textField>-->
+<!--            <staticText>-->
+<!--                <reportElement x="0" y="139" width="198" height="39" uuid="c7991919-e026-4b01-95d1-204edb6b3473"/>-->
+<!--                <textElement verticalAlignment="Middle">-->
+<!--                    <font size="16"/>-->
+<!--                </textElement>-->
+<!--                <text><![CDATA[Category]]></text>-->
+<!--            </staticText>-->
             <textField>
                 <reportElement x="198" y="178" width="205" height="43" uuid="3c07ab19-f875-4001-92c5-9b05cd9e6d5c"/>
                 <textElement verticalAlignment="Middle">
@@ -222,20 +222,20 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
                 </textElement>
                 <text><![CDATA[Total Cameras]]></text>
             </staticText>
-            <textField>
-                <reportElement x="198" y="342" width="205" height="36" uuid="38f571e0-99ed-430a-a786-6f9fd05811ff"/>
-                <textElement verticalAlignment="Middle">
-                    <font size="16"/>
-                </textElement>
-                <textFieldExpression><![CDATA[$F{service_fee}]]></textFieldExpression>
-            </textField>
-            <staticText>
-                <reportElement x="0" y="342" width="198" height="36" uuid="9e595da6-451f-4122-be4c-ee6547e2116c"/>
-                <textElement verticalAlignment="Middle">
-                    <font size="16"/>
-                </textElement>
-                <text><![CDATA[Service Fees]]></text>
-            </staticText>
+<!--            <textField>-->
+<!--                <reportElement x="198" y="342" width="205" height="36" uuid="38f571e0-99ed-430a-a786-6f9fd05811ff"/>-->
+<!--                <textElement verticalAlignment="Middle">-->
+<!--                    <font size="16"/>-->
+<!--                </textElement>-->
+<!--                <textFieldExpression><![CDATA[$F{service_fee}]]></textFieldExpression>-->
+<!--            </textField>-->
+<!--            <staticText>-->
+<!--                <reportElement x="0" y="342" width="198" height="36" uuid="9e595da6-451f-4122-be4c-ee6547e2116c"/>-->
+<!--                <textElement verticalAlignment="Middle">-->
+<!--                    <font size="16"/>-->
+<!--                </textElement>-->
+<!--                <text><![CDATA[Service Fees]]></text>-->
+<!--            </staticText>-->
             <textField>
                 <reportElement x="198" y="378" width="205" height="39" uuid="4aa86554-6513-41ac-9d2e-d8c1148068d4"/>
                 <textElement verticalAlignment="Middle">

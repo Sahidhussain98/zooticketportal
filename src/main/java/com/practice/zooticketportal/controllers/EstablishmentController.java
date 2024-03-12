@@ -213,6 +213,7 @@ public class EstablishmentController {
                 fees.setEstablishment(establishment);
 
                 fees.setEnteredOn(LocalDateTime.now());
+//                fees.setupdateEnteredOn(LocalDateTime.now());
                 Authentication authentication1 = SecurityContextHolder.getContext().getAuthentication();
                 String enteredBy1 = authentication1.getName();
                 fees.setEnteredBy(enteredBy1);
@@ -261,19 +262,49 @@ public class EstablishmentController {
         return "edit-establishments";
     }
 
-
-
     @PostMapping("/{id}")
     public String updateEstablishment(@PathVariable Long id,
-                                      @ModelAttribute("establishment") Establishment establishment) {
+                                      @ModelAttribute("establishment") Establishment establishment,
+                                      @RequestParam("entryFee") List<Double> entryFees) {
         Establishment existingEstablishment = establishmentService.getEstablishmentById(id);
         existingEstablishment.setName(establishment.getName());
         // Remove setting type here since it's not part of the Establishment entity
+
+        // Update establishment fields
+        existingEstablishment.setAddress(establishment.getAddress());
+        existingEstablishment.setOpeningTime(establishment.getOpeningTime());
+        existingEstablishment.setClosingTime(establishment.getClosingTime());
+
+        // Update fees
+        List<Fees> feeList = existingEstablishment.getFees();
+        for (int i = 0; i < feeList.size(); i++) {
+            Fees fee = feeList.get(i);
+            if (i < entryFees.size()) {
+                fee.setEntryFee(entryFees.get(i));
+            }
+        }
+
+        System.out.println(establishmentService.updateEstablishment(existingEstablishment));
 
         establishmentService.updateEstablishment(existingEstablishment);
         System.out.printf("update1");
         return "redirect:/establishments";
     }
+
+
+
+
+//    @PostMapping("/{id}")
+//    public String updateEstablishment(@PathVariable Long id,
+//                                      @ModelAttribute("establishment") Establishment establishment) {
+//        Establishment existingEstablishment = establishmentService.getEstablishmentById(id);
+//        existingEstablishment.setName(establishment.getName());
+//        // Remove setting type here since it's not part of the Establishment entity
+//
+//        establishmentService.updateEstablishment(existingEstablishment);
+//        System.out.printf("update1");
+//        return "redirect:/establishments";
+//    }
 
 
 

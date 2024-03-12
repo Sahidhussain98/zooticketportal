@@ -22,7 +22,7 @@ public class UserService {
     @Autowired
     private AuditService auditService;
     @Transactional
-    void registerUserWithCitizenRole(Long phoneNumber) {
+    void registerUserWithCitizenRole(String phoneNumber) {
         System.out.println("start registerUserWithCitizenRole");
         // Check if the user already exists
         AllUser existingUser = AllUserRepo.findByPhoneNumber(phoneNumber);
@@ -55,4 +55,6 @@ public class UserService {
         }
         auditService.audit("REGISTER_USER_WITH_CITIZEN_ROLE", "UserService", null, null);
     }
+
+
 }

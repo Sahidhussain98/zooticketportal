@@ -60,17 +60,18 @@ public class TicketController {
         List<Nationality> nationalities1 = nationalityRepo.findAll();
         model.addAttribute("categories", categories);
         model.addAttribute("nationalities", nationalities1);
-
-
-
-
         return "checkout-form";
     }
 
     @PostMapping("/processCheckoutForm/{establishmentId}")
-    public String processForm(@ModelAttribute("theTicket") Ticket theTicket) {
+    public String processForm(@PathVariable Long establishmentId,@ModelAttribute("theTicket") Ticket theTicket, Model model) {
         // Save the ticket details to the database using the repository
         ticketRepository.save(theTicket);
+        // Retrieve the establishment object from the database
+        Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
+
+        // Add the establishment object to the model
+        model.addAttribute("establishment", establishment);
 
 
         // log the input data
@@ -79,10 +80,16 @@ public class TicketController {
         return "checkoutConfirmation-form";
     }
 
-    @GetMapping("/showEditForm")
-    public String showEditForm(@RequestParam("ticketId") Long ticketId, Model model) {
+    @GetMapping("/showEditForm/{ticketId}")
+    public String showEditForm(@PathVariable Long ticketId, Model model) {
         // Retrieve ticket details by ID
         Ticket theTicket = ticketRepository.findById(ticketId).orElseThrow(() -> new RuntimeException("Ticket not found"));
+        // Retrieve the establishment associated with the ticket
+        Establishment establishment = theTicket.getEstablishment();
+
+        // Retrieve the fees associated with the establishment
+
+        // Retrieve the nationality and category associated with the ticket
 
         // Add ticket object to the model
         model.addAttribute("theTicket", theTicket);

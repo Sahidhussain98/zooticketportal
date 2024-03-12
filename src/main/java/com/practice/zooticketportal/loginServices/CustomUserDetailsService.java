@@ -35,7 +35,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String phoneNumber) throws UsernameNotFoundException {
-        AllUser user = userRepository.findByPhoneNumber(Long.valueOf(phoneNumber));
+        AllUser user = userRepository.findByPhoneNumber(phoneNumber);
         if (user == null) {
             throw new UsernameNotFoundException("User not found with phone number: " + phoneNumber);
         }

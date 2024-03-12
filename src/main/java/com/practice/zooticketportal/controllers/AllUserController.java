@@ -1,82 +1,68 @@
 package com.practice.zooticketportal.controllers;
 
 import com.practice.zooticketportal.entity.AllUser;
+import com.practice.zooticketportal.repositories.AllUserRepo;
 import com.practice.zooticketportal.service.AllUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 public class AllUserController {
     @Autowired
     private AllUserService allUserService;
-//    @GetMapping("/user-details")
-//    public String showUserPage(Model model) {
-//        // Assuming you have a way to retrieve the currently logged-in user
-//
-//
-////        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-////        //String enteredBy = authentication.getName();
-////        System.out.println(authentication.getDetails());
-//
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//          Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
-//
-//          System.out.println(roles.contains("ROLE_ADMIN"));
-//
-////        else {
-//
-////        }
-//
-//
-//        AllUser user = userService.getCurrentUser();
-//        model.addAttribute("user", user);
-//        System.out.println(model);
-//        System.out.println("here "+user);
-//        return "userDetails";
-//    }
-//@GetMapping("/user-details")
-//public String userDetails(Model model) {
-//    // Get the currently logged-in user's phone number
-//    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//    String phoneNumber = authentication.getName();
-//
-//    // Fetch user details from the database based on the phone number
-//    AllUser allUser = allUserService.findByPhoneNumber(Long.parseLong(phoneNumber));
-//
-//    // Check if user details were retrieved successfully
-//    if(allUser != null) {
-//        // Pass the user details to the Thymeleaf template
-//        model.addAttribute("allUser", allUser);
-//    } else {
-//        // User not found, handle this case as needed
-//        // For example, you can redirect the user to a login page or display an error message
-//        return "redirect:/login"; // Redirect to the login page
-//        // OR
-//        // model.addAttribute("errorMessage", "User details not found."); // Set error message attribute
-//        // return "errorPage"; // Display error page
-//    }
-//
-//    return "userDetails"; // Return the name of your Thymeleaf template
-//}
+    @Autowired
+    private AllUserRepo allUserRepo;
+    @PostMapping("/saveUserDetails")
+    @ResponseBody
+    public String saveAdditionalDetails(@RequestBody AllUser allUser) {
+        // Save the additional details to the database
+        allUserService.saveUserDetails(allUser);
 
-//@GetMapping("/user-details")
-//public String userDetails(Model model) {
-//    // Get the currently logged-in user's phone number
-//    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//    String phoneNumber = authentication.getName();
-//
-//    // Fetch user details from the database based on the phone number
-//    AllUser allUser = allUserService.findByPhoneNumber(Long.parseLong(phoneNumber));
-//
-//    // Pass the user details to the Thymeleaf template
-//    model.addAttribute("allUser", allUser);
-//
-//    return "userDetails"; // Return the name of your Thymeleaf template
-//}
+        // Return a success message or any other response if needed
+        return "Details saved successfully!";
+    }
+    @GetMapping("/checkUserDetails")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> checkUserDetails() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String phoneNumber = authentication.getName(); // phoneNumber is already a string
+
+        // Check if user details exist for the given phone number
+        AllUser user = allUserRepo.findByPhoneNumber(phoneNumber);
+        boolean userDetailsExist = user != null && (user.getUsername() != null || user.getEmail() != null);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("userDetailsExist", userDetailsExist);
+        return ResponseEntity.ok(response);
+    }
+    @PostMapping("/change-password")
+    @ResponseBody
+    public ResponseEntity<String> changePassword(@RequestParam String newPassword) {
+        // Get authenticated user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String phoneNumber = authentication.getName();
+
+        // Find user by phone number (assuming phone number is unique)
+        AllUser user = allUserRepo.findByPhoneNumber(phoneNumber);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+
+        // Update user's password
+        user.setPassword(newPassword);
+        allUserRepo.save(user);
+
+        return ResponseEntity.ok("Password changed successfully");
+    }
 
 
 }

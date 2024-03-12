@@ -100,10 +100,13 @@
                             <tr th:each="fee : ${establishment.fees}">
                                 <td th:text="${fee.getNationality().getNationalityType()}"></td>
                                 <td th:text="${fee.getCategory().getCategoryName()}"></td>
-                                <td th:text="${fee.entryFee}"></td>
+                                <td><input type="text" name="entryFee" th:value="${fee.entryFee}" readonly /></td>
                                 <td th:text="${fee.enteredOn}"></td>
+
                                 <td th:text="${fee.enteredBy}"></td>
+<!--                                <td><button type="button" class="btn btn-danger delete-button" onclick="deleteFee(${row.index})">Delete</button></td>-->
                             </tr>
+
                             </tbody>
                         </table>
                         <p class="profile-field">Status: <span th:text="${establishment.status} ? 'Active' : 'Inactive'"></span></p>
@@ -132,6 +135,7 @@
 <!-- Include SweetAlert library -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
+
     function showEstablishmentDetails() {
         // Retrieve establishment ID from the input field
         var establishmentId = extractEstablishmentIdFromHTML();
@@ -151,8 +155,40 @@
         return establishmentId;
     }
 
+    // var originalDatetimeValues = [];
+    //
+    // function storeOriginalDatetimeValues() {
+    //     var datetimeInputs = document.querySelectorAll(".datetime-input");
+    //     datetimeInputs.forEach(function(input) {
+    //         originalDatetimeValues.push(input.value);
+    //     });
+    // }
+    //
+    // function restoreOriginalDatetimeValues() {
+    //     var datetimeInputs = document.querySelectorAll(".datetime-input");
+    //     datetimeInputs.forEach(function(input, index) {
+    //         input.value = originalDatetimeValues[index];
+    //     });
+    //     // Clear the array storing original values
+    //     originalDatetimeValues = [];
+    // }
 
 
+    // Function to switch input type from text to datetime-local
+    // function switchToDateTimePicker() {
+    //     var datetimeInputs = document.querySelectorAll(".datetime-input");
+    //     datetimeInputs.forEach(function(input) {
+    //         input.type = "datetime-local";
+    //     });
+    // }
+
+    // Function to switch input type from datetime-local to text
+    // function switchToText() {
+    //     var datetimeInputs = document.querySelectorAll(".datetime-input");
+    //     datetimeInputs.forEach(function(input) {
+    //         input.type = "text";
+    //     });
+    // }
 
 
     document.getElementById("editButton").addEventListener("click", function() {
@@ -174,6 +210,7 @@
         }
     });
 
+
     document.getElementById("saveButton").addEventListener("click", function(event) {
         event.preventDefault(); // Prevent default form submission
 
@@ -190,6 +227,7 @@
             }
         });
     });
+
 </script>
 
 </body>

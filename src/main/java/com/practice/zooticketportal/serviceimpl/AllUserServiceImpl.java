@@ -5,10 +5,9 @@ import com.practice.zooticketportal.entity.AllUser;
 import com.practice.zooticketportal.repositories.AllUserRepo;
 import com.practice.zooticketportal.service.AllUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class AllUserServiceImpl implements AllUserService {
@@ -16,15 +15,28 @@ public class AllUserServiceImpl implements AllUserService {
     private AllUserRepo allUserRepo;
 
 
+    @Override
+    public AllUser saveUserDetails(AllUser allUser) {
+        return allUserRepo.save(allUser);
+    }
 
     @Override
-    public AllUser findByPhoneNumber(Long phoneNumber) {
+    public AllUser findByPhoneNumber(String phoneNumber) {
         return allUserRepo.findByPhoneNumber(phoneNumber);
     }
 
     @Override
-    public  AllUser findByUsername(String username){
-        return allUserRepo.findByUsername(username);
+    public List<AllUser> findByUsername(String username){
+        System.out.println("Username"+username+ "\n" +allUserRepo.findByUsername(username));
+        return  allUserRepo.findByUsername(username);
     }
+
+//    @Override
+//    public void saveEmail(String email) {
+//        AllUser allUser= new AllUser();
+//        allUser.setEmail(email);
+//        allUserRepo.save(allUser);
+//    }
+
 
 }

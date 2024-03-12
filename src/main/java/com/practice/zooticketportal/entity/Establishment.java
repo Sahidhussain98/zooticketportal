@@ -48,6 +48,13 @@ public class Establishment {
         this.setEnteredOn(date);
 
     }
+    @PreUpdate
+    public void updateEnteredOn() {
+        // Update enteredOn whenever there's a change in fees
+        Calendar cal = Calendar.getInstance();
+        Date date = new Date();
+        this.setEnteredOn(date);
+    }
     public void updateStatus() {
         if (name != null && address != null && openingTime != null && closingTime != null &&
                 enteredBy != null && masterEstablishment != null && village != null && users != null &&
