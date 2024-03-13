@@ -64,21 +64,35 @@ public class TicketController {
     }
 
     @PostMapping("/processCheckoutForm/{establishmentId}")
-    public String processForm(@PathVariable Long establishmentId,@ModelAttribute("theTicket") Ticket theTicket, Model model) {
+    public String processForm(@PathVariable Long establishmentId, @ModelAttribute("theTicket") Ticket theTicket, Model model) {
+        // Retrieve establishment name
+        Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
+        String establishmentName = establishment.getName();
+
+        // Generate random serial number (you can use your preferred method to generate the serial number)
+        int serialNumber = generateRandomSerialNumber();
+
+        // Generate bookingId using establishment name and serial number
+        theTicket.setBookingId(new Ticket(establishmentName, serialNumber).getBookingId());
+
         // Save the ticket details to the database using the repository
         ticketRepository.save(theTicket);
-        // Retrieve the establishment object from the database
-        Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
 
-        // Add the establishment object to the model
+        // Add establishment object to the model
         model.addAttribute("establishment", establishment);
 
-
-        // log the input data
+        // Log the input data
         System.out.println("theTicket: " + theTicket.getFirstName() + " " + theTicket.getLastName());
 
         return "checkoutConfirmation-form";
     }
+
+    // Method to generate random serial number (you can implement your own logic)
+    private int generateRandomSerialNumber() {
+        // Implement your logic to generate a random serial number
+        return (int) (Math.random() * 1000); // Example logic: Generate a random number between 0 and 999
+    }
+
 
     @GetMapping("/showEditForm/{ticketId}")
     public String showEditForm(@PathVariable Long ticketId, Model model) {

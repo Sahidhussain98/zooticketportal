@@ -15,7 +15,8 @@ public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-//    private String bookingId;
+    @Column(name = "booking_id", unique = true)
+    private String bookingId;
     private String firstName;
     private String lastName;
     private String email;
@@ -38,21 +39,16 @@ public class Ticket {
     public Ticket() {
     }
 
-    public Ticket(Long id, String firstName, String lastName, String email, Long phoneNumber, Long totalPersons, Long totalCameras, String totalAmount, LocalDateTime dateTime, LocalDateTime enteredBy, String enteredOn, AllUser user, Establishment establishment, Payment payment) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.totalPersons = totalPersons;
-        this.totalCameras = totalCameras;
-        this.totalAmount = totalAmount;
-        this.dateTime = dateTime;
-        this.enteredBy = enteredBy;
-        this.enteredOn = enteredOn;
-        this.user = user;
-        this.establishment = establishment;
-        this.payment = payment;
+    public Ticket(String establishmentName, int serialNumber) {
+        this.bookingId = establishmentName.replaceAll("\\s+", "") + "-" + serialNumber;
+    }
+
+    public String getBookingId() {
+        return bookingId;
+    }
+
+    public void setBookingId(String bookingId) {
+        this.bookingId = bookingId;
     }
 
     public Long getId() {
