@@ -17,8 +17,8 @@ public class Ticket {
     private Long id;
     @Column(name = "booking_id", unique = true)
     private String bookingId;
-    private String firstName;
-    private String lastName;
+    private String name;
+
     private String email;
     private Long phoneNumber;
     private Long totalPersons;
@@ -43,14 +43,6 @@ public class Ticket {
         this.bookingId = establishmentName.replaceAll("\\s+", "") + "-" + serialNumber;
     }
 
-    public String getBookingId() {
-        return bookingId;
-    }
-
-    public void setBookingId(String bookingId) {
-        this.bookingId = bookingId;
-    }
-
     public Long getId() {
         return id;
     }
@@ -59,20 +51,20 @@ public class Ticket {
         this.id = id;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getBookingId() {
+        return bookingId;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setBookingId(String bookingId) {
+        this.bookingId = bookingId;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getName() {
+        return name;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {

@@ -74,35 +74,55 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<!-- Inside <body> tag -->
+<!-- Inside <body> tag -->
 <script>
-    // Function to show SweetAlert prompt for email input
-    function getAndSaveEmail() {
+    // Function to trigger Sweet Alert after page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Show Sweet Alert prompt for email input
         Swal.fire({
-            title: 'Enter your Email',
+            title: 'Enter your email',
             input: 'email',
+            inputLabel: 'Email address',
+            inputPlaceholder: 'Enter your email address',
             showCancelButton: true,
-            confirmButtonText: 'Save',
-            allowOutsideClick: false
+            confirmButtonText: 'Submit',
+            showLoaderOnConfirm: true,
+            preConfirm: (email) => {
+                // Send the email to backend for processing and saving
+                return fetch('/saveEmail', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: email }),
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(response.statusText)
+                        }
+                        return response.json();
+                    })
+                    .catch(error => {
+                        Swal.showValidationMessage(
+                            `Request failed: ${error}`
+                        )
+                    });
+            },
+            allowOutsideClick: () => !Swal.isLoading()
         }).then((result) => {
             if (result.isConfirmed) {
-                const email = result.value;
-
-                $.ajax({
-                    url: "/saveEmail",
-                    type: "POST",
-                    data: { email: email },
-                    success: function(response) {
-                        Swal.fire("Success!", response, "success");
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        Swal.fire("Error!", "Failed to save email", "error");
-                    }
-                });
+                Swal.fire(
+                    'Email saved!',
+                    'Your email has been successfully saved.',
+                    'success'
+                );
             }
         });
-    }
-
+    });
 </script>
+
 
 
 </body>

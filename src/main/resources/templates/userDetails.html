@@ -8,28 +8,17 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4; /* Light grey background */
+            background-color: #fff; /* Light grey background */
             color: #333; /* Dark text color */
         }
-        nav {
-            background-color: #d9d9d9; /* Light grey navigation bar */
-            padding: 10px;
-        }
-        .welcome-info {
-            color: #333; /* Dark text color for welcome message */
-            margin: 0;
-        }
-        .logout-link {
-            color: #333; /* Dark text color for logout link */
-            text-decoration: none;
-        }
+
         .container {
             margin: 20px auto;
             max-width: 800px;
             padding: 20px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            background-color: #fff; /* White background for user details container */
+            background-color: #f4f4f4; /* White background for user details container */
             box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Light shadow effect */
         }
         h1 {
@@ -50,20 +39,7 @@
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container-fluid"> <!-- Updated to container-fluid for full-width -->
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <span class="navbar-text welcome-info">Welcome <span th:text="${#authentication.name}"></span>!</span>
-            </li>
-        </ul>
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-                <a th:href="@{/logout}" class="nav-link logout-link">Logout</a>
-            </li>
-        </ul>
-    </div>
-</nav>
+<div th:replace="fragments/adminNavMenu :: header"></div>
 <div class="container">
     <h1>User Details</h1>
     <ul>

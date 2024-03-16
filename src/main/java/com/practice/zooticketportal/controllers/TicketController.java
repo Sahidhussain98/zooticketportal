@@ -4,6 +4,7 @@ package com.practice.zooticketportal.controllers;
 import com.practice.zooticketportal.dto.FeeDTO;
 import com.practice.zooticketportal.entity.*;
 import com.practice.zooticketportal.repositories.*;
+import com.practice.zooticketportal.service.AllUserService;
 import com.practice.zooticketportal.service.EstablishmentService;
 import com.practice.zooticketportal.service.TicketService;
 import net.sf.jasperreports.engine.JRException;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -42,9 +44,28 @@ public class TicketController {
     private NationalityRepo nationalityRepo;
     @Autowired
     private EstablishmentRepo establishmentRepo;
+    @Autowired
+    private AllUserService allUserService;
 
     @GetMapping("/showCheckoutForm/{establishmentId}")
-    public String showCheckoutForm(@PathVariable Long establishmentId, Model model) {
+    public String showCheckoutForm(@PathVariable Long establishmentId, Model model, Authentication authentication) {
+        // Retrieve authenticated user's username
+        String username = authentication.getName();
+
+        // Retrieve user details from the database using the username
+        List<AllUser> users = allUserService.findByUsername(username);
+
+        // Placeholder for phone number and email
+        String phoneNumber = "";
+        String email = "";
+
+        // Check if any user was found
+        if (!users.isEmpty()) {
+            AllUser user = users.get(0); // Assuming there's only one user per username
+            phoneNumber = user.getPhoneNumber();
+            email = user.getEmail();
+        }
+
         // Here, you can add logic to retrieve the establishment details
         // based on the establishmentId from the database
         Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
@@ -55,12 +76,15 @@ public class TicketController {
         // Add ticket and establishment objects to the model
         model.addAttribute("theTicket", ticket);
         model.addAttribute("establishment", establishment);
+        model.addAttribute("phoneNumber", phoneNumber);
+        model.addAttribute("email", email);
+
         // add the list of countries to the model
         List<Category> categories = categoryRepo.findAll();
         List<Nationality> nationalities1 = nationalityRepo.findAll();
         model.addAttribute("categories", categories);
         model.addAttribute("nationalities", nationalities1);
-        return "checkout-form";
+        return "ticket";
     }
 
     @PostMapping("/processCheckoutForm/{establishmentId}")
@@ -82,7 +106,7 @@ public class TicketController {
         model.addAttribute("establishment", establishment);
 
         // Log the input data
-        System.out.println("theTicket: " + theTicket.getFirstName() + " " + theTicket.getLastName());
+//        System.out.println("theTicket: " + theTicket.getname() + " " + theTicket.ame());
 
         return "checkoutConfirmation-form";
     }
@@ -113,7 +137,7 @@ public class TicketController {
         model.addAttribute("nationalities", nationalities1);
 
 
-        return "checkout-form";
+        return "ticket";
     }
 
     @PostMapping("/processEditForm")
@@ -122,8 +146,8 @@ public class TicketController {
         Ticket existingTicket = ticketRepository.findById(updatedTicket.getId()).orElseThrow(() -> new RuntimeException("Ticket not found"));
 
         // Update the existing ticket with new details
-        existingTicket.setFirstName(updatedTicket.getFirstName());
-        existingTicket.setLastName(updatedTicket.getLastName());
+//        existingTicket.setName(updatedTicket.getname());
+//        existingTicket.setLastName(updatedTicket.getLastName());
 //        existingTicket.setCategory(updatedTicket.getCategory());
 //        existingTicket.setCountry(updatedTicket.getCountry());
         existingTicket.setDateTime(updatedTicket.getDateTime());

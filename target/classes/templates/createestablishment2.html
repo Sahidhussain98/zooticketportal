@@ -37,12 +37,13 @@
         .submit-btn:hover {
             background-color: #0056b3;
         }
+
         /* Customize the delete button */
         .removeFields {
             border-radius: 5px; /* Adjust border radius to make the button rounder */
             background-color: #dc3545; /* Change background color */
             color: #fff; /* Change text color */
-            padding: 8 px 16px; /* Adjust padding for better appearance */
+            padding: 8px 16px; /* Adjust padding for better appearance */
             margin-left: 10px; /* Adjust margin as needed */
             border: none; /* Remove default button border */
         }
@@ -60,69 +61,109 @@
 
         <div th:if="${establishment != null}">
 
-            <div>
-                <p>Establishment Name: <span th:text="${establishment.name}"></span></p>
-                <p>Establishment Village: <span th:text="${establishment.village.villageName}"></span></p>
-                <!-- Add more details here as needed -->
-            </div>
+            <!-- Establishment Details Section -->
+
+            <!-- Establishment Form (Part 1) -->
+
+            <!-- Non-Working Days Section -->
             <form th:action="@{/establishments/save2}" th:object="${establishment}" method="POST"
                   enctype="multipart/form-data" id="establishmentForm2" onsubmit="return validateForm()">
+                <!-- Hidden input for establishmentId -->
                 <input type="hidden" name="establishmentId" th:value="${establishment.establishmentId}" />
+
+                <!-- Establishment Address Field -->
                 <fieldset>
                     <legend>Part 1: Establishment Information</legend>
-                <div class="form-container">
-                    <div class="form-group">
-                        <label>Establishment Address<span class="text-danger">*</span></label>
-                        <input type="text" name="address" th:field="*{address}" class="form-control" placeholder="Enter Establishment Address" required/>
-                    </div>
-                    <div class="form-group">
-                        <label>Establishment Opening Time<span class="text-danger">*</span></label>
-                        <input type="time" name="openingTime" th:field="*{openingTime}" class="form-control" required/>
-                    </div>
-                    <div class="form-group">
-                        <label>Establishment Closing Time<span class="text-danger">*</span></label>
-                        <input type="time" name="closingTime" th:field="*{closingTime}" class="form-control" required/>
-                    </div>
-                    <div class="form-group">
-                        <label>Upload Additional Images<span class="text-danger">*</span></label>
-                        <input type="file" name="image" class="form-control-file" />
-                    </div>
-                </div>
-                </fieldset>
-                <fieldset id="additionalInfo">
-                <legend>Part 2: Additional Information</legend>
                     <div class="form-container">
-                     <div class="form-row" id="fieldSet1">
-                     <div class="form-group col-md-4">
-                        <label for="nationality">Nationality<span class="text-danger">*</span></label>
-                        <select id="nationality" name="nationalityId" class="form-control" required>
-                            <option value="">--SELECT NATIONALITY--</option>
-                            <option th:each="nationality : ${nationalities}" th:value="${nationality.nationalityId}"
-                                    th:text="${nationality.nationalityType}"></option>
-                        </select>
-                      </div>
-                      <div class="form-group col-md-4">
-                        <label for="category">Category<span class="text-danger">*</span></label>
-                        <select id="category" name="categoryId" class="form-control" required>
-                            <option value="">--SELECT CATEGORY--</option>
-                            <option th:each="category : ${categories}" th:value="${category.categoryId}"
-                                    th:text="${category.categoryName}"></option>
-                        </select>
-                       </div>
-                      <div class="form-group col-md-3">
-                        <label for="entryFee">Entry Fee<span class="text-danger">*</span></label>
-                        <input type="number" step="1" class="form-control" id="entryFee" name="entryFee"
-                               placeholder="Enter Entry Fee" required>
-                         </div>
-                      </div>
-                        <div class="button-group">
-                        <button type="button" class="btn btn-primary" id="addFields">Add</button>
+                        <!-- Establishment Address -->
+                        <div class="form-group">
+                            <label>Establishment Address<span class="text-danger">*</span></label>
+                            <input type="text" name="address" th:field="*{address}" class="form-control" placeholder="Enter Establishment Address" required/>
+                        </div>
+                        <!-- Establishment Opening Time -->
+                        <div class="form-group">
+                            <label>Establishment Opening Time<span class="text-danger">*</span></label>
+                            <input type="time" name="openingTime" th:field="*{openingTime}" class="form-control" required/>
+                        </div>
+                        <!-- Establishment Closing Time -->
+                        <div class="form-group">
+                            <label>Establishment Closing Time<span class="text-danger">*</span></label>
+                            <input type="time" name="closingTime" th:field="*{closingTime}" class="form-control" required/>
+                        </div>
+                        <!-- Upload Additional Images -->
+                        <div class="form-group">
+                            <label>Upload Additional Images<span class="text-danger">*</span></label>
+                            <input type="file" name="image" class="form-control-file" />
                         </div>
                     </div>
-
                 </fieldset>
+
+                <!-- Additional Information Section -->
+                <fieldset id="additionalInfo">
+                    <legend>Part 2: Additional Information</legend>
+                    <div class="form-container">
+                        <!-- Nationality, Category, Entry Fee Fields -->
+                        <div class="form-row" id="fieldSet1">
+                            <div class="form-group col-md-4">
+                                <label for="nationality">Nationality<span class="text-danger">*</span></label>
+                                <select id="nationality" name="nationalityId" class="form-control" required>
+                                    <option value="">--SELECT NATIONALITY--</option>
+                                    <option th:each="nationality : ${nationalities}" th:value="${nationality.nationalityId}"
+                                            th:text="${nationality.nationalityType}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="category">Category<span class="text-danger">*</span></label>
+                                <select id="category" name="categoryId" class="form-control" required>
+                                    <option value="">--SELECT CATEGORY--</option>
+                                    <option th:each="category : ${categories}" th:value="${category.categoryId}"
+                                            th:text="${category.categoryName}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label for="entryFee">Entry Fee<span class="text-danger">*</span></label>
+                                <input type="number" step="1" class="form-control" id="entryFee" name="entryFee"
+                                       placeholder="Enter Entry Fee" required>
+                            </div>
+                        </div>
+                        <!-- Add Button for Additional Fields -->
+                        <div class="button-group">
+                            <button type="button" class="btn btn-primary" id="addFields">Add</button>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Non-Working Days Section -->
+                <!-- Non-Working Days Section -->
+                <fieldset id="nonWorkingDays">
+                    <legend>Part 3: Non-Working Days</legend>
+                    <div class="form-container">
+                        <!-- Non-Working Days Fields -->
+                        <div id="nonWorkingDatesContainer">
+                            <!-- Non-Working Days Field (initial) -->
+                            <div class="form-group">
+                                <label>Non-Working Date<span class="text-danger">*</span></label>
+                                <input type="date" name="nonWorkingDate[]" class="form-control" required multiple />
+
+                            </div>
+                            <!-- Reason Field (initial) -->
+                            <div class="form-group">
+                                <label>Reason<span class="text-danger">*</span></label>
+                                <input type="text" name="reason[]" class="form-control" placeholder="Enter Reason" required />
+                            </div>
+                        </div>
+                        <!-- Add Button to Add More Non-Working Dates -->
+                        <div class="button-group">
+                            <button type="button" class="btn btn-primary" id="addNonWorkingDate">Add Non-Working Date</button>
+                        </div>
+                    </div>
+                </fieldset>
+
+
+                <!-- Submit Button -->
                 <button type="submit" class="submit-btn">Submit</button>
             </form>
+
         </div>
         <div th:if="${establishment == null}">
             <p>No establishment found.</p>
@@ -194,6 +235,18 @@
         return isValid;
     }
 
+    // JavaScript to Add Non-Working Date Fields Dynamically
+    $(document).ready(function() {
+        $("#addNonWorkingDate").click(function() {
+            var newField = $('<div class="form-group"><label>Non-Working Date<span class="text-danger">*</span></label><input type="date" name="nonWorkingDate[]" class="form-control" required /></div>');
+            var deleteButton = $('<button type="button" class="btn btn-danger removeNonWorkingDate">Delete</button>');
+            deleteButton.click(function() {
+                $(this).parent().remove();
+            });
+            newField.append(deleteButton);
+            $("#nonWorkingDatesContainer").append(newField);
+        });
+    });
 
 </script>
 </body>

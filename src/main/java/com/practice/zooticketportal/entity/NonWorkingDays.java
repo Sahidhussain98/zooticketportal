@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -12,7 +13,7 @@ public class NonWorkingDays {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long nonWorkingDayId;
-    private LocalDateTime nonWorkingDate;
+    private LocalDate nonWorkingDate;
     private String reason;
     private LocalDateTime enteredOn;
     private String enteredBy;
@@ -28,11 +29,11 @@ public class NonWorkingDays {
         this.nonWorkingDayId = nonWorkingDayId;
     }
 
-    public LocalDateTime getNonWorkingDate() {
+    public LocalDate getNonWorkingDate() {
         return nonWorkingDate;
     }
 
-    public void setNonWorkingDate(LocalDateTime nonWorkingDate) {
+    public void setNonWorkingDate(LocalDate nonWorkingDate) {
         this.nonWorkingDate = nonWorkingDate;
     }
 

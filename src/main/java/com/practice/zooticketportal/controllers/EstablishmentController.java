@@ -23,12 +23,14 @@ import java.io.IOException;
 import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/establishments")
@@ -62,6 +64,8 @@ public class EstablishmentController {
 
     @Autowired
     private FeesRepo feesRepo;
+    @Autowired
+    private NonWorkingDaysRepo nonWorkingDaysRepo;
 
     @Autowired
     private EstablishmentRepo establishmentRepo;
@@ -178,6 +182,8 @@ public class EstablishmentController {
                                      @RequestParam("nationalityId") List<Long> nationalityIds,
                                      @RequestParam("categoryId") List<Long> categoryIds,
                                      @RequestParam("entryFee") List<Double> entryFees,
+                                     @RequestParam("nonWorkingDate") LocalDate nonWorkingDate,
+                                     @RequestParam("reason") String reason,
                                      Model model) {
         try {
             // Fetch the existing establishment object from the database
@@ -201,6 +207,14 @@ public class EstablishmentController {
             // Save the image and get its imageId
             Long imageId = storageService.uploadImage(imageFile, establishmentId); // Pass the establishment ID to link the image with the establishment
 
+
+            NonWorkingDays nonWorkingDay = new NonWorkingDays();
+            nonWorkingDay.setNonWorkingDate(nonWorkingDate);
+            nonWorkingDay.setReason(reason);
+            nonWorkingDay.setEstablishment(establishment);
+
+            nonWorkingDaysRepo.save(nonWorkingDay);
+            //Save Fees
             for (int i = 0; i < nationalityIds.size(); i++) {
                 Long nationalityId = nationalityIds.get(i);
                 Long categoryId = categoryIds.get(i);

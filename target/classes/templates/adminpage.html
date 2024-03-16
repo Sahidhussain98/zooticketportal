@@ -80,27 +80,27 @@
     }
 
     // Call this function after successful login to check user details and show the prompt if needed
-    function enterUserDetailsPromptAfterLogin() {
-        // Send AJAX request to check if user details already exist
-        $.ajax({
-            type: 'GET',
-            url: '/checkUserDetails',
-            success: function (response) {
-                if (response.userDetailsExist === false) {
-                    // User details not found, show the prompt for entering additional details
-                    enterUserDetails();
-                }
-            },
-            error: function (xhr, status, error) {
-                // Handle errors appropriately
-                console.error('AJAX error: ' + xhr.status + ' ' + xhr.statusText);
-                console.error('Error: ' + error);
-            }
-        });
-    }
-
-    // Call the function after login
-    enterUserDetailsPromptAfterLogin();
+    // function enterUserDetailsPromptAfterLogin() {
+    //     // Send AJAX request to check if user details already exist
+    //     $.ajax({
+    //         type: 'GET',
+    //         url: '/checkUserDetails',
+    //         success: function (response) {
+    //             if (response.userDetailsExist === false) {
+    //                 // User details not found, show the prompt for entering additional details
+    //                 enterUserDetails();
+    //             }
+    //         },
+    //         error: function (xhr, status, error) {
+    //             // Handle errors appropriately
+    //             console.error('AJAX error: ' + xhr.status + ' ' + xhr.statusText);
+    //             console.error('Error: ' + error);
+    //         }
+    //     });
+    // }
+    //
+    // // Call the function after login
+    // enterUserDetailsPromptAfterLogin();
 </script>
 
 </body>
