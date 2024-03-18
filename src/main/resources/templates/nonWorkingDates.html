@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Non-Working Days</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
+    <style>
+        /* Custom Styles */
+        body {
+            background-color: #fff; /* Set background color */
+            padding: 20px;
+        }
+
+        .form-container {
+            max-width: 1000px;
+            margin: auto;
+            background: #f0f0f0;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.1);
+        }
+        .container{
+            margin-top: 20px;
+        }
+
+        /* Customize the delete button */
+        .removeFields {
+            border-radius: 5px; /* Adjust border radius to make the button rounder */
+            background-color: #dc3545; /* Change background color */
+            color: #fff; /* Change text color */
+            padding: 8px 16px; /* Adjust padding for better appearance */
+            margin-left: 10px; /* Adjust margin as needed */
+            margin-right: 10px; /* Add space between the delete button and the last field */
+            border: none; /* Remove default button border */
+        }
+
+        .removeFields:hover {
+            background-color: #c82333; /* Change background color on hover */
+        }
+
+    </style>
+</head>
+<body>
+<div th:replace="fragments/adminNavMenu :: header"></div>
+<div class="container">
+    <div class="form-container">
+        <h1 class="mb-4">Add Non-Working Dates</h1>
+
+        <form action="/establishments/nonworkingdates/save" method="POST" id="nonWorkingDatesForm">
+            <input type="hidden" name="establishmentId" value="{{ establishmentId }}"> <!-- Replace with actual establishment ID -->
+
+            <!-- First Set of Fields -->
+            <div class="form-group" data-set="1">
+                <label for="nonWorkingDate1">Non-Working Date</label>
+                <input type="date" class="form-control" id="nonWorkingDate1" name="nonWorkingDate[]" required>
+                <label for="reason1">Reason</label>
+                <input type="text" class="form-control" id="reason1" name="reason[]" required>
+            </div>
+            <!-- Add Button -->
+            <div class="text-left">
+                <button type="button" class="btn btn-success" id="addButton">Add</button>
+            </div>
+
+            <!-- Additional Fields will be Appended Here -->
+            <div id="additionalFields"></div>
+
+
+            <!-- Submit Button -->
+            <div class="text-right mt-4">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    $(document).ready(function() {
+        var counter = 1; // Initialize counter for dynamically added fields
+
+        // Function to add new non-working date and reason fields
+        $("#addButton").click(function() {
+            counter++; // Increment the counter
+            var newFields = $("#additionalFields").append(`
+                <div class="form-group" data-set="${counter}">
+                    <label for="nonWorkingDate${counter}">Non-Working Date</label>
+                    <input type="date" class="form-control non-working-date" id="nonWorkingDate${counter}" name="nonWorkingDate[]" required>
+                    <label for="reason${counter}">Reason</label>
+                    <input type="text" class="form-control" id="reason${counter}" name="reason[]" required>
+                    <br>
+                    <button type="button" class="btn btn-danger removeFields" data-set="${counter}">Delete</button>
+                </div>
+            `);
+            // Disable selected date in all date pickers
+            $(".non-working-date").each(function() {
+                var selectedDate = $(this).val();
+                $(this).siblings(".non-working-date").find(`option[value='${selectedDate}']`).prop('disabled', true);
+            });
+        });
+
+        // Function to handle deletion of dynamically added fields
+        $(document).on("click", ".removeFields", function() {
+            var dataSet = $(this).attr('data-set');
+            var removedDate = $(`.form-group[data-set="${dataSet}"]`).find(".non-working-date").val();
+            $(`.form-group[data-set="${dataSet}"]`).remove(); // Remove the corresponding set of fields
+            // Enable the removed date again
+            $(".non-working-date").each(function() {
+                $(this).find(`option[value='${removedDate}']`).prop('disabled', false);
+            });
+        });
+    });
+</script>
+</body>
+</html>

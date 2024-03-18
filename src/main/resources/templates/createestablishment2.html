@@ -32,6 +32,7 @@
             padding: 10px 20px;
             cursor: pointer;
             border-radius: 5px;
+            margin-top: 20px;
         }
 
         .submit-btn:hover {
@@ -65,7 +66,6 @@
 
             <!-- Establishment Form (Part 1) -->
 
-            <!-- Non-Working Days Section -->
             <form th:action="@{/establishments/save2}" th:object="${establishment}" method="POST"
                   enctype="multipart/form-data" id="establishmentForm2" onsubmit="return validateForm()">
                 <!-- Hidden input for establishmentId -->
@@ -132,33 +132,6 @@
                         </div>
                     </div>
                 </fieldset>
-
-                <!-- Non-Working Days Section -->
-                <!-- Non-Working Days Section -->
-                <fieldset id="nonWorkingDays">
-                    <legend>Part 3: Non-Working Days</legend>
-                    <div class="form-container">
-                        <!-- Non-Working Days Fields -->
-                        <div id="nonWorkingDatesContainer">
-                            <!-- Non-Working Days Field (initial) -->
-                            <div class="form-group">
-                                <label>Non-Working Date<span class="text-danger">*</span></label>
-                                <input type="date" name="nonWorkingDate[]" class="form-control" required multiple />
-
-                            </div>
-                            <!-- Reason Field (initial) -->
-                            <div class="form-group">
-                                <label>Reason<span class="text-danger">*</span></label>
-                                <input type="text" name="reason[]" class="form-control" placeholder="Enter Reason" required />
-                            </div>
-                        </div>
-                        <!-- Add Button to Add More Non-Working Dates -->
-                        <div class="button-group">
-                            <button type="button" class="btn btn-primary" id="addNonWorkingDate">Add Non-Working Date</button>
-                        </div>
-                    </div>
-                </fieldset>
-
 
                 <!-- Submit Button -->
                 <button type="submit" class="submit-btn">Submit</button>
@@ -234,19 +207,6 @@
 
         return isValid;
     }
-
-    // JavaScript to Add Non-Working Date Fields Dynamically
-    $(document).ready(function() {
-        $("#addNonWorkingDate").click(function() {
-            var newField = $('<div class="form-group"><label>Non-Working Date<span class="text-danger">*</span></label><input type="date" name="nonWorkingDate[]" class="form-control" required /></div>');
-            var deleteButton = $('<button type="button" class="btn btn-danger removeNonWorkingDate">Delete</button>');
-            deleteButton.click(function() {
-                $(this).parent().remove();
-            });
-            newField.append(deleteButton);
-            $("#nonWorkingDatesContainer").append(newField);
-        });
-    });
 
 </script>
 </body>

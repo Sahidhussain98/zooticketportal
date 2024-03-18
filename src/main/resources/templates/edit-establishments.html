@@ -123,6 +123,10 @@
                 </div>
                 <div><h6>If additional Data is not already submitted click on the button below </h6></div>
                 <button type="button" class="btn btn-primary" onclick="showEstablishmentDetails()">Add Additional Establishment Details</button>
+                <!-- Button for adding NonWorking Dates -->
+                <br>
+                <button type="button" class="btn btn-info mt-3" onclick="addNonWorkingDates()">Add NonWorking Dates</button>
+            </div>
             </div>
         </div>
     </div>
@@ -154,41 +158,6 @@
         var establishmentId = $("input[name='establishmentId']").val();
         return establishmentId;
     }
-
-    // var originalDatetimeValues = [];
-    //
-    // function storeOriginalDatetimeValues() {
-    //     var datetimeInputs = document.querySelectorAll(".datetime-input");
-    //     datetimeInputs.forEach(function(input) {
-    //         originalDatetimeValues.push(input.value);
-    //     });
-    // }
-    //
-    // function restoreOriginalDatetimeValues() {
-    //     var datetimeInputs = document.querySelectorAll(".datetime-input");
-    //     datetimeInputs.forEach(function(input, index) {
-    //         input.value = originalDatetimeValues[index];
-    //     });
-    //     // Clear the array storing original values
-    //     originalDatetimeValues = [];
-    // }
-
-
-    // Function to switch input type from text to datetime-local
-    // function switchToDateTimePicker() {
-    //     var datetimeInputs = document.querySelectorAll(".datetime-input");
-    //     datetimeInputs.forEach(function(input) {
-    //         input.type = "datetime-local";
-    //     });
-    // }
-
-    // Function to switch input type from datetime-local to text
-    // function switchToText() {
-    //     var datetimeInputs = document.querySelectorAll(".datetime-input");
-    //     datetimeInputs.forEach(function(input) {
-    //         input.type = "text";
-    //     });
-    // }
 
 
     document.getElementById("editButton").addEventListener("click", function() {
@@ -227,6 +196,24 @@
             }
         });
     });
+    //For Adding NonWorking Dates
+    // function addNonWorkingDates() {
+    //     // Redirect to the page where NonWorking Dates can be entered
+    //     window.location.href = '/establishments/nonworkingdates';
+    // }
+    function addNonWorkingDates() {
+        // Retrieve establishment ID from the input field
+        var establishmentId = extractEstablishmentIdFromHTML();
+
+        // Make sure establishment ID is valid
+        if (establishmentId) {
+            // Redirect to the "Add NonWorking Dates" page
+            window.location.href = '/establishments/nonworkingdates?establishmentId=' + establishmentId;
+        } else {
+            console.error("Error: Establishment ID not found in input field");
+        }
+    }
+
 
 </script>
 

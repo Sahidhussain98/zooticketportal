@@ -209,34 +209,42 @@ public class TicketController {
 @Autowired
 private FeesRepo feesRepo;
     @GetMapping("/fetchFee")
-    @ResponseBody
-    public ResponseEntity<?> fetchFee(@RequestParam("nationalityId") Long nationalityId,
-                                      @RequestParam("categoryId") Long categoryId,
+    public ResponseEntity<?> fetchFee(@RequestParam("nationalityId") List<Long> nationalityIds,
+                                      @RequestParam("categoryId") List<Long> categoryIds,
                                       @RequestParam("establishmentId") Long establishmentId,
-                                      @RequestParam("totalPersons") Long totalPersons) {
+                                      @RequestParam("numberOfPeople") List<Long> numberOfPeople) {
         System.out.println("-----------");
 
-        // Query the database to retrieve the entry fee based on the provided nationality ID, category ID, and establishment ID
-        List<Fees> fee = feesRepo.findByNationalityNationalityIdAndCategoryCategoryIdAndEstablishmentEstablishmentId(nationalityId, categoryId, establishmentId);
+        // Initialize total fees
+        double totalFees = 0.0;
 
-        // Check if the fee is retrieved successfully
-        if (fee != null) {
-            System.out.println("inside if");
-            // Calculate the total fees based on the entry fee and the total number of persons
-            double totalFees = 0.0;
-            for (Fees fees : fee) {
-                totalFees += fees.getEntryFee(); // Add the entry fee for each person
+        // Iterate through each combination of nationality, category, and number of people
+        for (int i = 0; i < nationalityIds.size(); i++) {
+            Long nationalityId = nationalityIds.get(i);
+            Long categoryId = categoryIds.get(i);
+            Long people = numberOfPeople.get(i);
+
+            // Query the database to retrieve the entry fee based on the provided nationality ID, category ID, and establishment ID
+            List<Fees> fees = feesRepo.findByNationalityNationalityIdAndCategoryCategoryIdAndEstablishmentEstablishmentId(nationalityId, categoryId, establishmentId);
+
+            // Check if the fee is retrieved successfully
+            if (fees != null) {
+                System.out.println("inside if");
+                // Calculate the total fees for this combination based on the entry fee and the number of people
+                for (Fees fee : fees) {
+                    totalFees += fee.getEntryFee() * people; // Multiply by the number of people
+                }
+            } else {
+                // If the fee cannot be retrieved, return an error response
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
-            totalFees *= totalPersons; // Multiply by the total number of persons
-
-            // Return the total fees amount in the response body
-            return ResponseEntity.ok(totalFees);
-        } else {
-            // If the fee cannot be retrieved, return an error response
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+
+        // Return the total fees amount in the response body
+        return ResponseEntity.ok(totalFees);
     }
 }
+
 
 
 

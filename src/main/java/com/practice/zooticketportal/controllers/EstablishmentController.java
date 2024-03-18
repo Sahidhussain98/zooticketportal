@@ -152,6 +152,12 @@ public class EstablishmentController {
 //        return "redirect:/establishments"; // Redirect to the home page or any other appropriate page
     }
 
+    @GetMapping("/nonworkingdates")
+    public String showAddNonWorkingDatesPage() {
+        // Return the name of the HTML template for the "Add NonWorking Dates" page
+        return "nonWorkingDates"; // Assuming "addNonWorkingDates.html" is the name of your HTML template
+    }
+
     @GetMapping("/show")
     public String showEstablishmentDetails(@RequestParam("id") Long establishmentId, Model model) {
         Establishment establishment = establishmentRepo.findById(establishmentId).orElse(null);
@@ -182,8 +188,6 @@ public class EstablishmentController {
                                      @RequestParam("nationalityId") List<Long> nationalityIds,
                                      @RequestParam("categoryId") List<Long> categoryIds,
                                      @RequestParam("entryFee") List<Double> entryFees,
-                                     @RequestParam("nonWorkingDate") LocalDate nonWorkingDate,
-                                     @RequestParam("reason") String reason,
                                      Model model) {
         try {
             // Fetch the existing establishment object from the database
@@ -207,13 +211,6 @@ public class EstablishmentController {
             // Save the image and get its imageId
             Long imageId = storageService.uploadImage(imageFile, establishmentId); // Pass the establishment ID to link the image with the establishment
 
-
-            NonWorkingDays nonWorkingDay = new NonWorkingDays();
-            nonWorkingDay.setNonWorkingDate(nonWorkingDate);
-            nonWorkingDay.setReason(reason);
-            nonWorkingDay.setEstablishment(establishment);
-
-            nonWorkingDaysRepo.save(nonWorkingDay);
             //Save Fees
             for (int i = 0; i < nationalityIds.size(); i++) {
                 Long nationalityId = nationalityIds.get(i);

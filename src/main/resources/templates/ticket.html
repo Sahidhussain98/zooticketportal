@@ -151,7 +151,8 @@
                 </div>
                 <div class="form-group1">
                     <label for="numberOfPeople">No. of People:<span class="text-danger">*</span></label>
-                    <input type="number" id="numberOfPeople" class="number-of-people" required min="1" />
+                    <input type="number" id="numberOfPeople" class="number-of-people" required min="1" oninput="validateNumberOfPeople()"/>
+
                 </div>
 
             </div>
@@ -167,7 +168,7 @@
             <div class="form-row">
                 <div class="form-group-half">
                     <label for="totalPersons">Total Persons:</label>
-                    <input type="number" id="totalPersons" th:field="*{totalPersons}" required min="1" onchange="calculateFees()"/>
+                    <input type="number" id="totalPersons" th:field="*{totalPersons}" required min="1" readonly onchange="calculateFees()"/>
                 </div>
                 <div class="form-group-half">
                     <label for="totalCameras">Total Cameras:</label>
@@ -193,26 +194,35 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
+    //Fees calculation based on different nationality and categories
     function calculateFees() {
         var establishmentId = $('#establishmentId').val();
-        var nationalityId = $('#nationalities').val();
-        var categoryId = $('#categories').val();
-        var numberOfPersons = parseInt($('#totalPersons').val());
+        var nationalityIds = [];
+        var categoryIds = [];
+        var numberOfPeople = [];
 
-        //
+        // Iterate through each selection row
+        $(".form-row").each(function(index) {
+            var nationalityId = $(this).find("#nationalities").val();
+            var categoryId = $(this).find("#categories").val();
+            var people = parseInt($(this).find("#numberOfPeople").val());
 
-        // Construct the URL with query parameters
-        var url = '/fetchFee';
+            // Add nationality ID, category ID, and number of people to respective arrays
+            nationalityIds.push(nationalityId);
+            categoryIds.push(categoryId);
+            numberOfPeople.push(people);
+        });
 
-        // Perform AJAX call to fetch fees
+        // Perform AJAX call to fetch fees for each combination
         $.ajax({
-            url: url,
+            url: '/fetchFee',
             type: 'GET',
+            traditional: true, // Ensure that arrays are serialized properly
             data: {
-                nationalityId: nationalityId,
-                categoryId: categoryId,
+                nationalityId: nationalityIds,
+                categoryId: categoryIds,
                 establishmentId: establishmentId,
-                totalPersons: numberOfPersons
+                numberOfPeople: numberOfPeople
             },
             success: function(data) {
                 console.log("AJAX request successful.");
@@ -223,6 +233,7 @@
             }
         });
     }
+    //For natinality and category and totalperson calculation
     $(document).ready(function() {
         var counter = 1;
 
@@ -253,6 +264,9 @@
         $(document).on("click", ".removeFields", function() {
             $(this).closest('.form-row').remove(); // Remove the closest form-row
             counter--;
+
+            // Recalculate total persons when removing a row
+            calculateTotalPersons();
         });
 
         // Check for existing combinations when selecting nationality and category
@@ -274,8 +288,43 @@
                 alert("The selected combination already exists.");
                 $(this).val(""); // Reset the select value
             }
+
+            // Recalculate total persons when changing a selection
+            calculateTotalPersons();
+        });
+
+        // Calculate total persons
+        function calculateTotalPersons() {
+            var totalPersons = 0;
+
+            // Sum up the number of people in each row
+            $(".number-of-people").each(function() {
+                var numberOfPeople = parseInt($(this).val());
+                if (!isNaN(numberOfPeople)) {
+                    totalPersons += numberOfPeople;
+                }
+            });
+
+            // Update the total persons field
+            $("#totalPersons").val(totalPersons);
+        }
+
+        // Bind event listener to number of people input
+        $(document).on("input", ".number-of-people", function() {
+            calculateTotalPersons();
         });
     });
+
+    function validateNumberOfPeople() {
+        var numberOfPeople = document.getElementById('numberOfPeople').value;
+
+        // Check if the number of people is not empty and not equal to 0
+        if (numberOfPeople !== "" && numberOfPeople !== "0") {
+            calculateTotalPersons(); // Calculate total persons if a valid value is entered
+        } else {
+            document.getElementById('totalPersons').value = ""; // Clear total persons if the number of people is empty or 0
+        }
+    }
 </script>
 
 </body>

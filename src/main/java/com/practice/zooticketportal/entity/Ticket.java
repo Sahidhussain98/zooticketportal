@@ -21,6 +21,7 @@ public class Ticket {
 
     private String email;
     private Long phoneNumber;
+    private Long numberOfPeople;
     private Long totalPersons;
     private Long totalCameras;
     private String totalAmount;
@@ -41,6 +42,14 @@ public class Ticket {
 
     public Ticket(String establishmentName, int serialNumber) {
         this.bookingId = establishmentName.replaceAll("\\s+", "") + "-" + serialNumber;
+    }
+
+    public Long getNumberOfPeople() {
+        return numberOfPeople;
+    }
+
+    public void setNoOfPeople(Long numberOfPeople) {
+        this.numberOfPeople = numberOfPeople;
     }
 
     public Long getId() {
