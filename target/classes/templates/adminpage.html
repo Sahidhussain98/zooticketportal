@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Welcome User</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="py-4">
+<div th:replace="fragments/adminNavMenu :: header"></div>
+
+<!-- Page Content -->
+<div class="container">
+    <section>
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-sm-8 col-xs-12">
+                <div class="card shadow p-3 mb-5 bg-white rounded">
+                    <div class="card-body py-xl-5">
+                        <div class="text-center">
+                            <h4 class="text-uppercase p-color">Welcome to the Admin Page</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Include Bootstrap JS (popper.js included within Bootstrap) -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
+    // Call this function after successful login to show the prompt for entering additional details
+    function enterUserDetails() {
+        Swal.fire({
+            title: 'Enter User Details',
+            html: '<input id="swal-username" class="swal2-input" placeholder="Username">' +
+                '<input id="swal-email" class="swal2-input" placeholder="Email">',
+            showCancelButton: true,
+            confirmButtonText: 'OK',
+            cancelButtonText: 'Cancel',
+            preConfirm: function () {
+                // Retrieve entered values  `
+                var username = document.getElementById('swal-username').value;
+                var email = document.getElementById('swal-email').value;
+                // Here, you can perform validation on username and email if needed
+
+                // If both fields are non-empty, save the details
+                if (username && email) {
+                    // Send AJAX request to save details to the server
+                    $.ajax({
+                        type: 'POST',
+                        url: '/saveUserDetails',
+                        data: { username: username, email: email },
+                        success: function (response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Additional Details Saved!',
+                                text: 'You can now proceed.',
+                                onClose: function () {
+                                    // Redirect user to home page or any other page
+                                    window.location.href = window.location.href;
+                                }
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            // Handle errors appropriately
+                            console.error('AJAX error: ' + xhr.status + ' ' + xhr.statusText);
+                            console.error('Error: ' + error);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    // Call this function after successful login to check user details and show the prompt if needed
+    // function enterUserDetailsPromptAfterLogin() {
+    //     // Send AJAX request to check if user details already exist
+    //     $.ajax({
+    //         type: 'GET',
+    //         url: '/checkUserDetails',
+    //         success: function (response) {
+    //             if (response.userDetailsExist === false) {
+    //                 // User details not found, show the prompt for entering additional details
+    //                 enterUserDetails();
+    //             }
+    //         },
+    //         error: function (xhr, status, error) {
+    //             // Handle errors appropriately
+    //             console.error('AJAX error: ' + xhr.status + ' ' + xhr.statusText);
+    //             console.error('Error: ' + error);
+    //         }
+    //     });
+    // }
+    //
+    // // Call the function after login
+    // enterUserDetailsPromptAfterLogin();
+</script>
+
+</body>
+
+</html>

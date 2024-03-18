@@ -14,11 +14,12 @@ public class  AllUser {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long allUserId;
     private String username;
-    private String email;
     private String password;
-    private String phoneNumber;
+    private Long phoneNumber;
     private Date onCreate;
     private Date onUpdate;
+
+    private String email;
 
     @ManyToOne
     @JoinColumn(name = "establishment_id")
@@ -26,7 +27,7 @@ public class  AllUser {
 
     @OneToMany(mappedBy = "user")
     private List<Ticket> tickets = new ArrayList<>();
-//    @Transient
+    //    @Transient
 //    private Long otp;
 //
 //    @Transient
@@ -78,11 +79,17 @@ public class  AllUser {
     public AllUser() {
     }
 
+    public String getEmail() {
+        return email;
+    }
 
-    public AllUser(Long allUserId, String username, String email, String password, String phoneNumber, Date onCreate, Date onUpdate, Establishment establishment, List<Ticket> tickets, Set<Roles> roles) {
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public AllUser(Long allUserId, String username, String password, Long phoneNumber, Date onCreate, Date onUpdate, Establishment establishment, List<Ticket> tickets, Set<Roles> roles, String email) {
         this.allUserId = allUserId;
         this.username = username;
-        this.email = email;
         this.password = password;
         this.phoneNumber = phoneNumber;
         this.onCreate = onCreate;
@@ -90,6 +97,7 @@ public class  AllUser {
         this.establishment = establishment;
         this.tickets = tickets;
         this.roles = roles;
+        this.email = email;
     }
 
     public void setAllUserId(Long allUserId) {
@@ -104,14 +112,6 @@ public class  AllUser {
         this.username = username;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getPassword() {
         return password;
     }
@@ -120,11 +120,11 @@ public class  AllUser {
         this.password = password;
     }
 
-    public String getPhoneNumber() {
+    public Long getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
+    public void setPhoneNumber(Long phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
@@ -167,21 +167,4 @@ public class  AllUser {
     public void setRoles(Set<Roles> roles) {
         this.roles = roles;
     }
-
-    @Override
-    public String toString() {
-        return "AllUser{" +
-                "allUserId=" + allUserId +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", phoneNumber=" + phoneNumber +
-                ", onCreate=" + onCreate +
-                ", onUpdate=" + onUpdate +
-                ", establishment=" + establishment +
-                ", tickets=" + tickets +
-                ", roles=" + roles +
-                '}';
-    }
-
-
 }

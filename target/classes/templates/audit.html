@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Audit Data</title>
+  <!-- Include Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+
+    .navbar {
+      background-color: #ffffff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-brand {
+      font-weight: bold;
+    }
+
+    .card {
+      border: none;
+    }
+
+    .p-color {
+      color: #007bff;
+    }
+
+    #auditSection {
+      margin-top: 20px;
+    }
+
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    th {
+      background-color: #007bff;
+      color: #ffffff;
+    }
+  </style>
+</head>
+
+<body class="py-4">
+<div th:replace="fragments/adminNavMenu :: header"></div>
+
+
+<!-- Page Content -->
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-sm-8 col-xs-12">
+      <div class="card shadow p-3 mb-5 bg-white rounded">
+        <div class="card-body py-xl-5">
+          <div class="text-center">
+            <h4 class="text-uppercase p-color">Welcome to the Admin Page</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audit Section -->
+  <div id="auditSection" th:style="${#lists.isEmpty(auditList) ? 'display: none;' : ''}">
+    <h3 class="text-center">Audit Logs</h3>
+    <table class="table">
+      <thead>
+      <tr>
+        <th scope="col">Action</th>
+        <th scope="col">Entity</th>
+        <th scope="col">Entity ID</th>
+        <th scope="col">Username</th>
+        <th scope="col">Timestamp</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="audit : ${auditList}">
+        <td th:text="${audit.action}"></td>
+        <td th:text="${audit.entityName}"></td>
+        <td th:text="${audit.entityId}"></td>
+        <td th:text="${audit.username}"></td>
+        <td th:text="${audit.timestamp}"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Include Bootstrap JS (popper.js included within Bootstrap) -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

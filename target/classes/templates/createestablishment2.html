@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Zoo Reservation System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
+    <style>
+        /* Custom Styles */
+        body {
+            background-color: #f8f9fa; /* Set background color */
+            padding: 20px;
+        }
+
+        .form-container {
+            max-width: 1000px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.1);
+        }
+
+        .highlight-required {
+            border-color: red; /* Change the border color to red */
+            /* Add any other styling as needed */
+        }
+
+        .submit-btn {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Customize the delete button */
+        .removeFields {
+            border-radius: 5px; /* Adjust border radius to make the button rounder */
+            background-color: #dc3545; /* Change background color */
+            color: #fff; /* Change text color */
+            padding: 8px 16px; /* Adjust padding for better appearance */
+            margin-left: 10px; /* Adjust margin as needed */
+            border: none; /* Remove default button border */
+        }
+
+        .removeFields:hover {
+            background-color: #c82333; /* Change background color on hover */
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="form-container">
+        <h1 class="mb-4">Enter Further Details</h1>
+
+        <div th:if="${establishment != null}">
+
+            <!-- Establishment Details Section -->
+
+            <!-- Establishment Form (Part 1) -->
+
+            <form th:action="@{/establishments/save2}" th:object="${establishment}" method="POST"
+                  enctype="multipart/form-data" id="establishmentForm2" onsubmit="return validateForm()">
+                <!-- Hidden input for establishmentId -->
+                <input type="hidden" name="establishmentId" th:value="${establishment.establishmentId}" />
+
+                <!-- Establishment Address Field -->
+                <fieldset>
+                    <legend>Part 1: Establishment Information</legend>
+                    <div class="form-container">
+                        <!-- Establishment Address -->
+                        <div class="form-group">
+                            <label>Establishment Address<span class="text-danger">*</span></label>
+                            <input type="text" name="address" th:field="*{address}" class="form-control" placeholder="Enter Establishment Address" required/>
+                        </div>
+                        <!-- Establishment Opening Time -->
+                        <div class="form-group">
+                            <label>Establishment Opening Time<span class="text-danger">*</span></label>
+                            <input type="time" name="openingTime" th:field="*{openingTime}" class="form-control" required/>
+                        </div>
+                        <!-- Establishment Closing Time -->
+                        <div class="form-group">
+                            <label>Establishment Closing Time<span class="text-danger">*</span></label>
+                            <input type="time" name="closingTime" th:field="*{closingTime}" class="form-control" required/>
+                        </div>
+                        <!-- Upload Additional Images -->
+                        <div class="form-group">
+                            <label>Upload Additional Images<span class="text-danger">*</span></label>
+                            <input type="file" name="image" class="form-control-file" />
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Additional Information Section -->
+                <fieldset id="additionalInfo">
+                    <legend>Part 2: Additional Information</legend>
+                    <div class="form-container">
+                        <!-- Nationality, Category, Entry Fee Fields -->
+                        <div class="form-row" id="fieldSet1">
+                            <div class="form-group col-md-4">
+                                <label for="nationality">Nationality<span class="text-danger">*</span></label>
+                                <select id="nationality" name="nationalityId" class="form-control" required>
+                                    <option value="">--SELECT NATIONALITY--</option>
+                                    <option th:each="nationality : ${nationalities}" th:value="${nationality.nationalityId}"
+                                            th:text="${nationality.nationalityType}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="category">Category<span class="text-danger">*</span></label>
+                                <select id="category" name="categoryId" class="form-control" required>
+                                    <option value="">--SELECT CATEGORY--</option>
+                                    <option th:each="category : ${categories}" th:value="${category.categoryId}"
+                                            th:text="${category.categoryName}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label for="entryFee">Entry Fee<span class="text-danger">*</span></label>
+                                <input type="number" step="1" class="form-control" id="entryFee" name="entryFee"
+                                       placeholder="Enter Entry Fee" required>
+                            </div>
+                        </div>
+                        <!-- Add Button for Additional Fields -->
+                        <div class="button-group">
+                            <button type="button" class="btn btn-primary" id="addFields">Add</button>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Submit Button -->
+                <button type="submit" class="submit-btn">Submit</button>
+            </form>
+
+        </div>
+        <div th:if="${establishment == null}">
+            <p>No establishment found.</p>
+            <!-- You can customize this message as needed -->
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script th:inline="javascript">
+    $(document).ready(function() {
+        var counter = 1;
+
+        // Function to add fields dynamically
+        $("#addFields").click(function() {
+            counter++;
+            var newFields = $("#fieldSet1").clone();
+            newFields.attr("id", "fieldSet" + counter);
+            newFields.find("input, select").val(""); // Clear input values
+            newFields.find("select").prop('selectedIndex', 0); // Reset select fields
+            newFields.find("legend").text("Part " + counter + ": Additional Information");
+
+            // Add delete button
+            var deleteButton = $("<button/>", {
+                type: "button",
+                class: "btn btn-danger removeFields",
+                text: "Delete"
+            });
+            deleteButton.appendTo(newFields);
+
+            newFields.appendTo("#additionalInfo .form-container");
+        });
+
+        // Function to remove fields dynamically
+        $(document).on("click", ".removeFields", function() {
+            $(this).closest('.form-row').remove();
+            counter--;
+        });
+    });
+
+
+
+    // Adjust validateForm() function to include newly added fields
+    function validateForm() {
+        // Existing validation logic
+
+        // Additional logic to ensure at least one set of fields is filled
+        var fieldSets = document.querySelectorAll('.form-row');
+        var isAnyFieldSetFilled = Array.from(fieldSets).some(function(fieldSet) {
+            return Array.from(fieldSet.querySelectorAll('input, select')).some(function(field) {
+                return field.value.trim();
+            });
+        });
+
+        if (!isAnyFieldSetFilled) {
+            // Show SweetAlert popup
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Please fill at least one set of nationality, category, and fees fields!',
+            });
+            return false;
+        }
+
+        return isValid;
+    }
+
+</script>
+</body>
+</html>

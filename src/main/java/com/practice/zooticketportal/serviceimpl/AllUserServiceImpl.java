@@ -22,8 +22,19 @@ public class AllUserServiceImpl implements AllUserService {
 
     @Override
     public AllUser findByPhoneNumber(String phoneNumber) {
-        return allUserRepo.findByPhoneNumber(phoneNumber);
+        // Convert phoneNumber String to Long
+        Long phoneNumberLong;
+        try {
+            phoneNumberLong = Long.parseLong(phoneNumber);
+        } catch (NumberFormatException e) {
+            // Handle invalid phone number format
+            // You can throw an exception, log an error, or handle it according to your application's requirements
+            return null; // or throw an exception
+        }
+
+        return allUserRepo.findByPhoneNumber(phoneNumberLong);
     }
+
 
     @Override
     public List<AllUser> findByUsername(String username){

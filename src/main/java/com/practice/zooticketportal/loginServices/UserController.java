@@ -30,7 +30,7 @@ public class UserController {
     private UserService userService;
     @PostMapping("/verifyOtp")
     public String verifyOtp(@RequestParam(name = "otp") String otp,
-                            @RequestParam(name = "mobile_number") String phoneNumber,
+                            @RequestParam(name = "mobile_number") Long phoneNumber,
                             HttpServletRequest req) {
         AllUser user = userRepository.findByPhoneNumber(phoneNumber);
         if (user != null && otp.equals(otpService.generateOtp())) {

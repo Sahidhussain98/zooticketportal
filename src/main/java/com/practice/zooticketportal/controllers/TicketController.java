@@ -62,7 +62,7 @@ public class TicketController {
         // Check if any user was found
         if (!users.isEmpty()) {
             AllUser user = users.get(0); // Assuming there's only one user per username
-            phoneNumber = user.getPhoneNumber();
+            phoneNumber = user.getPhoneNumber().toString();
             email = user.getEmail();
         }
 

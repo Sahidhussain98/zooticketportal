@@ -34,7 +34,10 @@ public class AllUserController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> checkUserDetails() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String phoneNumber = authentication.getName(); // phoneNumber is already a string
+        String phoneNumberString  = authentication.getName(); // phoneNumber is already a string
+
+        // Convert phoneNumberString to Long
+        Long phoneNumber = Long.parseLong(phoneNumberString);
 
         // Check if user details exist for the given phone number
         AllUser user = allUserRepo.findByPhoneNumber(phoneNumber);
@@ -49,8 +52,9 @@ public class AllUserController {
     public ResponseEntity<String> changePassword(@RequestParam String newPassword) {
         // Get authenticated user
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String phoneNumber = authentication.getName();
-
+        String phoneNumberString = authentication.getName();
+// Convert phoneNumberString to Long
+        Long phoneNumber = Long.parseLong(phoneNumberString);
         // Find user by phone number (assuming phone number is unique)
         AllUser user = allUserRepo.findByPhoneNumber(phoneNumber);
         if (user == null) {

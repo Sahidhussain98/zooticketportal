@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface AllUserRepo extends JpaRepository<AllUser, Long> {
      List<AllUser> findByUsername(String username);
-    AllUser findByPhoneNumber(String phoneNumber);
+    AllUser findByPhoneNumber(Long phoneNumber);
 
     Optional<AllUser> findByEmail(String email);
 //    AllUser findByPhoneNumber(String phoneNumber);
