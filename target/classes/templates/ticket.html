@@ -100,7 +100,7 @@
 <div th:replace="fragments/userNaveMenu :: header"></div>
 
 <div class="container-form">
-    <h3>Welcome to Wards Lake</h3> <!-- Centered header -->
+    <h3>Welcome to </h3> <!-- Centered header -->
 
     <form th:action="@{'/processCheckoutForm/' + ${establishment.establishmentId}}" th:object="${theTicket}" method="POST" onsubmit="return validateForm()">
         <input type="hidden" id="establishmentId" th:name="establishmentId" th:value="${establishment.establishmentId}" />

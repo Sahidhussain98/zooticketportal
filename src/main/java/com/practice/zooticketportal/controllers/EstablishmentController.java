@@ -159,35 +159,32 @@ public class EstablishmentController {
         // Return the name of the HTML template for the "Add NonWorking Dates" page
         return "nonWorkingDates"; // Assuming "addNonWorkingDates.html" is the name of your HTML template
     }
-
     @PostMapping("/nonworkingdates/save")
-    public String saveEstablishment2(@RequestParam("establishmentId") Long establishmentId,
-                                     @RequestParam("nonWorkingDates") List<LocalDate> nonWorkingDates,
-                                     @RequestParam("reasons") List<String> reasons,
-                                     Model model) {
-
-        // Iterate through the lists of dates and reasons
-        for (int i = 0; i < nonWorkingDates.size(); i++) {
-            NonWorkingDays nonWorkingDay = new NonWorkingDays();
-            nonWorkingDay.setNonWorkingDate(nonWorkingDates.get(i));
-            nonWorkingDay.setReason(reasons.get(i));
-            nonWorkingDay.setEnteredOn(LocalDateTime.now()); // Timestamp when the data is entered
-            nonWorkingDay.setEnteredBy("YourUsername"); // Assuming you have a way to get the username
-
-            // Assuming you have a method to find the establishment by ID
-            Establishment establishment = establishmentRepo.findById(establishmentId).orElse(null);
-            if (establishment != null) {
+    public String saveNonWorkingDates(
+            @RequestParam("establishmentId") Long establishmentId,
+            @RequestParam("nonWorkingDates") List<LocalDate> nonWorkingDates,
+            @RequestParam("reasons") List<String> reasons,
+            Model model
+    ) {
+        System.out.println("here????" + establishmentId);
+        Establishment establishment = establishmentRepo.findById(establishmentId).orElse(null);
+        if (establishment != null) {
+            for (int i = 0; i < nonWorkingDates.size(); i++) {
+                NonWorkingDays nonWorkingDay = new NonWorkingDays();
+                nonWorkingDay.setNonWorkingDate(nonWorkingDates.get(i));
+                nonWorkingDay.setReason(reasons.get(i));
                 nonWorkingDay.setEstablishment(establishment);
-                nonWorkingDaysRepo.save(nonWorkingDay); // Save the non-working day to the database
-            } else {
-                // Handle error if establishment is not found
-                model.addAttribute("error", "Establishment not found with ID: " + establishmentId);
-                return "error-page";
+                nonWorkingDaysRepo.save(nonWorkingDay);
             }
+            System.out.println("whh" + establishmentId);
+            // Redirect to a success page or return a success message
+            return "createestablishment2";
+        } else {
+            System.out.println("error" + establishmentId);
+            // Handle error if establishment is not found
+            model.addAttribute("error", "Establishment not found with ID: " + establishmentId);
+            return "error-page";
         }
-
-        // Redirect to a success page or return some response
-        return "success-page";
     }
 
 
@@ -205,7 +202,7 @@ public class EstablishmentController {
             model.addAttribute("categories", categories);
             model.addAttribute("nationalities", nationalities1);
 
-            return "createestablishment2"; // Return the HTML template with the establishment details
+            return "redirect:/createestablishment2"; // Return the HTML template with the establishment details
         } else {
             // Handle case where establishment is not found
             return "error"; // For example, return an error page
