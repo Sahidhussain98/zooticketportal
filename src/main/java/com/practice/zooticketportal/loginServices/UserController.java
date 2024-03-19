@@ -1,7 +1,5 @@
 package com.practice.zooticketportal.loginServices;
 
-import com.practice.zooticketportal.entity.AllUser;
-import com.practice.zooticketportal.repositories.AllUserRepo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,21 +22,19 @@ public class UserController {
 
     @Autowired
     private OtpService otpService;
-    @Autowired
-    private AllUserRepo userRepository;
+
     @Autowired
     private UserService userService;
     @PostMapping("/verifyOtp")
     public String verifyOtp(@RequestParam(name = "otp") String otp,
                             @RequestParam(name = "mobile_number") Long phoneNumber,
                             HttpServletRequest req) {
-        AllUser user = userRepository.findByPhoneNumber(phoneNumber);
-        if (user != null && otp.equals(otpService.generateOtp())) {
+        if (otp.equals(otpService.generateOtp())) {
             System.out.println("Received phone number: " + phoneNumber);
 
 
 
-            Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), null, null);
+            Authentication authentication = new UsernamePasswordAuthenticationToken("user", null, null);
             // Set the authentication object in the SecurityContext
             SecurityContext sc = SecurityContextHolder.getContext();
             sc.setAuthentication(authentication);

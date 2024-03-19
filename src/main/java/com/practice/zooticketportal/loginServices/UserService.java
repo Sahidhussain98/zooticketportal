@@ -55,6 +55,4 @@ public class UserService {
         }
         auditService.audit("REGISTER_USER_WITH_CITIZEN_ROLE", "UserService", null, null);
     }
-
-
 }

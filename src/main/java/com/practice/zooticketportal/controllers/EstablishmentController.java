@@ -161,10 +161,10 @@ public class EstablishmentController {
     }
 
     @PostMapping("/nonworkingdates/save")
-    public String saveEstablishment2(@RequestParam("establishmentId") Long establishmentId,
-                                     @RequestParam("nonWorkingDates") List<LocalDate> nonWorkingDates,
-                                     @RequestParam("reasons") List<String> reasons,
-                                     Model model) {
+    public String saveNonWorkingDates(
+            @RequestParam("establishmentId") Long establishmentId,
+            @RequestParam("nonWorkingDates") List<LocalDate> nonWorkingDates,
+            @RequestParam("reasons") List<String> reasons) {
 
         // Iterate through the lists of dates and reasons
         for (int i = 0; i < nonWorkingDates.size(); i++) {
@@ -181,13 +181,12 @@ public class EstablishmentController {
                 nonWorkingDaysRepo.save(nonWorkingDay); // Save the non-working day to the database
             } else {
                 // Handle error if establishment is not found
-                model.addAttribute("error", "Establishment not found with ID: " + establishmentId);
-                return "error-page";
+                return "Error: Establishment not found with ID " + establishmentId;
             }
         }
 
-        // Redirect to a success page or return some response
-        return "success-page";
+        // Return success message
+        return "Non-working dates saved successfully.";
     }
 
 
