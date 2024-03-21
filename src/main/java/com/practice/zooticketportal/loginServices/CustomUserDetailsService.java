@@ -35,24 +35,19 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String phoneNumber) throws UsernameNotFoundException {
-        // Convert phoneNumber String to Long
-        Long phoneNumberLong;
-        try {
-            phoneNumberLong = Long.parseLong(phoneNumber);
-        } catch (NumberFormatException e) {
-            throw new UsernameNotFoundException("Invalid phone number format: " + phoneNumber);
-        }
-
-        AllUser user = userRepository.findByPhoneNumber(phoneNumberLong);
+        AllUser user = userRepository.findByPhoneNumber(Long.valueOf(phoneNumber));
         if (user == null) {
             throw new UsernameNotFoundException("User not found with phone number: " + phoneNumber);
         }
         String encodedPassword = user.getPassword();
 
+//        System.out.println("password got");
+
         List<GrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRoleName()))
                 .collect(Collectors.toList());
         auditService.audit("LOAD_USER_BY_USERNAME", "AllUser", user.getAllUserId(), phoneNumber);
+//        System.out.println("got roles");
 
         // You can customize the UserDetails creation based on your AllUser entity
         return org.springframework.security.core.userdetails.User
@@ -60,7 +55,6 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .password(user.getPassword())
                 .authorities(authorities)
                 .build();
+
     }
-
-
 }
