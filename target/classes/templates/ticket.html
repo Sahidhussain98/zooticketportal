@@ -100,7 +100,7 @@
 <div th:replace="fragments/userNaveMenu :: header"></div>
 
 <div class="container-form">
-    <h3>Welcome to </h3> <!-- Centered header -->
+    <h3>Welcome to <span th:text="${establishment.name}"></span></h3> <!-- Centered header -->
 
     <form th:action="@{'/processCheckoutForm/' + ${establishment.establishmentId}}" th:object="${theTicket}" method="POST" onsubmit="return validateForm()">
         <input type="hidden" id="establishmentId" th:name="establishmentId" th:value="${establishment.establishmentId}" />
@@ -325,6 +325,45 @@
             document.getElementById('totalPersons').value = ""; // Clear total persons if the number of people is empty or 0
         }
     }
+    //For NonWorking Dates
+    $(document).ready(function() {
+        // Function to fetch non-working dates for the establishment from the server
+        function fetchNonWorkingDates() {
+            var establishmentId = $('#establishmentId').val();
+
+            $.ajax({
+                url: '/establishments/fetchNonWorkingDates',
+                type: 'GET',
+                data: { establishmentId: establishmentId },
+                success: function(data) {
+                    disableNonWorkingDates(data);
+                },
+                error: function() {
+                    console.error('Error fetching non-working dates');
+                }
+            });
+        }
+
+        // Call the function to fetch non-working dates on page load
+        fetchNonWorkingDates();
+
+        // Function to disable non-working dates in the date picker
+        function disableNonWorkingDates(nonWorkingDates) {
+            $('input[type="date"]').each(function() {
+                var dateInput = $(this);
+                var date = dateInput.val();
+
+                // Convert LocalDate objects to string before comparison
+                var stringNonWorkingDates = nonWorkingDates.map(date => date.toString());
+
+                if (stringNonWorkingDates.includes(date)) {
+                    dateInput.prop('disabled', true);
+                    dateInput.after("<span class='text-danger'>This date is not available for booking.</span>");
+                }
+            });
+        }
+    });
+
 </script>
 
 </body>
