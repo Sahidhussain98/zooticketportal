@@ -29,6 +29,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -161,15 +162,32 @@ public class EstablishmentController {
     }
 
     @PostMapping("/nonworkingdates/save")
-    public String saveNonWorkingDates(
-            @RequestParam("establishmentId") Long establishmentId,
-            @RequestParam("nonWorkingDates") List<LocalDate> nonWorkingDates,
-            @RequestParam("reasons") List<String> reasons) {
+    public ResponseEntity<String> saveNonWorkingDates(@RequestBody Map<String, Object> requestData) {
+        Long establishmentId = Long.parseLong(requestData.get("establishmentId").toString());
+        List<Map<String, String>> nonWorkingDates = (List<Map<String, String>>) requestData.get("nonWorkingDates");
+
+        List<String> dates = new ArrayList<>();
+        List<String> reasons = new ArrayList<>();
+
+        for (Map<String, String> dateMap : nonWorkingDates) {
+            dates.add(dateMap.get("nonWorkingDate")); // Extract date string from the map
+            reasons.add(dateMap.get("reason"));
+        }
+
+        System.out.println(establishmentId);
+        System.out.println(nonWorkingDates);
+        System.out.println(reasons);
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         // Iterate through the lists of dates and reasons
-        for (int i = 0; i < nonWorkingDates.size(); i++) {
+        for (int i = 0; i < dates.size(); i++) { // Use dates.size() instead of nonWorkingDates.size()
             NonWorkingDays nonWorkingDay = new NonWorkingDays();
-            nonWorkingDay.setNonWorkingDate(nonWorkingDates.get(i));
+
+            // Parse the date string using the formatter
+            LocalDate parsedDate = LocalDate.parse(dates.get(i), dateFormatter); // Use dates.get(i) instead of nonWorkingDates.get(i)
+
+            nonWorkingDay.setNonWorkingDate(parsedDate);
             nonWorkingDay.setReason(reasons.get(i));
             nonWorkingDay.setEnteredOn(LocalDateTime.now()); // Timestamp when the data is entered
             nonWorkingDay.setEnteredBy("YourUsername"); // Assuming you have a way to get the username
@@ -181,14 +199,14 @@ public class EstablishmentController {
                 nonWorkingDaysRepo.save(nonWorkingDay); // Save the non-working day to the database
             } else {
                 // Handle error if establishment is not found
-                return "Error: Establishment not found with ID " + establishmentId;
+                return ResponseEntity.badRequest().body("Error: Establishment not found with ID " + establishmentId);
             }
         }
 
         // Return success message
-        return "Non-working dates saved successfully.";
+        System.out.println("Data Saved");
+        return ResponseEntity.ok("Non-working dates saved successfully.");
     }
-
 
 
     @GetMapping("/show")

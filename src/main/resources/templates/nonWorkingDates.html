@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Add Non-Working Days</title>
-    <meta name="_csrf" th:content="${_csrf.token}" />
-    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
@@ -54,7 +54,7 @@
         <div id="addNonWorkingSection">
             <form id="nonWorkingDatesForm" th:action="@{/establishments/nonworkingdates/save}" method="post">
                 <input type="hidden" id="establishmentId" name="establishmentId"
-                       th:value="${establishment.establishmentId}" />
+                       th:value="${establishment.establishmentId}"/>
 
                 <div class="form-row">
                     <div class="form-group col-md-5">
@@ -62,7 +62,9 @@
                         <div class="input-group">
                             <input type="date" class="form-control" id="nonWorkingDate" name="nonWorkingDate" required>
                         </div>
-                        <div class="error-message" id="nonWorkingDateError" style="display: none;">Please select a Non-Working Date.</div>
+                        <div class="error-message" id="nonWorkingDateError" style="display: none;">Please select a
+                            Non-Working Date.
+                        </div>
                     </div>
                     <div class="form-group col-md-5">
                         <label for="reason">Reason</label>
@@ -102,6 +104,8 @@
 
 <script>
     $(document).ready(function () {
+        var nonWorkingDatesArray = []; // Array to store non-working dates and reasons
+
         // Add button click event
         $('.addButton').click(function () {
             var nonWorkingDateInput = $('#nonWorkingDate');
@@ -124,6 +128,10 @@
                 '</tr>';
             $('#nonWorkingDatesTable tbody').append(row);
 
+            // Add data to the array
+            nonWorkingDatesArray.push({nonWorkingDate: nonWorkingDate, reason: reason});
+
+
             // Clear input fields
             nonWorkingDateInput.val('');
             $('#reason').val('');
@@ -131,40 +139,54 @@
 
         // Delete button click event
         $(document).on('click', '.deleteButton', function () {
-            $(this).closest('tr').remove();
+            var row = $(this).closest('tr');
+            var rowIndex = row.index();
+
+            // Remove row from the table
+            row.remove();
+
+            // Remove corresponding entry from the array
+            nonWorkingDatesArray.splice(rowIndex, 1);
         });
 
         // Submit button click event
         $('#submitButton').click(function (e) {
-            console.log("Submit button clicked"); // Log that the submit button is clicked
-
             var token = $("meta[name='_csrf']").attr("content");
             var header = $("meta[name='_csrf_header']").attr("content");
 
-            // Serialize form data
-            var formData = $('#nonWorkingDatesForm').serializeArray();
-            var establishmentId = $('#establishmentId').val();
-            formData.push({ name: 'establishmentId', value: establishmentId });
+            e.preventDefault(); // Prevent default form submission
 
-            console.log("Form data:", formData); // Log the serialized form data
+            var nonWorkingDatesArray = []; // Array to store non-working dates and reasons
+
+            // Iterate through the table rows to collect data
+            $('#nonWorkingDatesTable tbody tr').each(function() {
+                var nonWorkingDate = $(this).find('td:eq(0)').text(); // Get non-working date
+                var reason = $(this).find('td:eq(1)').text(); // Get reason
+
+                nonWorkingDatesArray.push({ nonWorkingDate: nonWorkingDate, reason: reason });
+            });
+
+            console.log(nonWorkingDatesArray);
 
             // Send AJAX request
             $.ajax({
                 url: '/establishments/nonworkingdates/save',
                 type: 'POST',
-                 // Send form data directly
                 contentType: 'application/json', // Set content type to JSON
-                data: JSON.stringify(formData), // Convert form data to JSON string
-                beforeSend: function (xhr) {
+                data: JSON.stringify({
+                    establishmentId: $('#establishmentId').val(),
+                    nonWorkingDates: nonWorkingDatesArray
+                }), // Convert data to JSON string
+                beforeSend: function(xhr) {
                     // Include CSRF token in request headers
                     xhr.setRequestHeader(header, token);
                 },
-                success: function (response) {
+                success: function(response) {
                     // Handle success response
                     console.log("Success:", response); // Log the success response
                     // Redirect or show success message
                 },
-                error: function (xhr, status, error) {
+                error: function(xhr, status, error) {
                     // Handle error response
                     console.error("Error:", xhr.responseText); // Log the error response
                     // Show error message or handle appropriately
