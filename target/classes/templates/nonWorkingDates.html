@@ -104,6 +104,18 @@
 
 <script>
     $(document).ready(function () {
+        var currentDate = new Date(); // Get current date
+        var currentYear = currentDate.getFullYear(); // Get current year
+        var currentMonth = currentDate.getMonth() + 1; // Get current month (1-12)
+        var currentDay = currentDate.getDate(); // Get current day of the month
+
+        // Set the minimum and maximum date for the date picker to the current date
+        var minDate = currentYear + '-' + (currentMonth < 10 ? '0' : '') + currentMonth + '-' + (currentDay < 10 ? '0' : '') + currentDay;
+        var maxDate = currentYear + '-' + (currentMonth < 10 ? '0' : '') + currentMonth + '-' + (new Date(currentYear, currentMonth, 0).getDate());
+
+        $('#nonWorkingDate').attr('min', minDate); // Set minimum date
+        $('#nonWorkingDate').attr('max', maxDate); // Set maximum date
+
         var nonWorkingDatesArray = []; // Array to store non-working dates and reasons
 
         // Add button click event
@@ -131,7 +143,6 @@
             // Add data to the array
             nonWorkingDatesArray.push({nonWorkingDate: nonWorkingDate, reason: reason});
 
-
             // Clear input fields
             nonWorkingDateInput.val('');
             $('#reason').val('');
@@ -155,18 +166,6 @@
             var header = $("meta[name='_csrf_header']").attr("content");
 
             e.preventDefault(); // Prevent default form submission
-
-            var nonWorkingDatesArray = []; // Array to store non-working dates and reasons
-
-            // Iterate through the table rows to collect data
-            $('#nonWorkingDatesTable tbody tr').each(function() {
-                var nonWorkingDate = $(this).find('td:eq(0)').text(); // Get non-working date
-                var reason = $(this).find('td:eq(1)').text(); // Get reason
-
-                nonWorkingDatesArray.push({ nonWorkingDate: nonWorkingDate, reason: reason });
-            });
-
-            console.log(nonWorkingDatesArray);
 
             // Send AJAX request
             $.ajax({
@@ -194,9 +193,8 @@
             });
         });
     });
-
-
 </script>
+
 
 </body>
 </html>

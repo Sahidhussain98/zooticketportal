@@ -1,15 +1,12 @@
 package com.practice.zooticketportal.controllers;
 
 
-import com.practice.zooticketportal.dto.FeeDTO;
 import com.practice.zooticketportal.entity.*;
 import com.practice.zooticketportal.repositories.*;
 import com.practice.zooticketportal.service.AllUserService;
 import com.practice.zooticketportal.service.EstablishmentService;
 import com.practice.zooticketportal.service.TicketService;
-import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,12 +16,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.FileNotFoundException;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Controller
@@ -46,6 +39,8 @@ public class TicketController {
     private EstablishmentRepo establishmentRepo;
     @Autowired
     private AllUserService allUserService;
+    @Autowired
+    private NonWorkingDaysRepo nonWorkingDaysRepo;
 
     @GetMapping("/showCheckoutForm/{establishmentId}")
     public String showCheckoutForm(@PathVariable Long establishmentId, Model model, Authentication authentication) {
@@ -243,6 +238,15 @@ private FeesRepo feesRepo;
         // Return the total fees amount in the response body
         return ResponseEntity.ok(totalFees);
     }
+    //FetchNonWorkingDates
+    //NonWorkingDays fetching in userside
+    @GetMapping("/fetchNonWorkingDates/{establishmentId}")
+    public List<LocalDate> fetchNonWorkingDates(@PathVariable("establishmentId") Long establishmentId) {
+        System.out.print("hererrrere");
+        return nonWorkingDaysRepo.findNonWorkingDatesByEstablishment_EstablishmentId(establishmentId);
+    }
+
+
 }
 
 
