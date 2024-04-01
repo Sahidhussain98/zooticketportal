@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface NonWorkingDaysRepo extends JpaRepository<NonWorkingDays,Long> {
-    @Query("SELECT DISTINCT n.nonWorkingDate FROM NonWorkingDays n WHERE n.establishment.establishmentId = :establishmentId")
-    List<LocalDate> findNonWorkingDatesByEstablishment_EstablishmentId(@Param("establishmentId") Long establishmentId);
+    List<NonWorkingDays> findByEstablishmentEstablishmentId(Long establishmentId);
 }
 

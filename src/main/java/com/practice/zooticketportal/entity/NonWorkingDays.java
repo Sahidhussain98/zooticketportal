@@ -22,10 +22,12 @@ public class NonWorkingDays {
     private Establishment establishment;
 
     public Long getNonWorkingDayId() {
+
         return nonWorkingDayId;
     }
 
     public void setNonWorkingDayId(Long nonWorkingDayId) {
+
         this.nonWorkingDayId = nonWorkingDayId;
     }
 

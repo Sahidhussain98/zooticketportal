@@ -18,11 +18,20 @@
             padding: 20px;
         }
 
-        .form-container {
+        .form-container
+         {
             max-width: 1000px;
             margin: auto;
             background: #f0f0f0;
             padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.1);
+        }
+        .table-container{
+            max-width: 1000px;
+            margin: auto;
+            background: #f0f0f0;
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.1);
         }
@@ -47,76 +56,114 @@
 <body>
 <div th:replace="~{fragments/adminNavMenu :: header}"></div>
 <div class="container">
-    <div class="form-container">
-        <h1 class="mb-4">Add Non-Working Dates</h1>
-        <h3>Welcome to <span th:text="${establishment.name}"></span></h3>
-        <!-- Section for entering non-working dates and reasons -->
-        <div id="addNonWorkingSection">
-            <form id="nonWorkingDatesForm" th:action="@{/establishments/nonworkingdates/save}" method="post">
-                <input type="hidden" id="establishmentId" name="establishmentId"
-                       th:value="${establishment.establishmentId}"/>
+    <div class="row">
+        <!-- Left side: Existing form -->
+        <div class="col-md-6">
+            <div class="form-container">
+                <h1 class="mb-4">Add Non-Working Dates</h1>
+                <h3>Welcome to <span th:text="${establishment.name}"></span></h3>
+                <!-- Existing form content -->
+                <div id="addNonWorkingSection">
+                    <form id="nonWorkingDatesForm" th:action="@{/establishments/nonworkingdates/save}" method="post">
+                        <input type="hidden" id="establishmentId" name="establishmentId"
+                               th:value="${establishment.establishmentId}"/>
 
-                <div class="form-row">
-                    <div class="form-group col-md-5">
-                        <label for="nonWorkingDate">Non-Working Date<span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <input type="date" class="form-control" id="nonWorkingDate" name="nonWorkingDate" required>
+                        <div class="form-row">
+                            <div class="form-group col-md-5">
+                                <label for="nonWorkingDate">Non-Working Date<span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input type="date" class="form-control" id="nonWorkingDate" name="nonWorkingDate" required>
+                                </div>
+                                <div class="error-message" id="nonWorkingDateError" style="display: none;">Please select a
+                                    Non-Working Date.
+                                </div>
+                            </div>
+                            <div class="form-group col-md-5">
+                                <label for="reason">Reason</label>
+                                <input type="text" class="form-control" id="reason" name="reason">
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label></label>
+                                <button type="button" class="btn btn-success addButton form-control">Add</button>
+                            </div>
                         </div>
-                        <div class="error-message" id="nonWorkingDateError" style="display: none;">Please select a
-                            Non-Working Date.
-                        </div>
-                    </div>
-                    <div class="form-group col-md-5">
-                        <label for="reason">Reason</label>
-                        <input type="text" class="form-control" id="reason" name="reason">
-                    </div>
-                    <div class="form-group col-md-2">
-                        <label></label>
-                        <button type="button" class="btn btn-success addButton form-control">Add</button>
-                    </div>
+                    </form>
                 </div>
-            </form>
+                <!-- Existing table for added non-working dates and reasons -->
+                <div id="displayNonWorkingSection">
+                    <h2 class="mt-5">Non-Working Dates and Reasons</h2>
+                    <table id="nonWorkingDatesTable" class="table mt-3">
+                        <thead>
+                        <tr>
+                            <th scope="col">Non-Working Date</th>
+                            <th scope="col">Reason</th>
+                            <th scope="col">Actions</th> <!-- Added Actions column -->
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!-- Non-working dates and reasons will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Submit button -->
+                <div class="text-right mt-4">
+                    <button type="button" id="submitButton" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
         </div>
-        <!-- Section for displaying added non-working dates and reasons -->
-        <div id="displayNonWorkingSection">
-            <h2 class="mt-5">Non-Working Dates and Reasons</h2>
-            <table id="nonWorkingDatesTable" class="table mt-3">
-                <thead>
-                <tr>
-                    <th scope="col">Non-Working Date</th>
-                    <th scope="col">Reason</th>
-                    <th scope="col">Actions</th> <!-- Added Actions column -->
-                </tr>
-                </thead>
-                <tbody>
-                <!-- Non-working dates and reasons will be dynamically added here -->
-                </tbody>
-            </table>
+        <!-- Right side: Table to display non-working dates from the database -->
+        <!-- Right side: Table to display non-working dates from the database -->
+        <div class="col-md-6">
+            <div class="table-container">
+                <h2 class="mt-5">Non-Working Dates and Reasons from Database</h2>
+                <!-- Filter bar -->
+                <div class="filter-bar mb-3">
+                    <label for="filterMonth">Month:</label>
+                    <select class="form-control mr-2" id="filterMonth">
+                        <!-- Options for selecting month dynamically will be added here -->
+                    </select>
+                    <label for="filterYear">Year:</label>
+                    <select class="form-control mr-2" id="filterYear">
+                        <!-- Options for selecting year dynamically will be added here -->
+                    </select>
+                    <button type="button" class="btn btn-primary" id="applyFilters">Apply Filters</button>
+                </div>
+                <!-- Table to display non-working dates -->
+                <table id="nonWorkingDatesFromDBTable" class="table mt-3">
+                    <thead>
+                    <tr>
+                        <th scope="col">Id</th>
+                        <th scope="col">Non-Working Date</th>
+                        <th scope="col">Reason</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- Non-working dates and reasons from the database will be dynamically added here -->
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div class="text-right mt-4">
-            <button type="button" id="submitButton" class="btn btn-primary">Submit</button>
-        </div>
+
     </div>
 </div>
+
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
     $(document).ready(function () {
-        var currentDate = new Date(); // Get current date
-        var currentYear = currentDate.getFullYear(); // Get current year
-        var currentMonth = currentDate.getMonth() + 1; // Get current month (1-12)
-        var currentDay = currentDate.getDate(); // Get current day of the month
+        var nonWorkingDatesArray = []; // Array to store non-working dates and reasons
 
-        // Set the minimum and maximum date for the date picker to the current date
-        var minDate = currentYear + '-' + (currentMonth < 10 ? '0' : '') + currentMonth + '-' + (currentDay < 10 ? '0' : '') + currentDay;
-        var maxDate = currentYear + '-' + (currentMonth < 10 ? '0' : '') + currentMonth + '-' + (new Date(currentYear, currentMonth, 0).getDate());
+        // Set minimum date to today's date
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+        var yyyy = today.getFullYear();
+        var minDate = yyyy + '-' + mm + '-' + dd;
 
         $('#nonWorkingDate').attr('min', minDate); // Set minimum date
-        $('#nonWorkingDate').attr('max', maxDate); // Set maximum date
-
-        var nonWorkingDatesArray = []; // Array to store non-working dates and reasons
 
         // Add button click event
         $('.addButton').click(function () {
@@ -130,6 +177,13 @@
                 return; // Exit the function if Non-Working Date is not selected
             } else {
                 $('#nonWorkingDateError').hide();
+            }
+
+            // Check if the selected date is already in the array
+            if (nonWorkingDatesArray.some(item => item.nonWorkingDate === nonWorkingDate)) {
+                alert('The selected date is already added as a non-working date.' +
+                    ' Please select another date');
+                return; // Exit the function if date is already added
             }
 
             // Append the new row to the table
@@ -193,6 +247,141 @@
             });
         });
     });
+
+    // Delete button click event
+    $(document).on('click', '.deleteButton', function () {
+        var row = $(this).closest('tr');
+        var rowIndex = row.index();
+
+        // Display confirmation dialog
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'Once deleted, you will not be able to recover this item!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // If user confirms deletion, remove row from the table and the array
+                row.remove();
+                nonWorkingDatesArray.splice(rowIndex, 1);
+                // Optionally, you can perform additional actions here
+                Swal.fire(
+                    'Deleted!',
+                    'Your item has been deleted.',
+                    'success'
+                );
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                // If user cancels deletion, do nothing
+                Swal.fire(
+                    'Cancelled',
+                    'Your item is safe :)',
+                    'error'
+                );
+            }
+        });
+    });
+    //For filtering months and years
+
+</script>
+<script>
+    $(document).ready(function () {
+        // Function to fetch non-working dates from the database
+        function fetchNonWorkingDates(selectedMonth, selectedYear) {
+            var establishmentId = $('#establishmentId').val();
+            $.ajax({
+                url: '/fetchNonWorkingDays/' + establishmentId, // Adjust the URL based on your backend endpoint
+                type: 'GET',
+                data: {
+                    month: selectedMonth,
+                    year: selectedYear
+                },
+                success: function(response) {
+                    // Populate the table with the retrieved data
+                    populateNonWorkingDatesTable(response);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error:", xhr.responseText); // Log the error response
+                    // Show error message or handle appropriately
+                }
+            });
+        }
+
+// Event listener for Apply Filters button click
+        $('#applyFilters').click(function() {
+            var selectedMonth = $('#filterMonth').val();
+            var selectedYear = $('#filterYear').val();
+            // Call function to fetch non-working dates based on selected month and year
+            fetchNonWorkingDates(selectedMonth, selectedYear);
+        });
+
+
+        // Function to populate the table with non-working dates data
+        function populateNonWorkingDatesTable(data) {
+            var tableBody = $('#nonWorkingDatesFromDBTable tbody');
+            tableBody.empty(); // Clear existing rows
+
+            // Loop through the data and append rows to the table
+            data.forEach(function (item) {
+                var row = '<tr>' +
+                    '<td>' + item.id + '</td>' +
+                    '<td>' + item.nonWorkingDate + '</td>' +
+                    '<td>' + item.reason + '</td>' +
+                    '<td><button class="btn btn-danger deleteButton">Delete</button></td>' +
+                    '</tr>';
+                tableBody.append(row);
+            });
+        }
+
+        // Call the fetchNonWorkingDates function when the document is ready
+        fetchNonWorkingDates();
+    });
+
+</script>
+<script>
+    // Function to dynamically populate month dropdown
+    function populateMonthDropdown() {
+        var filterMonthDropdown = $('#filterMonth');
+        var currentDate = new Date();
+        var currentMonth = currentDate.getMonth(); // 0-indexed month
+        var monthNames = new Intl.DateTimeFormat('en-US', { month: 'long' }).format;
+        for (var month = 0; month < 12; month++) {
+            var monthText = monthNames(new Date(currentDate.getFullYear(), month, 1));
+            filterMonthDropdown.append($('<option>', {
+                value: month + 1, // Adjust for 1-indexed month
+                text: monthText
+            }));
+        }
+    }
+
+    // Function to dynamically populate year dropdown
+    function populateYearDropdown() {
+        var filterYearDropdown = $('#filterYear');
+        var currentYear = new Date().getFullYear();
+        for (var year = currentYear; year >= currentYear - 5; year--) {
+            filterYearDropdown.append($('<option>', {
+                value: year,
+                text: year
+            }));
+        }
+    }
+
+    // Call functions to populate month and year dropdowns when the document is ready
+    $(document).ready(function() {
+        populateMonthDropdown();
+        populateYearDropdown();
+    });
+
+    // Event listener for Apply Filters button click
+    $('#applyFilters').click(function() {
+        var selectedMonth = $('#filterMonth').val();
+        var selectedYear = $('#filterYear').val();
+        // Call function to fetch non-working dates based on selected month and year
+        fetchNonWorkingDates(selectedMonth, selectedYear);
+    });
+
 </script>
 
 

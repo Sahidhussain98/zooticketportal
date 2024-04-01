@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -25,7 +26,7 @@ public class Ticket {
     private Long totalPersons;
     private Long totalCameras;
     private String totalAmount;
-    private LocalDateTime dateTime;
+    private LocalDate dateTime;
     private LocalDateTime enteredBy;
     private String enteredOn;
     @ManyToOne
@@ -116,11 +117,11 @@ public class Ticket {
         this.totalAmount = totalAmount;
     }
 
-    public LocalDateTime getDateTime() {
+    public LocalDate getDateTime() {
         return dateTime;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
+    public void setDateTime(LocalDate dateTime) {
         this.dateTime = dateTime;
     }
 

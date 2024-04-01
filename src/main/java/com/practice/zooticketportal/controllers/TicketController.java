@@ -6,6 +6,7 @@ import com.practice.zooticketportal.repositories.*;
 import com.practice.zooticketportal.service.AllUserService;
 import com.practice.zooticketportal.service.EstablishmentService;
 import com.practice.zooticketportal.service.TicketService;
+import com.practice.zooticketportal.serviceimpl.NonWorkingDaysService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,8 +17,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Controller
@@ -40,7 +43,7 @@ public class TicketController {
     @Autowired
     private AllUserService allUserService;
     @Autowired
-    private NonWorkingDaysRepo nonWorkingDaysRepo;
+    private FeesRepo feesRepo;
 
     @GetMapping("/showCheckoutForm/{establishmentId}")
     public String showCheckoutForm(@PathVariable Long establishmentId, Model model, Authentication authentication) {
@@ -81,12 +84,29 @@ public class TicketController {
         model.addAttribute("nationalities", nationalities1);
         return "ticket";
     }
+//    @GetMapping("/ticketConfirmation/{establishmentId}")
+//    public String showTicketConfirmationPage(@PathVariable Long establishmentId, Model model) {
+//        System.out.print("TICKETconfirm");
+//        Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
+//        if (establishment == null) {
+//            // Handle the situation where the establishment is not found
+//            return "establishmentNotFound"; // Return a view indicating that the establishment is not found
+//        }
+//        model.addAttribute("establishment", establishment);
+//        return "ticketConfirmation"; // Assuming your Thymeleaf template is named "ticketConfirmation.html"
+//    }
+//@GetMapping("/ticketConfirmation")
+//    public String showTicketConfirmationPage(Model model) {
+//        System.out.print("TICKETconfirm");
+//        return "ticketConfirmation"; // Assuming your Thymeleaf template is named "ticketConfirmation.html"
+//    }
 
     @PostMapping("/processCheckoutForm/{establishmentId}")
     public String processForm(@PathVariable Long establishmentId, @ModelAttribute("theTicket") Ticket theTicket, Model model) {
         // Retrieve establishment name
         Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
         String establishmentName = establishment.getName();
+        System.out.print("print please");
 
         // Generate random serial number (you can use your preferred method to generate the serial number)
         int serialNumber = generateRandomSerialNumber();
@@ -134,6 +154,7 @@ public class TicketController {
 
         return "ticket";
     }
+
 
     @PostMapping("/processEditForm")
     public String processEditForm(@ModelAttribute("theTicket") Ticket updatedTicket) {
@@ -201,8 +222,7 @@ public class TicketController {
         }
     }
 
-@Autowired
-private FeesRepo feesRepo;
+
     @GetMapping("/fetchFee")
     public ResponseEntity<?> fetchFee(@RequestParam("nationalityId") List<Long> nationalityIds,
                                       @RequestParam("categoryId") List<Long> categoryIds,
@@ -238,13 +258,9 @@ private FeesRepo feesRepo;
         // Return the total fees amount in the response body
         return ResponseEntity.ok(totalFees);
     }
-    //FetchNonWorkingDates
-    //NonWorkingDays fetching in userside
-    @GetMapping("/fetchNonWorkingDates/{establishmentId}")
-    public List<LocalDate> fetchNonWorkingDates(@PathVariable("establishmentId") Long establishmentId) {
-        System.out.print("hererrrere");
-        return nonWorkingDaysRepo.findNonWorkingDatesByEstablishment_EstablishmentId(establishmentId);
-    }
+
+
+
 
 
 }
