@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -67,8 +69,6 @@ public class TicketController {
         // Here, you can add logic to retrieve the establishment details
         // based on the establishmentId from the database
         Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
-
-        // Create a ticket object
         Ticket ticket = new Ticket();
 
         // Add ticket and establishment objects to the model
@@ -76,7 +76,6 @@ public class TicketController {
         model.addAttribute("establishment", establishment);
         model.addAttribute("phoneNumber", phoneNumber);
         model.addAttribute("email", email);
-
         // add the list of countries to the model
         List<Category> categories = categoryRepo.findAll();
         List<Nationality> nationalities1 = nationalityRepo.findAll();
@@ -223,47 +222,69 @@ public class TicketController {
     }
 
 
+    //    @GetMapping("/fetchFee")
+//    public ResponseEntity<?> fetchFee(@RequestParam("nationalityId") Long nationalityId,
+//                                      @RequestParam("categoryId") Long categoryId,
+//                                      @RequestParam("establishmentId") Long establishmentId,
+//                                      @RequestParam("numberOfPeople") Long numberOfPeople) {
+//        System.out.println("-----------");
+//
+//        // Query the database to retrieve the entry fee based on the provided nationality ID, category ID, and establishment ID
+//        List<Fees> fees = feesRepo.findByNationalityNationalityIdAndCategoryCategoryIdAndEstablishmentEstablishmentId(nationalityId, categoryId, establishmentId);
+//
+//        // Check if the fee is retrieved successfully
+//        if (fees != null && !fees.isEmpty()) {
+//            // Calculate the total fees for this combination based on the entry fee and the number of people
+//            double entryFee = fees.get(0).getEntryFee(); // Assuming only one entry fee is returned
+//            double totalFees = entryFee * numberOfPeople; // Multiply by the number of people
+//
+//            // Return the total fees amount in the response body
+//            return ResponseEntity.ok(totalFees);
+//        } else {
+//            // If the fee cannot be retrieved, return an error response
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//    }
     @GetMapping("/fetchFee")
-    public ResponseEntity<?> fetchFee(@RequestParam("nationalityId") List<Long> nationalityIds,
-                                      @RequestParam("categoryId") List<Long> categoryIds,
-                                      @RequestParam("establishmentId") Long establishmentId,
-                                      @RequestParam("numberOfPeople") List<Long> numberOfPeople) {
-        System.out.println("-----------");
+    public ResponseEntity<Map<String, Double>> fetchFee(@RequestParam("nationalityId") Long nationalityId,
+                                                        @RequestParam("categoryId") Long categoryId,
+                                                        @RequestParam("establishmentId") Long establishmentId,
+                                                        @RequestParam("numberOfPeople") Long numberOfPeople) {
+        // Query the database to retrieve the list of entry fees based on the provided nationality ID, category ID, and establishment ID
+        List<Fees> feesList = feesRepo.findByNationalityNationalityIdAndCategoryCategoryIdAndEstablishmentEstablishmentId(nationalityId, categoryId, establishmentId);
 
-        // Initialize total fees
-        double totalFees = 0.0;
+        // Check if fees are retrieved successfully
+        if (!feesList.isEmpty()) {
+            // Get the entry fee from the first fee (assuming the combination is unique)
+            double entryFee = feesList.get(0).getEntryFee();
 
-        // Iterate through each combination of nationality, category, and number of people
-        for (int i = 0; i < nationalityIds.size(); i++) {
-            Long nationalityId = nationalityIds.get(i);
-            Long categoryId = categoryIds.get(i);
-            Long people = numberOfPeople.get(i);
+            // Calculate the total fees
+            double totalFees = entryFee * numberOfPeople;
 
-            // Query the database to retrieve the entry fee based on the provided nationality ID, category ID, and establishment ID
-            List<Fees> fees = feesRepo.findByNationalityNationalityIdAndCategoryCategoryIdAndEstablishmentEstablishmentId(nationalityId, categoryId, establishmentId);
+            // Create a map to hold the entry fee and total fees
+            Map<String, Double> responseMap = new HashMap<>();
+            responseMap.put("entryFee", entryFee);
+            responseMap.put("totalFees", totalFees);
 
-            // Check if the fee is retrieved successfully
-            if (fees != null) {
-                System.out.println("inside if");
-                // Calculate the total fees for this combination based on the entry fee and the number of people
-                for (Fees fee : fees) {
-                    totalFees += fee.getEntryFee() * people; // Multiply by the number of people
-                }
-            } else {
-                // If the fee cannot be retrieved, return an error response
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-            }
+            // Return the entry fee and total fees
+            return ResponseEntity.ok(responseMap);
+        } else {
+            // If no fees are retrieved, return an error response
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
-        // Return the total fees amount in the response body
-        return ResponseEntity.ok(totalFees);
     }
 
-
-
-
-
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
