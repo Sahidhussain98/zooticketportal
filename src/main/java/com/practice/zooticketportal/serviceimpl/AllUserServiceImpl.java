@@ -13,12 +13,16 @@ import java.util.List;
 public class AllUserServiceImpl implements AllUserService {
     @Autowired
     private AllUserRepo allUserRepo;
-
-
     @Override
     public AllUser saveUserDetails(AllUser allUser) {
         return allUserRepo.save(allUser);
     }
+
+
+    public AllUserServiceImpl(AllUserRepo allUserRepo) {
+        this.allUserRepo = allUserRepo;
+    }
+
 
     @Override
     public AllUser findByPhoneNumber(String phoneNumber) {
@@ -37,17 +41,9 @@ public class AllUserServiceImpl implements AllUserService {
 
 
     @Override
-    public List<AllUser> findByUsername(String username){
+    public AllUser findByUsername(String username){
         System.out.println("Username"+username+ "\n" +allUserRepo.findByUsername(username));
-        return  allUserRepo.findByUsername(username);
+        return (AllUser) allUserRepo.findByUsername(username);
     }
-
-//    @Override
-//    public void saveEmail(String email) {
-//        AllUser allUser= new AllUser();
-//        allUser.setEmail(email);
-//        allUserRepo.save(allUser);
-//    }
-
 
 }

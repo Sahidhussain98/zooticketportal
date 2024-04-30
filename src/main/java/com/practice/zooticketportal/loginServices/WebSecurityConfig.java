@@ -47,6 +47,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/establishments/show").hasAnyRole("ADMIN","OFFICER")
                         .requestMatchers("/adminpage").hasAnyRole("ADMIN","OFFICER")
                         .requestMatchers("/officerpage").hasAnyRole("OFFICER","ADMIN")
+                        .requestMatchers(("/abc")).permitAll()
                         //.requestMatchers()
                         // ADD CSP,CSRF, XSS
                         .anyRequest().authenticated()

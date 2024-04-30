@@ -239,6 +239,7 @@ public class EstablishmentController {
                                      @RequestParam("nationalityId") List<Long> nationalityIds,
                                      @RequestParam("categoryId") List<Long> categoryIds,
                                      @RequestParam("entryFee") List<Double> entryFees,
+                                     @RequestParam("cameraFee") Double cameraFee,
                                      Model model) {
         try {
             // Fetch the existing establishment object from the database
@@ -261,6 +262,16 @@ public class EstablishmentController {
 
             // Save the image and get its imageId
             Long imageId = storageService.uploadImage(imageFile, establishmentId); // Pass the establishment ID to link the image with the establishment
+            // Save camera fee
+            Fees cameraFeeEntity = new Fees();
+            cameraFeeEntity.setEstablishment(establishment);
+            // Set other camera fee details if needed
+            cameraFeeEntity.setCameraFee(cameraFee);
+            // Set nationality and category as null for camera fees
+            cameraFeeEntity.setNationality(null);
+            cameraFeeEntity.setCategory(null);
+            cameraFeeEntity.setEnteredOn(LocalDateTime.now());
+            feesRepo.save(cameraFeeEntity);
 
             //Save Fees
             for (int i = 0; i < nationalityIds.size(); i++) {

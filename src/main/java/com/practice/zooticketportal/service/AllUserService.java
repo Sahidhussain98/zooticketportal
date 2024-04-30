@@ -7,8 +7,10 @@ import java.util.List;
 public interface AllUserService {
     AllUser saveUserDetails(AllUser allUser);
     AllUser findByPhoneNumber(String phoneNumber);
-    List<AllUser> findByUsername(String username);
+//    List<AllUser> findByUsername(String username);
+    AllUser findByUsername(String username);
 
-//    static void saveEmail(String email);
+
+
 
 }

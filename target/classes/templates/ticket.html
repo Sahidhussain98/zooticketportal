@@ -128,12 +128,14 @@
                 </div>
                 <div class="form-group">
                     <label for="email">Email:<span class="text-danger">*</span></label>
-                    <input type="email" id="email"  th:value="${email}" readonly/>
+<!--                    <input type="email" id="email" th:field="*{email}"/>-->
+                    <input type="email" id="email"  th:value="${email}" />
                 </div>
                 <div class="form-group">
                     <label for="phoneNumber">Phone Number:<span class="text-danger">*</span></label>
-                    <input type="tel" id="phoneNumber"  th:value="${phoneNumber}" readonly/>
+                    <input type="tel" id="phoneNumber"  th:value="${phoneNumber}"/>
                 </div>
+
             </div>
         </fieldset>
 
@@ -177,6 +179,25 @@
 
 
         <hr class="separator">
+        <fieldset id="cameraDetails">
+            <legend>Camera Details</legend>
+            <div class="form-row" id="cameraRow1">
+                <div class="form-group1">
+                    <label for="numberOfCameras">No. of Cameras:<span class="text-danger">*</span></label>
+                    <input type="number" id="numberOfCameras" class="number-of-cameras" required min="0" onchange="calculateCameraFees()" />
+                </div>
+                <div class="form-group1">
+                    <label for="feesPerCamera">Fees per Camera:</label>
+                    <input type="text" id="feesPerCamera" th:value="${feesPerCamera}" readonly />
+                </div>
+                <div class="form-group1">
+                    <label for="totalCameraFees">Total Camera Fees:</label>
+                    <input type="text" id="totalCameraFees" readonly />
+                </div>
+            </div>
+
+        </fieldset>
+        <hr class="separator">
 
         <fieldset>
             <legend>Total Details</legend>
@@ -217,7 +238,7 @@
                         <!-- Ticket details will be displayed here -->
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Confirm</button>
                     </div>
                 </div>
             </div>
@@ -417,80 +438,92 @@
             }
         });
     });
-    // Function to fetch fee per person based on selected nationality, category, and establishment
-    // Function to fetch fee per person based on selected nationality, category, and establishment
-    // function fetchPricePerPerson() {
-    //     var establishmentId = $("#establishmentId").val();
-    //     var nationalityId = $("#nationalities").val();
-    //     var categoryId = $("#categories").val();
-    //
-    //     // Send AJAX request to backend controller to fetch fee per person
-    //     $.ajax({
-    //         url: '/fetchPricePerPerson', // Replace with your backend endpoint URL
-    //         method: 'GET',
-    //         data: {
-    //             establishmentId: establishmentId,
-    //             nationalityId: nationalityId,
-    //             categoryId: categoryId
-    //         },
-    //         success: function(response) {
-    //             // Update the price per person field with the fetched fee
-    //             $("#pricePerPerson").val(response.pricePerPerson);
-    //         },
-    //         error: function(xhr, status, error) {
-    //             console.error('Error fetching price per person:', error);
-    //         }
-    //     });
-    // }
-    //
-    //
-    // // Call fetchPricePerPerson() whenever there is a change in nationality, category, or establishment
-    // $(document).on("change", "#establishmentId, #nationalities, #categories", function() {
-    //     fetchPricePerPerson();
-    // });
-
-    // $(document).ready(function() {
-    //     // Event listener for form submission
-    //     $("#ticketForm").submit(function(event) {
-    //         // Prevent the default form submission
-    //         event.preventDefault();
-    //
-    //         // Capture form data
-    //         var formData = $(this).serialize();
-    //
-    //         // Redirect to ticket confirmation page with form data as URL parameters
-    //         window.location.href = "/ticketConfirmation?" + formData;
-    //     });
-    // });
-
-
 </script>
 <script>
-    $(document).ready(function() {
-        // Event listener for form submission
-        $("form").submit(function(event) {
-            event.preventDefault(); // Prevent the default form submission
+    // $(document).ready(function() {
+    //     // Event listener for form submission
+    //     $("form").submit(function(event) {
+    //         event.preventDefault(); // Prevent the default form submission
+    //
+    //         // Capture form data
+    //         var formData = $(this).serializeArray();
+    //         var modalBody = $(".modal-body");
+    //
+    //         // Clear previous content
+    //         modalBody.empty();
+    //
+    //         modalBody.append("<p> Date: " + $("#dateTime").val())
+    //         modalBody.append("<p> Name: " + $("#name").val())
+    //         modalBody.append("<p> Email: " + $("#email").val())
+    //         modalBody.append("<p> PhoneNumber: " + $("#phoneNumber").val())
+    //         modalBody.append("<p> Nationality: " + $("#nationalities").val())
+    //         modalBody.append("<p> Category: " + $("#categories").val())
+    //         modalBody.append("<p> Price Per Person: " + $("#pricePerPerson").val())
+    //         modalBody.append("<p> No Of People: " + $("#numberOfPeople").val())
+    //         modalBody.append("<p> Total: " + $("#totalFees").val())
+    //         modalBody.append("<p> Total Person: " + $("#totalPersons").val())
+    //         modalBody.append("<p> Total Cameras: " + $("#totalCameras").val())
+    //         modalBody.append("<p> Fees: " + $("#fees").val())
+    //         modalBody.append("<p> Total Amount: " + $("#totalAmount").val())
+    //
+    //         // Show the modal
+    //         $("#ticketModal").modal("show");
+    //     });
+    //
+    //     // Event listener for modal confirmation
+    //     $("#ticketModal .btn-secondary").click(function() {
+    //         // Redirect to the ticket download page
+    //         window.location.href = "ticketDownload.html";
+    //     });
+    // });
+</script>
 
-            // Capture form data
-            var formData = $(this).serializeArray();
-            var modalBody = $(".modal-body");
+<script>
+    // Function to calculate camera fees
+    function calculateCameraFees() {
+        var establishmentId = $("#establishmentId").val();
+        var numberOfCameras = $("#numberOfCameras").val();
 
-            // Clear previous content
-            modalBody.empty();
+        // Send AJAX request to backend controller to fetch camera fees
+        $.ajax({
+            url: '/fetchCameraFees',
+            method: 'GET',
+            data: {
+                establishmentId: establishmentId,
+                numberOfCameras: numberOfCameras
+            },
+            success: function (response) {
+                console.log("camera", response);
+                $("#feesPerCamera").val(response.feesPerCamera);
+                $("#totalCameraFees").val(response.totalCameraFees);
+            },
 
-            // Populate modal with form data
-            formData.forEach(function(field) {
-                var label = $("label[for='" + field.name + "']").text();
-                var value = field.value;
-
-                // Append label and value to modal body
-                modalBody.append("<p><strong>" + label + ":</strong> " + value + "</p>");
-            });
-
-            // Show the modal
-            $("#ticketModal").modal("show");
+            error: function (xhr, status, error) {
+                console.error('Error fetching camera fees:', error);
+            }
         });
+    }
+
+    // Bind event listener to the input field for number of cameras
+    $(document).on("input", "#numberOfCameras", function () {
+        updateTotalCameras(); // Call the function to update total cameras
     });
+
+    // Function to update the total cameras field
+    function updateTotalCameras() {
+        var numberOfCameras = parseInt($("#numberOfCameras").val()); // Get the value of the number of cameras
+
+        // Check if the value is a valid number
+        if (!isNaN(numberOfCameras)) {
+            // Update the total cameras field with the entered value
+            $("#totalCameras").val(numberOfCameras);
+        } else {
+            // If the entered value is not a number, clear the total cameras field
+            $("#totalCameras").val("");
+        }
+    }
+
+
 
 </script>
 

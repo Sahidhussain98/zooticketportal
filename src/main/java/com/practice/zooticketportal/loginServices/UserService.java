@@ -27,6 +27,8 @@ public class UserService {
         // Check if the user already exists
         AllUser existingUser = AllUserRepo.findByPhoneNumber(phoneNumber);
 
+        System.out.println("Existing user: " + existingUser);
+
         if (existingUser != null) {
             System.out.println("user exist");
             // User already exists, handle accordingly (update, notify, etc.)

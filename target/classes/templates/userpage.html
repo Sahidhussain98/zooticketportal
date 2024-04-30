@@ -68,63 +68,101 @@
         </div>
     </div>
 </div>
+<!-- Modal -->
+<!-- Modal -->
+<div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="userModalLabel">Enter your username and email</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="usernameInput">Username</label>
+                    <input id="usernameInput" class="form-control" name="username" placeholder="Username">
+                </div>
+                <div class="form-group">
+                    <label for="emailInput">Email</label>
+                    <input id="emailInput" class="form-control" name="email" placeholder="Email address">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveUserDataBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <!-- Include Bootstrap JS (popper.js included within Bootstrap) -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-<!-- Inside <body> tag -->
-<!-- Inside <body> tag -->
 <script>
-    // Function to trigger Sweet Alert after page load
-    document.addEventListener('DOMContentLoaded', function() {
-        // Show Sweet Alert prompt for email input
-        Swal.fire({
-            title: 'Enter your email',
-            input: 'email',
-            inputLabel: 'Email address',
-            inputPlaceholder: 'Enter your email address',
-            showCancelButton: true,
-            confirmButtonText: 'Submit',
-            showLoaderOnConfirm: true,
-            preConfirm: (email) => {
-                // Send the email to backend for processing and saving
-                return fetch('/saveEmail', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ email: email }),
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(response.statusText)
-                        }
-                        return response.json();
-                    })
-                    .catch(error => {
-                        Swal.showValidationMessage(
-                            `Request failed: ${error}`
-                        )
-                    });
+
+    $(document).ready(function() {
+        $.ajax({
+            url: "abc",
+            type: "POST",
+            success: function (response) {
+                console.log(response)
             },
-            allowOutsideClick: () => !Swal.isLoading()
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire(
-                    'Email saved!',
-                    'Your email has been successfully saved.',
-                    'success'
-                );
+            error: function (error) {
+                console.log(error)
             }
+        })
+        $('#userModal').modal('show');
+
+        $('#saveUserDataBtn').click(function() {
+            const username = $('#usernameInput').val();
+            const email = $('#emailInput').val();
+
+            let data = { username: username, email: email };
+            console.log(data)
+
+            $.ajax({
+                url: "/save2",
+                type: "POST",
+                success: function (response) {
+                    console.log(response)
+                },
+                error: function (error) {
+                    console.log(error)
+                }
+            })
+            $.ajax({
+                type: 'POST',
+                url: '/test/abc',
+                // data: data,
+                success: function(response) {
+                    console.log(response)
+                    // alert(email)
+                    // console.log('Data saved successfully:', response);
+                    // Swal.fire(
+                    //     'User data saved!',
+                    //     'Your username and email have been successfully saved.',
+                    //     'success'
+                    // );
+                },
+                error: function(xhr, status, error) {
+                    console.error('Failed to save data:', error);
+                    // Swal.fire(
+                    //     'Error',
+                    //     'Failed to save username and email.',
+                    //     'error'
+                    // );
+                }
+            });
         });
     });
+
+
 </script>
-
-
-
 </body>
-
 </html>

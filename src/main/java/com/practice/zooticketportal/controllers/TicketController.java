@@ -13,10 +13,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -48,27 +50,28 @@ public class TicketController {
     private FeesRepo feesRepo;
 
     @GetMapping("/showCheckoutForm/{establishmentId}")
-    public String showCheckoutForm(@PathVariable Long establishmentId, Model model, Authentication authentication) {
+    public String showCheckoutForm(@PathVariable Long establishmentId,
+                                   Model model,
+                                   Principal principal) {
         // Retrieve authenticated user's username
-        String username = authentication.getName();
+        String username = principal.getName();
+        System.out.println(username);
 
         // Retrieve user details from the database using the username
-        List<AllUser> users = allUserService.findByUsername(username);
+        AllUser user = allUserService.findByUsername(username);
 
         // Placeholder for phone number and email
-        String phoneNumber = "";
-        String email = "";
-
+        String email = user.getEmail();
+        String phoneNumber = String.valueOf(user.getPhoneNumber());
         // Check if any user was found
-        if (!users.isEmpty()) {
-            AllUser user = users.get(0); // Assuming there's only one user per username
-            phoneNumber = user.getPhoneNumber().toString();
-            email = user.getEmail();
-        }
+        System.out.print("phoneNumber"+phoneNumber);
+        System.out.print("email"+phoneNumber);
 
         // Here, you can add logic to retrieve the establishment details
         // based on the establishmentId from the database
         Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
+
+        // Create a ticket object
         Ticket ticket = new Ticket();
 
         // Add ticket and establishment objects to the model
@@ -76,6 +79,7 @@ public class TicketController {
         model.addAttribute("establishment", establishment);
         model.addAttribute("phoneNumber", phoneNumber);
         model.addAttribute("email", email);
+
         // add the list of countries to the model
         List<Category> categories = categoryRepo.findAll();
         List<Nationality> nationalities1 = nationalityRepo.findAll();
@@ -83,22 +87,8 @@ public class TicketController {
         model.addAttribute("nationalities", nationalities1);
         return "ticket";
     }
-//    @GetMapping("/ticketConfirmation/{establishmentId}")
-//    public String showTicketConfirmationPage(@PathVariable Long establishmentId, Model model) {
-//        System.out.print("TICKETconfirm");
-//        Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
-//        if (establishment == null) {
-//            // Handle the situation where the establishment is not found
-//            return "establishmentNotFound"; // Return a view indicating that the establishment is not found
-//        }
-//        model.addAttribute("establishment", establishment);
-//        return "ticketConfirmation"; // Assuming your Thymeleaf template is named "ticketConfirmation.html"
-//    }
-//@GetMapping("/ticketConfirmation")
-//    public String showTicketConfirmationPage(Model model) {
-//        System.out.print("TICKETconfirm");
-//        return "ticketConfirmation"; // Assuming your Thymeleaf template is named "ticketConfirmation.html"
-//    }
+
+
 
     @PostMapping("/processCheckoutForm/{establishmentId}")
     public String processForm(@PathVariable Long establishmentId, @ModelAttribute("theTicket") Ticket theTicket, Model model) {
@@ -122,7 +112,7 @@ public class TicketController {
         // Log the input data
 //        System.out.println("theTicket: " + theTicket.getname() + " " + theTicket.ame());
 
-        return "checkoutConfirmation-form";
+        return "ticketDownload";
     }
 
     // Method to generate random serial number (you can implement your own logic)
@@ -221,30 +211,6 @@ public class TicketController {
         }
     }
 
-
-    //    @GetMapping("/fetchFee")
-//    public ResponseEntity<?> fetchFee(@RequestParam("nationalityId") Long nationalityId,
-//                                      @RequestParam("categoryId") Long categoryId,
-//                                      @RequestParam("establishmentId") Long establishmentId,
-//                                      @RequestParam("numberOfPeople") Long numberOfPeople) {
-//        System.out.println("-----------");
-//
-//        // Query the database to retrieve the entry fee based on the provided nationality ID, category ID, and establishment ID
-//        List<Fees> fees = feesRepo.findByNationalityNationalityIdAndCategoryCategoryIdAndEstablishmentEstablishmentId(nationalityId, categoryId, establishmentId);
-//
-//        // Check if the fee is retrieved successfully
-//        if (fees != null && !fees.isEmpty()) {
-//            // Calculate the total fees for this combination based on the entry fee and the number of people
-//            double entryFee = fees.get(0).getEntryFee(); // Assuming only one entry fee is returned
-//            double totalFees = entryFee * numberOfPeople; // Multiply by the number of people
-//
-//            // Return the total fees amount in the response body
-//            return ResponseEntity.ok(totalFees);
-//        } else {
-//            // If the fee cannot be retrieved, return an error response
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//        }
-//    }
     @GetMapping("/fetchFee")
     public ResponseEntity<Map<String, Double>> fetchFee(@RequestParam("nationalityId") Long nationalityId,
                                                         @RequestParam("categoryId") Long categoryId,

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 public class AllUserController {
@@ -21,32 +22,75 @@ public class AllUserController {
     private AllUserService allUserService;
     @Autowired
     private AllUserRepo allUserRepo;
-    @PostMapping("/saveUserDetails")
-    @ResponseBody
-    public String saveAdditionalDetails(@RequestBody AllUser allUser) {
-        // Save the additional details to the database
-        allUserService.saveUserDetails(allUser);
 
-        // Return a success message or any other response if needed
-        return "Details saved successfully!";
-    }
-    @GetMapping("/checkUserDetails")
+    @PostMapping("/abc")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> checkUserDetails() {
+    public String get() {
+        System.out.println("abc");
+        return "abc";
+    }
+
+    @PostMapping("/saveUsernameEmail")
+    @ResponseBody
+    public ResponseEntity<?> saveUsernameEmail(@RequestParam String username, @RequestParam String email) {
+        System.out.println("Saving username and email...");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String phoneNumberString  = authentication.getName(); // phoneNumber is already a string
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
-        // Convert phoneNumberString to Long
-        Long phoneNumber = Long.parseLong(phoneNumberString);
+        String strphoneNumber = authentication.getName(); // Get authenticated username
 
-        // Check if user details exist for the given phone number
+        Long phoneNumber = Long.parseLong(strphoneNumber);
         AllUser user = allUserRepo.findByPhoneNumber(phoneNumber);
-        boolean userDetailsExist = user != null && (user.getUsername() != null || user.getEmail() != null);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("userDetailsExist", userDetailsExist);
-        return ResponseEntity.ok(response);
+        user.setUsername(username);
+        user.setEmail(email);
+        allUserRepo.save(user);
+
+        return ResponseEntity.ok("Username and email saved successfully");
     }
+
+
+    //For saving email and username for the authenticated user
+//    @PostMapping("/saveUsernameEmail")
+//    @ResponseBody
+//    public ResponseEntity<String> saveUserData(@RequestBody Map<String, String> userData) {
+//        System.out.println("EmailUsername");
+//        String email = userData.get("email");
+//        String username = userData.get("username");
+//
+//        try {
+//            allUserService.saveEmailAndUsername(email, username);
+//            return ResponseEntity.ok("User data saved successfully.");
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save user data: " + e.getMessage());
+//        }
+//    }
+
+
+    @PostMapping("/checkUsernameEmailExists")
+    public ResponseEntity<Map<String, Boolean>> checkUsernameEmailExists(@RequestBody Map<String, Long> requestBody) {
+        Long allUserId = requestBody.get("allUserId");
+        Optional<AllUser> userOptional = allUserRepo.findById(allUserId);
+        if (userOptional.isPresent()) {
+            AllUser user = userOptional.get();
+            String username = user.getUsername();
+            String email = user.getEmail();
+            boolean usernameEmailExists = username != null && !username.isEmpty() && email != null && !email.isEmpty();
+            Map<String, Boolean> response = new HashMap<>();
+            response.put("usernameEmailExists", usernameEmailExists);
+            System.out.println("checkUsernameEmailExists");
+            System.out.println(response);
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @PostMapping("/change-password")
     @ResponseBody
     public ResponseEntity<String> changePassword(@RequestParam String newPassword) {

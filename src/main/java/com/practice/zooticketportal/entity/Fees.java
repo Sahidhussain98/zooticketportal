@@ -17,6 +17,8 @@ public class Fees {
     private Long feesId;
     @Column(name="entry_fee")
     private Double entryFee;
+    @Column(name="camera_fee")
+    private Double cameraFee;
     @Column(name="entered_on")
     private LocalDateTime enteredOn;
     @Column(name="entered_by")
@@ -47,6 +49,14 @@ public class Fees {
 
     public void setEntryFee(Double entryFee) {
         this.entryFee = entryFee;
+    }
+
+    public Double getCameraFee() {
+        return cameraFee;
+    }
+
+    public void setCameraFee(Double cameraFee) {
+        this.cameraFee = cameraFee;
     }
 
     public LocalDateTime getEnteredOn() {

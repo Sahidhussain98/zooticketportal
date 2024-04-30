@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Controller
-public class UserPageController {
+public class   UserPageController {
 
     private final EstablishmentService establishmentService;
 
@@ -53,15 +53,12 @@ public class UserPageController {
         System.out.println("Authenticated username: " + username);
 
         // Retrieve user data from the UserService
-        List<AllUser> users = allUserService.findByUsername(username);
-        //users.
+        AllUser user = allUserService.findByUsername(username);
 
-        System.out.println("User :" + users);
-
+        System.out.println("Username object: " + user); // Print user object
 
         // Check if any user was found
-        if (!users.isEmpty()) {
-            AllUser user = users.get(0); // Assuming there's only one user per username
+        if (user != null) {
             model.addAttribute("user", user);
             return "userDetails";
         } else {
@@ -69,43 +66,6 @@ public class UserPageController {
             return "error"; // or whatever error handling you need
         }
     }
-    // Add a method to your controller to handle saving the email
-    @PostMapping("/saveEmail")
-    public ResponseEntity<String> saveEmail(@RequestBody Map<String, String> request) {
-        String email = request.get("email");
-
-        // Validate email (you can add more validation logic as per your requirements)
-        if (email == null || email.isEmpty()) {
-            return ResponseEntity.badRequest().body("{\"message\": \"Email is required.\"}");
-        }
-
-        try {
-            // Save the email to the AllUser entity
-            AllUser user = getUserFromYourSession(); // Implement this method to get the current logged-in user
-            user.setEmail(email);
-            allUserRepo.save(user); // Assuming userRepository is your repository for AllUser entity
-
-            // Return a JSON response indicating success
-            return ResponseEntity.ok("{\"message\": \"Email saved successfully.\"}");
-        } catch (Exception e) {
-            // Return a JSON response indicating failure
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"message\": \"Failed to save email.\"}");
-        }
-    }
-    // Add this method to your UserPageController
-    private AllUser getUserFromYourSession() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        List<AllUser> users = allUserService.findByUsername(username);
-
-        if (!users.isEmpty()) {
-            return users.get(0); // Assuming there's only one user per username
-        } else {
-            return null; // Or handle the case when no user is found according to your application logic
-        }
-    }
-
-
 
 }
 

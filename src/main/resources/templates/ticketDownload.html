@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Download Page</title>
+</head>
+<body>
+<h1>Ticket Download Page</h1>
+<!-- Add a download button -->
+<!--<a th:href="@{/export/pdf(id=${theTicket.id})}" download><button>Download Ticket</button></a>-->
+<a th:href="@{/export/pdf(id=${theTicket.id})}" class="btn btn-success" id="downloadPdf">Download PDF Report</a>
+<script>
+    document.getElementById('downloadPdf').addEventListener('click', function() {
+        // Store reference to current scope
+        var self = this;
+
+        // Check for the email sent flag after a delay to ensure the response is received
+        setTimeout(function() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('HEAD', self.href, true);
+            xhr.onload = function () {
+                var emailSent = xhr.getResponseHeader('X-Email-Sent');
+                if (emailSent === 'true') {
+                    // Display a success message
+                    var successMessage = document.createElement('div');
+                    successMessage.textContent = 'Email sent successfully';
+                    successMessage.classList.add('alert', 'alert-success');
+                    document.body.appendChild(successMessage);
+                } else {
+                    // Display an error message if email was not sent
+                    var errorMessage = document.createElement('div');
+                    errorMessage.textContent = 'Error sending email';
+                    errorMessage.classList.add('alert', 'alert-danger');
+                    document.body.appendChild(errorMessage);
+                }
+            };
+            xhr.send(null);
+        }, 200); // Adjust the delay as needed
+    });
+
+</script>
+</body>
+</html>

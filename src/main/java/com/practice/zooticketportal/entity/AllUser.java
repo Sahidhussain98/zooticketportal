@@ -167,4 +167,20 @@ public class  AllUser {
     public void setRoles(Set<Roles> roles) {
         this.roles = roles;
     }
+
+    @Override
+    public String toString() {
+        return "AllUser{" +
+                "allUserId=" + allUserId +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", phoneNumber=" + phoneNumber +
+                ", onCreate=" + onCreate +
+                ", onUpdate=" + onUpdate +
+                ", email='" + email + '\'' +
+                ", establishment=" + establishment +
+                ", tickets=" + tickets +
+                ", roles=" + roles +
+                '}';
+    }
 }

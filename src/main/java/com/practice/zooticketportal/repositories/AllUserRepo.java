@@ -9,10 +9,10 @@ import java.util.Optional;
 
 @Repository
 public interface AllUserRepo extends JpaRepository<AllUser, Long> {
-     List<AllUser> findByUsername(String username);
-    AllUser findByPhoneNumber(Long phoneNumber);
 
+//    List<AllUser> findByUsername(String username);
+    AllUser findByUsername(String username);
+    AllUser findByPhoneNumber(Long phoneNumber);
     Optional<AllUser> findByEmail(String email);
-//    AllUser findByPhoneNumber(String phoneNumber);
-//    void saveEmail(String email);
+
 }
