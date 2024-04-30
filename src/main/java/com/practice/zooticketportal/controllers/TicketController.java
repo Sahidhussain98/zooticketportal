@@ -7,6 +7,7 @@ import com.practice.zooticketportal.service.AllUserService;
 import com.practice.zooticketportal.service.EstablishmentService;
 import com.practice.zooticketportal.service.TicketService;
 import com.practice.zooticketportal.serviceimpl.NonWorkingDaysService;
+import jakarta.validation.constraints.Email;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -55,7 +56,7 @@ public class TicketController {
                                    Principal principal) {
         // Retrieve authenticated user's username
         String username = principal.getName();
-        System.out.println(username);
+//        System.out.println(username);
 
         // Retrieve user details from the database using the username
         AllUser user = allUserService.findByUsername(username);
@@ -64,8 +65,8 @@ public class TicketController {
         String email = user.getEmail();
         String phoneNumber = String.valueOf(user.getPhoneNumber());
         // Check if any user was found
-        System.out.print("phoneNumber"+phoneNumber);
-        System.out.print("email"+phoneNumber);
+//        System.out.print("phoneNumber"+phoneNumber);
+//        System.out.print("email"+email);
 
         // Here, you can add logic to retrieve the establishment details
         // based on the establishmentId from the database
@@ -73,9 +74,13 @@ public class TicketController {
 
         // Create a ticket object
         Ticket ticket = new Ticket();
+        ticket.setEmail(email);
+        ticket.setPhoneNumber(Long.parseLong(phoneNumber));
+
 
         // Add ticket and establishment objects to the model
         model.addAttribute("theTicket", ticket);
+        System.out.println("Ticket "+ticket);
         model.addAttribute("establishment", establishment);
         model.addAttribute("phoneNumber", phoneNumber);
         model.addAttribute("email", email);
@@ -95,7 +100,8 @@ public class TicketController {
         // Retrieve establishment name
         Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
         String establishmentName = establishment.getName();
-        System.out.print("print please");
+
+        System.out.print("print please "+theTicket.toString());
 
         // Generate random serial number (you can use your preferred method to generate the serial number)
         int serialNumber = generateRandomSerialNumber();
@@ -115,11 +121,25 @@ public class TicketController {
         return "ticketDownload";
     }
 
-    // Method to generate random serial number (you can implement your own logic)
+//     Method to generate random serial number (you can implement your own logic)
     private int generateRandomSerialNumber() {
         // Implement your logic to generate a random serial number
         return (int) (Math.random() * 1000); // Example logic: Generate a random number between 0 and 999
     }
+
+//    @PostMapping("/processCheckoutForm/{establishmentId}")
+//    public String processCheckoutForm(@PathVariable("establishmentId") Long establishmentId, @ModelAttribute Map<String, Object> formData, Model model) {
+//        // Process the form data (save to database, perform calculations, etc.)
+//
+//        // Pass the establishment ID to the confirmation page
+//        model.addAttribute("establishmentId", establishmentId);
+//        // Pass the form data to the confirmation page
+//        model.addAttribute("formData", formData);
+//
+//        // Redirect to the confirmation page
+//        return "redirect:/ticketConfirmation";
+//    }
+
 
 
     @GetMapping("/showEditForm/{ticketId}")

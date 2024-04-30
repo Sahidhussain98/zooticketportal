@@ -3,6 +3,7 @@ package com.practice.zooticketportal.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -163,5 +164,26 @@ public class Ticket {
 
     public void setPayment(Payment payment) {
         this.payment = payment;
+    }
+
+    @Override
+    public String toString() {
+        return "Ticket{" +
+                "id=" + id +
+                ", bookingId='" + bookingId + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", phoneNumber=" + phoneNumber +
+                ", numberOfPeople=" + numberOfPeople +
+                ", totalPersons=" + totalPersons +
+                ", totalCameras=" + totalCameras +
+                ", totalAmount='" + totalAmount + '\'' +
+                ", dateTime=" + dateTime +
+                ", enteredBy=" + enteredBy +
+                ", enteredOn='" + enteredOn + '\'' +
+                ", user=" + user +
+                ", establishment=" + establishment +
+                ", payment=" + payment +
+                '}';
     }
 }
