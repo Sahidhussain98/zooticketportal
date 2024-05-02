@@ -106,6 +106,11 @@
                                 <td th:text="${fee.enteredBy}"></td>
                                 <!--                                <td><button type="button" class="btn btn-danger delete-button" onclick="deleteFee(${row.index})">Delete</button></td>-->
                             </tr>
+                            <tr>
+                                <td colspan="5">
+                                    <p class="profile-field">Camera Fee: <span id="cameraFeeValue"></span></p>
+                                </td>
+                            </tr>
 
                             </tbody>
                         </table>
@@ -214,7 +219,23 @@
         }
     }
 
-
+    $(document).ready(function () {
+        var establishmentId = $("#establishmentId").val();
+        $.ajax({
+            type: "GET",
+            url: "/fetchCameraFees",
+            data: {
+                establishmentId: establishmentId/* Provide establishment ID here */
+            },
+            success: function (data) {
+                // You can handle the response data here if needed
+                console.log("Camera fees fetched successfully:", data);
+            },
+            error: function (xhr, status, error) {
+                console.error("Error fetching camera fees: " + error);
+            }
+        });
+    });
 </script>
 
 </body>

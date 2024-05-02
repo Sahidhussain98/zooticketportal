@@ -284,6 +284,9 @@
 
                     // Update the Fees field with the total fees
                     $("#fees").val(totalFees.toFixed(2));
+
+                    // Calculate total amount whenever fees change
+                    calculateTotalAmount();
                 }.bind(this), // Bind the current context to use inside the success callback
                 error: function(xhr, status, error) {
                     console.error('Error fetching/calculating fees:', error);
@@ -291,7 +294,6 @@
             });
         });
     }
-
 
     // Call calculateFees() whenever there is a change in nationality, category, establishment, or number of people
     $(document).on("change", "#establishmentId, #nationalities, #categories, #numberOfPeople", function() {
@@ -330,6 +332,10 @@
         // Function to remove fields dynamically
         $(document).on("click", ".removeFields", function() {
             $(this).closest('.form-row').remove(); // Remove the closest form-row
+            calculateFees();
+
+            // Recalculate total persons when removing a row
+            calculateTotalPersons();
         });
 
         // Check for existing combinations when selecting nationality and category
@@ -492,18 +498,19 @@
                 establishmentId: establishmentId,
                 numberOfCameras: numberOfCameras
             },
-            success: function (response) {
-                console.log("camera", response);
+            success: function(response) {
                 $("#feesPerCamera").val(response.feesPerCamera);
                 $("#totalCameraFees").val(response.totalCameraFees);
+
+                // Calculate total amount whenever camera fees change
+                calculateTotalAmount();
             },
 
-            error: function (xhr, status, error) {
+            error: function(xhr, status, error) {
                 console.error('Error fetching camera fees:', error);
             }
         });
     }
-
     // Bind event listener to the input field for number of cameras
     $(document).on("input", "#numberOfCameras", function () {
         updateTotalCameras(); // Call the function to update total cameras
@@ -522,6 +529,25 @@
             $("#totalCameras").val("");
         }
     }
+    function calculateTotalAmount() {
+        var fees = parseFloat($("#fees").val());
+        var totalCameraFees = parseFloat($("#totalCameraFees").val());
+
+        // Check if entry fees or camera fees is NaN (not a number)
+        if (isNaN(fees)) {
+            fees = 0; // Set entry fees to 0 if NaN
+        }
+        if (isNaN(totalCameraFees)) {
+            totalCameraFees = 0; // Set camera fees to 0 if NaN
+        }
+
+        // Calculate total amount
+        var totalAmount = fees + totalCameraFees;
+
+        // Set total amount field
+        $("#totalAmount").val(totalAmount.toFixed(2));
+    }
+
 
 
 
