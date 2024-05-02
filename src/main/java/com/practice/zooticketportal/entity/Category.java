@@ -74,4 +74,7 @@ public class Category {
     public void setEnteredBy(String enteredBy) {
         this.enteredBy = enteredBy;
     }
+    public boolean hasEntryFee() {
+        return fees != null && !fees.isEmpty();
+    }
 }

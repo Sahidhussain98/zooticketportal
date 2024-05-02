@@ -20,6 +20,7 @@ public class Nationality {
     @OneToMany(mappedBy = "nationality", cascade = CascadeType.ALL)
     private List<Fees> fees;
 
+
     public Long getNationalityId() {
         return nationalityId;
     }
@@ -42,5 +43,8 @@ public class Nationality {
 
     public void setFees(List<Fees> fees) {
         this.fees = fees;
+    }
+    public boolean hasEntryFee() {
+        return fees != null && !fees.isEmpty();
     }
 }

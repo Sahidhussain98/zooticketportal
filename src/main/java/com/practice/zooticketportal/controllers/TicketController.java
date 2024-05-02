@@ -86,11 +86,28 @@ public class TicketController {
         model.addAttribute("email", email);
 
         // add the list of countries to the model
-        List<Category> categories = categoryRepo.findAll();
-        List<Nationality> nationalities1 = nationalityRepo.findAll();
-        model.addAttribute("categories", categories);
-        model.addAttribute("nationalities", nationalities1);
+        // Fetch nationalities and categories with associated entry fees
+        List<Nationality> nationalitiesWithFees = feesRepo.findNationalitiesWithFees(establishmentId);
+        List<Category> categoriesWithFees = feesRepo.findCategoriesWithFees(establishmentId);
+
+
+        // Add filtered nationalities and categories to the model
+        model.addAttribute("nationalities", nationalitiesWithFees);
+        model.addAttribute("categories", categoriesWithFees);
+
         return "ticket";
+    }
+
+    private List<Category> filterCategoriesWithFees(List<Category> categories) {
+        return categories.stream()
+                .filter(c -> c.getFees() != null && !c.getFees().isEmpty())
+                .collect(Collectors.toList());
+    }
+
+    private List<Nationality> filterNationalitiesWithFees(List<Nationality> nationalities) {
+        return nationalities.stream()
+                .filter(n -> n.getFees() != null && !n.getFees().isEmpty())
+                .collect(Collectors.toList());
     }
 
 

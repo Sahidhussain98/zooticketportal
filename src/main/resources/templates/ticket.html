@@ -148,14 +148,14 @@
                     <label for="nationalities">Nationalities:<span class="text-danger">*</span></label>
                     <select id="nationalities" name="nationalityId" class="form-control" required>
                         <option value="">--SELECT NATIONALITY--</option>
-                        <option th:each="nationality : ${nationalities}" th:value="${nationality.nationalityId}" th:text="${nationality.nationalityType}"></option>
+                        <option th:each="nationality : ${nationalities}" th:if="${nationality.hasEntryFee()}" th:value="${nationality.nationalityId}" th:text="${nationality.nationalityType}"></option>
                     </select>
                 </div>
                 <div class="form-group1">
                     <label for="categories">Categories:<span class="text-danger">*</span></label>
                     <select id="categories" name="categoryId" class="form-control" required>
                         <option value="">--SELECT CATEGORY--</option>
-                        <option th:each="category : ${categories}" th:value="${category.categoryId}" th:text="${category.categoryName}"></option>
+                        <option th:each="category : ${categories}" th:if="${category.hasEntryFee()}" th:value="${category.categoryId}" th:text="${category.categoryName}"></option>
                     </select>
                 </div>
                 <div class="form-group1">
