@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fff; /* Light grey background */
+            color: #333; /* Dark text color */
+        }
+
+        .container {
+            margin: 20px auto;
+            max-width: 800px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f4f4f4; /* White background for user details container */
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Light shadow effect */
+        }
+        h1 {
+            text-align: center;
+            color: #0056b3; /* Dark blue header text color */
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .change-password-link {
+            color: #007bff; /* Blue color for change password link */
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="fragments/adminNavMenu :: header"></div>
+<div class="container">
+    <h1>User Details</h1>
+    <ul>
+        <li><strong>Username:</strong> <span th:text="${user.username}"></span></li>
+        <li><strong>Phone Number:</strong> <span th:text="${user.phoneNumber}"></span></li>
+        <li><strong>Email:</strong> <span th:text="${user.email}"></span></li>
+    </ul>
+</div>
+</body>
+</html>

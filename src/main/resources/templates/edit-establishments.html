@@ -106,12 +106,24 @@
                                 <td th:text="${fee.enteredBy}"></td>
                                 <!--                                <td><button type="button" class="btn btn-danger delete-button" onclick="deleteFee(${row.index})">Delete</button></td>-->
                             </tr>
-                            <tr>
-                                <td colspan="5">
-                                    <p class="profile-field">Camera Fee: <span id="cameraFeeValue"></span></p>
-                                </td>
-                            </tr>
 
+                            </tbody>
+                        </table>
+
+                        <!-- New table for additional fees -->
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Other Fees Type</th>
+                                <th>Fees</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <!-- Iterate over other fees if they exist -->
+<!--                            <tr th:each="otherFees : ${establishment.otherFees}">-->
+<!--                                <td th:text="${otherFee.otherFeesType}"></td>-->
+<!--                                <td th:text="${otherFee.fees}"></td>-->
+<!--                            </tr>-->
                             </tbody>
                         </table>
                         <p class="profile-field">Status: <span th:text="${establishment.status} ? 'Active' : 'Inactive'"></span></p>
@@ -219,23 +231,7 @@
         }
     }
 
-    $(document).ready(function () {
-        var establishmentId = $("#establishmentId").val();
-        $.ajax({
-            type: "GET",
-            url: "/fetchCameraFees",
-            data: {
-                establishmentId: establishmentId/* Provide establishment ID here */
-            },
-            success: function (data) {
-                // You can handle the response data here if needed
-                console.log("Camera fees fetched successfully:", data);
-            },
-            error: function (xhr, status, error) {
-                console.error("Error fetching camera fees: " + error);
-            }
-        });
-    });
+
 </script>
 
 </body>

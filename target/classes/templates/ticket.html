@@ -179,24 +179,37 @@
 
 
         <hr class="separator">
-        <fieldset id="cameraDetails">
-            <legend>Camera Details</legend>
-            <div class="form-row" id="cameraRow1">
+        <fieldset id="otherFees">
+            <legend>Other Fees</legend>
+            <div class="form-row" id="otherFeesRow1">
                 <div class="form-group1">
-                    <label for="numberOfCameras">No. of Cameras:<span class="text-danger">*</span></label>
-                    <input type="number" id="numberOfCameras" class="number-of-cameras" required min="0" onchange="calculateCameraFees()" />
+                    <label for="otherFeesType">Fee Type:<span class="text-danger">*</span></label>
+                    <select id="otherFeesType" name="otherFeesType" class="form-control" required>
+                        <option value="">--SELECT FEES TYPE--</option>
+                        <!-- Iterate over each fee type -->
+                        <option th:each="otherFeesType : ${otherFeesType}"
+                                th:if="${otherFeesType.hasFees()}"
+                                th:value="${otherFeesType.otherFeesTypeId}"
+                                th:text="${otherFeesType.otherFeesType}"></option>
+                    </select>
+                </div>
+
+
+                <div class="form-group1">
+                    <label for="numberOfItems">No. of Items:<span class="text-danger">*</span></label>
+                    <input type="number" id="numberOfItems" class="number-of-items" required min="0" onchange="calculateOtherFees()" />
                 </div>
                 <div class="form-group1">
-                    <label for="feesPerCamera">Fees per Camera:</label>
-                    <input type="text" id="feesPerCamera" th:value="${feesPerCamera}" readonly />
+                    <label for="feesPerItem">Fees per Item:</label>
+                    <input type="text" id="feesPerItem" readonly />
                 </div>
                 <div class="form-group1">
-                    <label for="totalCameraFees">Total Camera Fees:</label>
-                    <input type="text" id="totalCameraFees" readonly />
+                    <label for="totalItemFees">Total Item Fees:</label>
+                    <input type="text" id="totalItemFees" readonly />
                 </div>
             </div>
-
         </fieldset>
+
         <hr class="separator">
 
         <fieldset>
@@ -483,77 +496,38 @@
     //     });
     // });
 </script>
-
 <script>
-    // Function to calculate camera fees
-    function calculateCameraFees() {
+    // Function to fetch original fees and calculate total item fees
+    function calculateOtherFees() {
+        var numberOfItems = $("#numberOfItems").val();
+        var otherFeesTypeId = $("#otherFeesType").val();
         var establishmentId = $("#establishmentId").val();
-        var numberOfCameras = $("#numberOfCameras").val();
 
-        // Send AJAX request to backend controller to fetch camera fees
+        // Send AJAX request to backend controller to fetch original fees
         $.ajax({
-            url: '/fetchCameraFees',
+            url: '/fetchOtherFees',
             method: 'GET',
             data: {
                 establishmentId: establishmentId,
-                numberOfCameras: numberOfCameras
+                otherFeesTypeId: otherFeesTypeId,
+                numberOfItems: numberOfItems
             },
-            success: function(response) {
-                $("#feesPerCamera").val(response.feesPerCamera);
-                $("#totalCameraFees").val(response.totalCameraFees);
-
-                // Calculate total amount whenever camera fees change
-                calculateTotalAmount();
+            success: function(totalItemFees) {
+                // Update the total item fees field
+                $("#totalItemFees").val(totalItemFees.toFixed(2));
             },
-
             error: function(xhr, status, error) {
-                console.error('Error fetching camera fees:', error);
+                console.error('Error fetching original fees:', error);
             }
         });
     }
-    // Bind event listener to the input field for number of cameras
-    $(document).on("input", "#numberOfCameras", function () {
-        updateTotalCameras(); // Call the function to update total cameras
+
+    // Call calculateOtherFees() whenever the number of items or the fee type changes
+    $(document).on("change", "#numberOfItems, #otherFeesType", function() {
+        calculateOtherFees();
     });
 
-    // Function to update the total cameras field
-    function updateTotalCameras() {
-        var numberOfCameras = parseInt($("#numberOfCameras").val()); // Get the value of the number of cameras
-
-        // Check if the value is a valid number
-        if (!isNaN(numberOfCameras)) {
-            // Update the total cameras field with the entered value
-            $("#totalCameras").val(numberOfCameras);
-        } else {
-            // If the entered value is not a number, clear the total cameras field
-            $("#totalCameras").val("");
-        }
-    }
-    function calculateTotalAmount() {
-        var fees = parseFloat($("#fees").val());
-        var totalCameraFees = parseFloat($("#totalCameraFees").val());
-
-        // Check if entry fees or camera fees is NaN (not a number)
-        if (isNaN(fees)) {
-            fees = 0; // Set entry fees to 0 if NaN
-        }
-        if (isNaN(totalCameraFees)) {
-            totalCameraFees = 0; // Set camera fees to 0 if NaN
-        }
-
-        // Calculate total amount
-        var totalAmount = fees + totalCameraFees;
-
-        // Set total amount field
-        $("#totalAmount").val(totalAmount.toFixed(2));
-    }
-
-
-
-
 </script>
-
-
 </body>
 </html>
 

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -45,10 +46,10 @@ public class   UserPageController {
     }
 
     @GetMapping("/userDetails")
-    public String showUserDetails(Model model) {
+    public String showUserDetails(Model model,
+                                  Principal principal) {
         // Retrieve authenticated user's username
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+        String username = principal.getName();
 
         System.out.println("Authenticated username: " + username);
 

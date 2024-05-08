@@ -30,30 +30,6 @@ public class AllUserController {
         return "abc";
     }
 
-    @PostMapping("/saveUsernameEmail")
-    @ResponseBody
-    public ResponseEntity<?> saveUsernameEmail(@RequestParam String username, @RequestParam String email) {
-        System.out.println("Saving username and email...");
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        String strphoneNumber = authentication.getName(); // Get authenticated username
-
-        Long phoneNumber = Long.parseLong(strphoneNumber);
-        AllUser user = allUserRepo.findByPhoneNumber(phoneNumber);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-        }
-
-        user.setUsername(username);
-        user.setEmail(email);
-        allUserRepo.save(user);
-
-        return ResponseEntity.ok("Username and email saved successfully");
-    }
-
 
     //For saving email and username for the authenticated user
 //    @PostMapping("/saveUsernameEmail")

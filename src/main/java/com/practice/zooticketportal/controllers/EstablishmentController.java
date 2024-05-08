@@ -67,9 +67,13 @@ public class EstablishmentController {
     private FeesRepo feesRepo;
     @Autowired
     private NonWorkingDaysRepo nonWorkingDaysRepo;
+    @Autowired
+    private OtherFeesTypeRepo otherFeesTypeRepo;
 
     @Autowired
     private EstablishmentRepo establishmentRepo;
+    @Autowired
+    private OtherFeesRepo otherFeesRepo;
     ObjectMapper objectMapper = new ObjectMapper();// needed to load establishmnet page
 
     @Autowired
@@ -219,8 +223,15 @@ public class EstablishmentController {
             // Retrieve additional data from createEstablishmentForm2 method
             List<Category> categories = categoryRepo.findAll();
             List<Nationality> nationalities1 = nationalityRepo.findAll();
+            // Fetch other fees types
+            List<OtherFeesType> otherFeesTypes = otherFeesTypeRepo.findAll();
+
+            // Logging to verify if otherFeesTypes is populated correctly
+            System.out.println("Other Fees Types: " + otherFeesTypes);
+
             model.addAttribute("categories", categories);
             model.addAttribute("nationalities", nationalities1);
+            model.addAttribute("otherFeesTypes", otherFeesTypes);
 
             return "createestablishment2"; // Return the HTML template with the establishment details
         } else {
@@ -228,6 +239,7 @@ public class EstablishmentController {
             return "error"; // For example, return an error page
         }
     }
+
 
 
     @PostMapping("/save2")
@@ -239,7 +251,8 @@ public class EstablishmentController {
                                      @RequestParam("nationalityId") List<Long> nationalityIds,
                                      @RequestParam("categoryId") List<Long> categoryIds,
                                      @RequestParam("entryFee") List<Double> entryFees,
-                                     @RequestParam("cameraFee") Double cameraFee,
+                                     @RequestParam("otherFeesType") List<Long> otherFeesTypeIds,
+                                     @RequestParam("fees") List<Double> feesList, // Renamed to feesList
                                      Model model) {
         try {
             // Fetch the existing establishment object from the database
@@ -262,18 +275,8 @@ public class EstablishmentController {
 
             // Save the image and get its imageId
             Long imageId = storageService.uploadImage(imageFile, establishmentId); // Pass the establishment ID to link the image with the establishment
-            // Save camera fee
-            Fees cameraFeeEntity = new Fees();
-            cameraFeeEntity.setEstablishment(establishment);
-            // Set other camera fee details if needed
-            cameraFeeEntity.setCameraFee(cameraFee);
-            // Set nationality and category as null for camera fees
-            cameraFeeEntity.setNationality(null);
-            cameraFeeEntity.setCategory(null);
-            cameraFeeEntity.setEnteredOn(LocalDateTime.now());
-            feesRepo.save(cameraFeeEntity);
 
-            //Save Fees
+            // Save Entry Fees
             for (int i = 0; i < nationalityIds.size(); i++) {
                 Long nationalityId = nationalityIds.get(i);
                 Long categoryId = categoryIds.get(i);
@@ -284,15 +287,27 @@ public class EstablishmentController {
                 fees.setNationality(nationalityRepo.findById(nationalityId).orElse(null));
                 fees.setCategory(categoryRepo.findById(categoryId).orElse(null));
                 fees.setEstablishment(establishment);
-
                 fees.setEnteredOn(LocalDateTime.now());
-//                fees.setupdateEnteredOn(LocalDateTime.now());
                 Authentication authentication1 = SecurityContextHolder.getContext().getAuthentication();
                 String enteredBy1 = authentication1.getName();
                 fees.setEnteredBy(enteredBy1);
 
                 feesRepo.save(fees);
             }
+
+            // Save Other Fees
+            for (int i = 0; i < otherFeesTypeIds.size(); i++) {
+                Long otherFeesTypeId = otherFeesTypeIds.get(i);
+                Double fee = feesList.get(i); // Changed variable name to feesList
+                // Create OtherFees object and link to establishment
+                OtherFees otherFeesEntity = new OtherFees();
+                otherFeesEntity.setFees(fee);
+                otherFeesEntity.setOtherFeesType(otherFeesTypeRepo.findById(otherFeesTypeId).orElse(null));
+                otherFeesEntity.setEstablishment(establishment);
+
+                otherFeesRepo.save(otherFeesEntity);
+            }
+
             // Optionally, you can add a success message to the model
             model.addAttribute("message", "Establishment updated successfully!");
         } catch (IOException e) {
@@ -303,7 +318,6 @@ public class EstablishmentController {
 
         return "redirect:/establishments"; // Redirect to the home page or any other appropriate page
     }
-
 
 
 

@@ -49,6 +49,8 @@ public class TicketController {
     private AllUserService allUserService;
     @Autowired
     private FeesRepo feesRepo;
+    @Autowired
+    private OtherFeesRepo otherFeesRepo;
 
     @GetMapping("/showCheckoutForm/{establishmentId}")
     public String showCheckoutForm(@PathVariable Long establishmentId,
@@ -89,27 +91,16 @@ public class TicketController {
         // Fetch nationalities and categories with associated entry fees
         List<Nationality> nationalitiesWithFees = feesRepo.findNationalitiesWithFees(establishmentId);
         List<Category> categoriesWithFees = feesRepo.findCategoriesWithFees(establishmentId);
+        List<OtherFeesType> otherFeesTypeWithFees = otherFeesRepo.findOtherFeesTypeWithFees(establishmentId);
 
 
         // Add filtered nationalities and categories to the model
         model.addAttribute("nationalities", nationalitiesWithFees);
         model.addAttribute("categories", categoriesWithFees);
+        model.addAttribute("otherFeesType", otherFeesTypeWithFees);
 
         return "ticket";
     }
-
-    private List<Category> filterCategoriesWithFees(List<Category> categories) {
-        return categories.stream()
-                .filter(c -> c.getFees() != null && !c.getFees().isEmpty())
-                .collect(Collectors.toList());
-    }
-
-    private List<Nationality> filterNationalitiesWithFees(List<Nationality> nationalities) {
-        return nationalities.stream()
-                .filter(n -> n.getFees() != null && !n.getFees().isEmpty())
-                .collect(Collectors.toList());
-    }
-
 
 
     @PostMapping("/processCheckoutForm/{establishmentId}")

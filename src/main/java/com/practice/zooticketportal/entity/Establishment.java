@@ -39,6 +39,8 @@ public class Establishment {
     private List<Ticket> tickets;
     @OneToMany(mappedBy = "establishment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Fees> fees;
+    @OneToMany(mappedBy = "establishment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OtherFees> otherFees;
 
 
     @PrePersist

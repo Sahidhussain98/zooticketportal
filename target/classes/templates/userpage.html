@@ -106,61 +106,44 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
 
-    $(document).ready(function() {
+    // Function to save user data
+    function saveUserData() {
+        // Retrieve username and email from input fields
+        const username = $('#usernameInput').val();
+        const email = $('#emailInput').val();
+
+        // Data object containing username and email
+        const data = { username: username, email: email };
+
+        // AJAX POST request to save user data
         $.ajax({
-            url: "abc",
+            url: "/saveUser",
             type: "POST",
+            contentType: "application/json", // Set content type to JSON
+            data: JSON.stringify(data), // Convert data to JSON string
             success: function (response) {
-                console.log(response)
+                console.log(response);
+                // Handle success response
+                Swal.fire(
+                    'User data saved!',
+                    'Your username and email have been successfully saved.',
+                    'success'
+                );
             },
             error: function (error) {
-                console.log(error)
+                console.log(error);
+                // Handle error response
+                Swal.fire(
+                    'Error',
+                    'Failed to save username and email.',
+                    'error'
+                );
             }
-        })
-        $('#userModal').modal('show');
-
-        $('#saveUserDataBtn').click(function() {
-            const username = $('#usernameInput').val();
-            const email = $('#emailInput').val();
-
-            let data = { username: username, email: email };
-            console.log(data)
-
-            $.ajax({
-                url: "/save2",
-                type: "POST",
-                success: function (response) {
-                    console.log(response)
-                },
-                error: function (error) {
-                    console.log(error)
-                }
-            })
-            $.ajax({
-                type: 'POST',
-                url: '/test/abc',
-                // data: data,
-                success: function(response) {
-                    console.log(response)
-                    // alert(email)
-                    // console.log('Data saved successfully:', response);
-                    // Swal.fire(
-                    //     'User data saved!',
-                    //     'Your username and email have been successfully saved.',
-                    //     'success'
-                    // );
-                },
-                error: function(xhr, status, error) {
-                    console.error('Failed to save data:', error);
-                    // Swal.fire(
-                    //     'Error',
-                    //     'Failed to save username and email.',
-                    //     'error'
-                    // );
-                }
-            });
         });
-    });
+    }
+
+    // Execute saveUserData function when the Save button is clicked
+    $('#saveUserDataBtn').click(saveUserData);
 
 
 </script>
