@@ -61,13 +61,4 @@ public class OtherFees {
         this.establishment = establishment;
     }
 
-    @Override
-    public String toString() {
-        return "OtherFees{" +
-                "otherFeesId=" + otherFeesId +
-                ", fees=" + fees +
-                ", otherFeesType=" + otherFeesType +
-                ", establishment=" + establishment +
-                '}';
-    }
 }

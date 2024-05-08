@@ -101,6 +101,13 @@
             width: calc(25% - 10px);
             /* Adjust width as needed and consider margin */
         }
+        .removeFields {
+            margin-top: 33px;
+            height: 40px; /* Adjust the height as needed */
+            line-height: 1; /* Align the text vertically */
+            padding: 10px 10px; /* Add padding to the button */
+        }
+
 
     </style>
 </head>
@@ -164,7 +171,7 @@
                 </div>
                 <div class="form-group1">
                     <label for="numberOfPeople">No. of People:<span class="text-danger">*</span></label>
-                    <input type="number" id="numberOfPeople" class="number-of-people" required min="1" oninput="validateNumberOfPeople()" onchange="calculateFees()" />
+                    <input type="number" id="numberOfPeople" class="number-of-people" required min="1" step="1" oninput="validateNumberOfPeople()" onchange="calculateFees()" />
                 </div>
                 <div class="form-group1">
                     <label for="totalFees">Total:</label>
@@ -197,7 +204,7 @@
 
                 <div class="form-group1">
                     <label for="numberOfItems">No. of Items:<span class="text-danger">*</span></label>
-                    <input type="number" id="numberOfItems" class="number-of-items" required min="0" onchange="calculateOtherFees()" />
+                    <input type="number" id="numberOfItems" class="number-of-items" required min="1" step="1" onchange="calculateOtherFees()" />
                 </div>
                 <div class="form-group1">
                     <label for="feesPerItem">Fees per Item:</label>
@@ -208,6 +215,10 @@
                     <input type="text" id="totalItemFees" readonly />
                 </div>
             </div>
+            <div class="button-group">
+                <button type="button" class="btn btn-primary addOtherFeesFields">Add More</button>
+            </div>
+
         </fieldset>
 
         <hr class="separator">
@@ -220,12 +231,17 @@
                     <input type="number" id="totalPersons" th:field="*{totalPersons}" required min="1" readonly/>
                 </div>
                 <div class="form-group-half">
-                    <label for="totalCameras">Total Cameras:</label>
-                    <input type="number" id="totalCameras" th:field="*{totalCameras}" required  min="0"/>
+                    <label for="totalItems">Total Items:</label>
+                    <input type="number" id="totalItems" th:field="*{totalItems}" required min="0"/>
                 </div>
+
                 <div class="form-group-half">
                     <label for="fees">Fees:</label>
                     <input type="text" id="fees" readonly />
+                </div>
+                <div class="form-group-half">
+                    <label for="itemFees">Item Fees:</label>
+                    <input type="text" id="itemFees" class="item-fees" readonly style="width: calc(50% - 10px);" />
                 </div>
             </div>
             <div class="form-row" style="margin-top: 15px;">
@@ -497,10 +513,10 @@
     // });
 </script>
 <script>
-    // Function to fetch original fees and calculate total item fees
-    function calculateOtherFees() {
-        var numberOfItems = $("#numberOfItems").val();
-        var otherFeesTypeId = $("#otherFeesType").val();
+    // Function to calculate other fees and update the fields
+    function calculateOtherFeesForElement(element) {
+        var numberOfItems = element.find("#numberOfItems").val();
+        var otherFeesTypeId = element.find("#otherFeesType").val();
         var establishmentId = $("#establishmentId").val();
 
         // Send AJAX request to backend controller to fetch original fees
@@ -513,8 +529,14 @@
                 numberOfItems: numberOfItems
             },
             success: function(totalItemFees) {
+                // Update the fees per item field with the fetched fees
+                var feesPerItem = totalItemFees / numberOfItems; // Calculate fees per item
+                element.find("#feesPerItem").val(feesPerItem.toFixed(2)); // Display fees per item in the input field
                 // Update the total item fees field
-                $("#totalItemFees").val(totalItemFees.toFixed(2));
+                element.find("#totalItemFees").val(totalItemFees.toFixed(2));
+
+                // Recalculate total items for all rows
+                calculateTotalItems();
             },
             error: function(xhr, status, error) {
                 console.error('Error fetching original fees:', error);
@@ -522,12 +544,103 @@
         });
     }
 
-    // Call calculateOtherFees() whenever the number of items or the fee type changes
-    $(document).on("change", "#numberOfItems, #otherFeesType", function() {
-        calculateOtherFees();
+    // Function to calculate total items
+    function calculateTotalItems() {
+        var totalItems = 0;
+
+        // Sum up the number of items in each row
+        $(".number-of-items").each(function() {
+            var items = parseInt($(this).val());
+            if (!isNaN(items)) {
+                totalItems += items;
+            }
+        });
+
+        // Update the Total Items field
+        $("#totalItems").val(totalItems);
+    }
+
+    // Call calculateTotalItems() whenever there is a change in the number of items
+    $(document).on("input", ".form-row #numberOfItems", function() {
+        calculateTotalItems();
     });
 
+    // Function to add other fees fields dynamically
+    $(document).on("click", ".addOtherFeesFields", function() {
+        var newFields = $("#otherFeesRow1").clone(); // Clone the container for other fees
+        newFields.find("input").val(""); // Clear input values
+
+        // Remove existing "Delete" button before appending
+        newFields.find('.removeFields').remove();
+
+        // Add delete button
+        var deleteButton = $("<button/>", {
+            type: "button",
+            class: "btn btn-danger removeFields",
+            text: "Delete"
+        });
+        deleteButton.appendTo(newFields);
+
+        // Insert the new row before the "Add Other Fees" button
+        $(this).before(newFields);
+
+        // Calculate fees for the newly added row
+        calculateOtherFeesForElement(newFields);
+    });
+
+    // Function to remove other fees fields dynamically
+    $(document).on("click", ".removeFields", function() {
+        $(this).closest('.form-row').remove(); // Remove the closest form-row
+        calculateTotalItems(); // Recalculate total items when removing a row
+    });
+
+    // Call calculateOtherFeesForElement() whenever there is a change in the number of items or the fee type
+    $(document).on("change", ".form-row #numberOfItems, .form-row #otherFeesType", function() {
+        calculateOtherFeesForElement($(this).closest('.form-row'));
+    });
+
+    // Check for existing combinations when selecting other fees type
+    $(document).on("change", ".form-group1 select", function() {
+        var otherFeesTypeId = $(this).closest(".form-row").find("#otherFeesType").val();
+        var existingCombination = false;
+
+        // Check if the selected fee type already exists in any other row
+        $("#otherFees .form-row").not($(this).closest(".form-row")).each(function() {
+            if ($(this).find("#otherFeesType").val() == otherFeesTypeId) {
+                existingCombination = true;
+                return false; // Break the loop
+            }
+        });
+
+        if (existingCombination) {
+            alert("The selected fee type has already been chosen. Please select another fee type.");
+            $(this).val(""); // Reset the select value
+        }
+    });
+    // Function to calculate and update the item fees
+    function updateItemFees() {
+        var totalItemFees = 0;
+
+        // Iterate through each row of Total Item Fees and sum up the values
+        $(".form-group1 #totalItemFees").each(function() {
+            var value = parseFloat($(this).val());
+            if (!isNaN(value)) {
+                totalItemFees += value;
+            }
+        });
+
+        // Update the Item Fees field with the calculated sum
+        $(".item-fees").val(totalItemFees.toFixed(2));
+    }
+
+    // Call the updateItemFees function whenever Total Item Fees change
+    $(document).on("input", ".form-group1 #totalItemFees", function() {
+        updateItemFees();
+    });
+
+
 </script>
+
 </body>
 </html>
 

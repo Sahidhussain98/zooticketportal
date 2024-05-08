@@ -51,12 +51,4 @@ public class OtherFeesType {
         return otherFees != null && !otherFees.isEmpty();
     }
 
-    @Override
-    public String toString() {
-        return "OtherFeesType{" +
-                "otherFeesTypeId=" + otherFeesTypeId +
-                ", otherFeesType='" + otherFeesType + '\'' +
-                ", otherFees=" + otherFees +
-                '}';
-    }
 }

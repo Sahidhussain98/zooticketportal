@@ -25,7 +25,7 @@ public class Ticket {
     private Long phoneNumber;
     private Long numberOfPeople;
     private Long totalPersons;
-    private Long totalCameras;
+    private Long totalItems;
     private String totalAmount;
     private LocalDate dateTime;
     private LocalDateTime enteredBy;
@@ -102,12 +102,12 @@ public class Ticket {
         this.totalPersons = totalPersons;
     }
 
-    public Long getTotalCameras() {
-        return totalCameras;
+    public Long getTotalItems() {
+        return totalItems;
     }
 
-    public void setTotalCameras(Long totalCameras) {
-        this.totalCameras = totalCameras;
+    public void setTotalItems(Long totalItems) {
+        this.totalItems = totalItems;
     }
 
     public String getTotalAmount() {
@@ -176,7 +176,7 @@ public class Ticket {
                 ", phoneNumber=" + phoneNumber +
                 ", numberOfPeople=" + numberOfPeople +
                 ", totalPersons=" + totalPersons +
-                ", totalCameras=" + totalCameras +
+                ", totalItems=" + totalItems +
                 ", totalAmount='" + totalAmount + '\'' +
                 ", dateTime=" + dateTime +
                 ", enteredBy=" + enteredBy +
