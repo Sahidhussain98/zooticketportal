@@ -10,7 +10,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class OtherFeesController {
@@ -18,11 +20,14 @@ public class OtherFeesController {
     private OtherFeesRepo otherFeesRepo;
 
     @GetMapping("/fetchOtherFees")
-    public ResponseEntity<Double> fetchOriginalFees(@RequestParam("establishmentId") Long establishmentId,
-                                                    @RequestParam("otherFeesTypeId") Long otherFeesTypeId,
-                                                    @RequestParam("numberOfItems") Long numberOfItems) {
+    public ResponseEntity<Map<String, Double>> fetchOriginalFees(@RequestParam("establishmentId") Long establishmentId,
+                                                                 @RequestParam("otherFeesTypeId") Long otherFeesTypeId,
+                                                                 @RequestParam("numberOfItems") Long numberOfItems) {
         // Query the database to retrieve the list of other fees based on the provided establishment ID and other fees type ID
         List<OtherFees> otherFeesList = otherFeesRepo.findByEstablishmentEstablishmentIdAndOtherFeesTypeOtherFeesTypeId(establishmentId, otherFeesTypeId);
+
+        // Create a response map to hold the fees per item and total item fees
+        Map<String, Double> responseMap = new HashMap<>();
 
         // Check if other fees are retrieved successfully
         if (!otherFeesList.isEmpty()) {
@@ -32,12 +37,17 @@ public class OtherFeesController {
             // Calculate the total item fees
             double totalItemFees = originalFees * numberOfItems;
 
-            // Return the total item fees
-            return ResponseEntity.ok(totalItemFees);
+            // Put the fees per item and total item fees into the response map
+            responseMap.put("fees", originalFees);
+            responseMap.put("totalItemFees", totalItemFees);
+
+            // Return the response map
+            return ResponseEntity.ok(responseMap);
         } else {
             // If no other fees are retrieved, return an error response
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
 
 }

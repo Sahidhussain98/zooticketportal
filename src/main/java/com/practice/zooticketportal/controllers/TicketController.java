@@ -267,6 +267,45 @@ public class TicketController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+//    @GetMapping("/fetchFees")
+//    public ResponseEntity<Map<String, Double>> fetchFees(
+//            @RequestParam("establishmentId") Long establishmentId,
+//            @RequestParam(value = "nationalityId", required = false) Long nationalityId,
+//            @RequestParam(value = "categoryId", required = false) Long categoryId,
+//            @RequestParam(value = "otherFeesTypeId", required = false) Long otherFeesTypeId,
+//            @RequestParam(value = "numberOfPeople", required = false) Long numberOfPeople,
+//            @RequestParam(value = "numberOfItems", required = false) Long numberOfItems) {
+//
+//        Map<String, Double> responseMap = new HashMap<>();
+//
+//        if (nationalityId != null && categoryId != null && numberOfPeople != null) {
+//            // Fetch entry fees
+//            List<Fees> feesList = feesRepo.findByNationalityNationalityIdAndCategoryCategoryIdAndEstablishmentEstablishmentId(nationalityId, categoryId, establishmentId);
+//            if (!feesList.isEmpty()) {
+//                double entryFee = feesList.get(0).getEntryFee();
+//                double totalFees = entryFee * numberOfPeople;
+//                responseMap.put("entryFee", entryFee);
+//                responseMap.put("totalFees", totalFees);
+//            } else {
+//                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//            }
+//        }
+//
+//        if (otherFeesTypeId != null && numberOfItems != null) {
+//            // Fetch other fees
+//            List<OtherFees> otherFeesList = otherFeesRepo.findByEstablishmentEstablishmentIdAndOtherFeesTypeOtherFeesTypeId(establishmentId, otherFeesTypeId);
+//            if (!otherFeesList.isEmpty()) {
+//                double originalFees = otherFeesList.get(0).getFees();
+//                double totalItemFees = originalFees * numberOfItems;
+//                responseMap.put("totalItemFees", totalItemFees);
+//            } else {
+//                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//            }
+//        }
+//
+//        return ResponseEntity.ok(responseMap);
+//    }
+
 
 }
 
