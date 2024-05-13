@@ -87,18 +87,20 @@
                         <!-- Establishment Address -->
                         <div class="form-group">
                             <label>Establishment Address<span class="text-danger">*</span></label>
-                            <input type="text" name="address" th:field="*{address}" class="form-control" placeholder="Enter Establishment Address" required/>
+                            <input type="text" name="address" th:field="*{address}" class="form-control" placeholder="Enter Establishment Address" required th:value="${establishment.address}"/>
                         </div>
                         <!-- Establishment Opening Time -->
                         <div class="form-group">
                             <label>Establishment Opening Time<span class="text-danger">*</span></label>
-                            <input type="time" name="openingTime" th:field="*{openingTime}" class="form-control" required/>
+
+                            <input type="time" name="openingTime"  th:field="*{openingTime}" class="form-control" th:value="${establishment.openingTime}" required />
                         </div>
                         <!-- Establishment Closing Time -->
                         <div class="form-group">
                             <label>Establishment Closing Time<span class="text-danger">*</span></label>
-                            <input type="time" name="closingTime" th:field="*{closingTime}" class="form-control" required/>
+                            <input type="time" name="closingTime" th:field="*{closingTime}" class="form-control" th:value="${establishment.closingTime}" required/>
                         </div>
+
                         <!-- Upload Additional Images -->
                         <div class="form-group">
                             <label>Upload Additional Images<span class="text-danger">*</span></label>
@@ -149,19 +151,17 @@
                         <!-- Other Fees Type and Fee Fields -->
                         <div class="form-row" id="otherFeesFieldSet1">
                             <div class="form-group col-md-4">
-                                <label for="otherFeesType">Other Fees Type<span class="text-danger">*</span></label>
-                                <select id="otherFeesType" name="otherFeesType" class="form-control" required>
-                                    <option value="">--SELECT OTHER FEES TYPE--</option>
-                                    <option th:each="otherFeesType : ${otherFeesTypes}" th:value="${otherFeesType.otherFeesTypeId}" th:text="${otherFeesType.otherFeesType}"></option>
-                                </select>
+                                <label for="feesType">Fees Type<span class="text-danger">*</span></label>
+                                <input type="text" id="feesType" name="feesType" class="form-control" placeholder="Enter Fees Type" required>
                             </div>
+
                             <div class="form-group col-md-4">
                                 <label for="fees">Fees<span class="text-danger">*</span></label>
                                 <input type="number" step="1" class="form-control" id="fees" name="fees" placeholder="Enter Fees" required>
                             </div>
                         </div>
                         <!-- Add Button for Additional Other Fees Fields -->
-                        <div class="form-group">
+                        <div class="form-group" id="addOtherFeesContainer">
                             <button type="button" class="btn btn-primary addOtherFees">Add Fees</button>
                         </div>
                     </div>
@@ -208,13 +208,41 @@
             newFields.appendTo("#additionalInfo .form-container");
         });
 
+        // Adjust validateForm() function to include newly added fields
+        function validateForm() {
+            // Existing validation logic
+
+            // Additional logic to ensure at least one set of fields is filled
+            var fieldSets = document.querySelectorAll('.form-row');
+            var isAnyFieldSetFilled = Array.from(fieldSets).some(function(fieldSet) {
+                return Array.from(fieldSet.querySelectorAll('input, select')).some(function(field) {
+                    return field.value.trim();
+                });
+            });
+
+            if (!isAnyFieldSetFilled) {
+                // Show SweetAlert popup
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please fill at least one set of nationality, category, and fees fields!',
+                });
+                return false;
+            }
+
+            return true;
+        }
+    });
+    //For OtherFees part
+    $(document).ready(function() {
+        var counter = 1;
+
         // Function to add other fees fields dynamically
         $(".addOtherFees").click(function() {
             counter++;
             var newFields = $("#otherFeesFieldSet1").clone();
             newFields.attr("id", "otherFeesFieldSet" + counter);
             newFields.find("input").val(""); // Clear input values
-            newFields.find("select").prop('selectedIndex', 0); // Reset select fields
             newFields.find("legend").text("Part " + counter + ": Other Fees");
 
             // Add delete button
@@ -231,44 +259,18 @@
             deleteButtonContainer.append(deleteButton);
             newFields.append(deleteButtonContainer);
 
-            newFields.appendTo("#otherFees .form-container");
+            // Append newFields before the Add button in the Other Fees section
+            newFields.insertBefore("#addOtherFeesContainer");
         });
 
-
-
-
-
-        // Function to remove fields dynamically
+        // Function to remove other fees fields dynamically
         $(document).on("click", ".removeFields", function() {
             $(this).closest('.form-row').remove();
             counter--;
         });
     });
 
-    // Adjust validateForm() function to include newly added fields
-    function validateForm() {
-        // Existing validation logic
-
-        // Additional logic to ensure at least one set of fields is filled
-        var fieldSets = document.querySelectorAll('.form-row');
-        var isAnyFieldSetFilled = Array.from(fieldSets).some(function(fieldSet) {
-            return Array.from(fieldSet.querySelectorAll('input, select')).some(function(field) {
-                return field.value.trim();
-            });
-        });
-
-        if (!isAnyFieldSetFilled) {
-            // Show SweetAlert popup
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Please fill at least one set of nationality, category, and fees fields!',
-            });
-            return false;
-        }
-
-        return true;
-    }
 </script>
+
 </body>
 </html>

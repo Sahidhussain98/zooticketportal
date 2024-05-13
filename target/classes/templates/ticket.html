@@ -247,7 +247,7 @@
             <div class="form-row" style="margin-top: 15px;">
                 <div class="form-group">
                     <label for="totalAmount">Total Amount:</label>
-                    <input type="text" id="totalAmount" th:field="*{totalAmount}" required onchange="calculateTotalAmount" style="width: calc(50% - 10px);" />
+                    <input type="text" id="totalAmount" th:field="*{totalAmount}" required style="width: calc(50% - 10px);" />
                 </div>
             </div>
         </fieldset>
@@ -312,6 +312,7 @@
 
                     // Update the Fees field with the total fees
                     $("#fees").val(totalFees.toFixed(2));
+                    calculateTotalAmount();
 
                 }.bind(this), // Bind the current context to use inside the success callback
                 error: function(xhr, status, error) {
@@ -512,40 +513,50 @@
 <script>
     function calculateOtherFees() {
         var totalItemFees = 0;
-        var establishmentId = $("#establishmentId").val();
-        var otherFeesTypeId = $("#otherFeesType").val(); // Corrected $(this).find("#otherFeesType") to $("#otherFeesType")
-        var numberOfItems = $("#numberOfItems").val(); // Corrected $(this).find("#numberOfItems") to $("#numberOfItems")
 
-        // Send AJAX request to backend controller to fetch original fees
-        $.ajax({
-            url: '/fetchOtherFees',
-            method: 'GET',
-            data: {
-                establishmentId: establishmentId,
-                otherFeesTypeId: otherFeesTypeId,
-                numberOfItems: numberOfItems
-            },
-            success: function(response) {
-                $("#totalItemFees").val(response.totalItemFees);
-                // Update the fees per item field with the fetched fees
-                $("#feesPerItem").val(response.fees); // Corrected $(this).find("#feesPerItem") to $("#feesPerItem")
-                totalItemFees += parseFloat(response.totalItemFees);
-                $("#itemFees").val(totalItemFees.toFixed(2));
+        // Loop through each form row
+        $(".form-row").each(function() {
+            var establishmentId = $("#establishmentId").val();
+            var otherFeesTypeId = $(this).find("#otherFeesType").val(); // Fetch other fees type for each row
+            var numberOfItems = $(this).find("#numberOfItems").val(); // Fetch number of items for each row
 
-                // Recalculate total items for all rows
-                calculateTotalItems();
-            }.bind(this),
-            error: function(xhr, status, error) {
-                console.error('Error fetching original fees:', error);
-            }
+            // Send AJAX request to backend controller to fetch original fees
+            $.ajax({
+                url: '/fetchOtherFees',
+                method: 'GET',
+                data: {
+                    establishmentId: establishmentId,
+                    otherFeesTypeId: otherFeesTypeId,
+                    numberOfItems: numberOfItems
+                },
+                success: function(response) {
+                    // Update the fees per item field with the fetched fees for the current row
+                    $(this).find("#feesPerItem").val(response.fees);
+
+                    // Update the total item fees field with the fetched total fees for the current row
+                    $(this).find("#totalItemFees").val(response.totalItemFees);
+
+                    // Add the fetched total fees to the running total
+                    totalItemFees += parseFloat(response.totalItemFees);
+
+                    // Update the Item Fees field with the total item fees
+                    $("#itemFees").val(totalItemFees.toFixed(2));
+
+                    // Recalculate total items for all rows
+                    calculateTotalItems();
+                    calculateTotalAmount();
+                }.bind(this),
+                error: function(xhr, status, error) {
+                    console.error('Error fetching original fees:', error);
+                }
+            });
         });
     }
+
+    // Call calculateOtherFees() whenever there is a change in establishmentId, otherFeesType, or numberOfItems
     $(document).on("change", "#establishmentId, #otherFeesType, #numberOfItems", function() {
         calculateOtherFees();
     });
-
-
-
 
     // Function to calculate total items
     function calculateTotalItems() {
@@ -595,10 +606,10 @@
         });
     });
 
+
     // Function to remove other fees fields dynamically
     $(document).on("click", ".removeFields", function() {
         $(this).closest('.form-row').remove();
-        counter--;
         calculateOtherFees(); // Recalculate other fees when removing a row
         calculateTotalItems(); // Recalculate total items when removing a row
     });
@@ -621,8 +632,28 @@
             $(this).val(""); // Reset the select value
         }
     });
-</script>
+    // Function to calculate total amount
+    function calculateTotalAmount() {
+        // Parse the values of Fees and Item Fees fields
+        var fees = parseFloat($("#fees").val());
+        var itemFees = parseFloat($("#itemFees").val());
 
+        // Check if fees or itemFees is NaN (not a number)
+        if (isNaN(fees)) {
+            fees = 0; // Set fees to 0 if it's not present
+        }
+        if (isNaN(itemFees)) {
+            itemFees = 0; // Set itemFees to 0 if it's not present
+        }
+
+        // Calculate the total amount by summing Fees and Item Fees
+        var totalAmount = fees + itemFees;
+
+        // Update the Total Amount field with the calculated value
+        $("#totalAmount").val(totalAmount.toFixed(2));
+    }
+
+</script>
 </body>
 </html>
 

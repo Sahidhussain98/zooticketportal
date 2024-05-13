@@ -109,8 +109,7 @@
 
                             </tbody>
                         </table>
-
-                        <!-- New table for additional fees -->
+                        <!-- Table for other fees -->
                         <table class="table">
                             <thead>
                             <tr>
@@ -119,13 +118,20 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <!-- Iterate over other fees if they exist -->
-<!--                            <tr th:each="otherFees : ${establishment.otherFees}">-->
-<!--                                <td th:text="${otherFee.otherFeesType}"></td>-->
-<!--                                <td th:text="${otherFee.fees}"></td>-->
-<!--                            </tr>-->
+                            <th:block th:if="${#lists.isEmpty(otherFees)}">
+                                <tr>
+                                    <td colspan="2" class="text-center"> Other fees is not added</td>
+                                </tr>
+                            </th:block>
+                            <th:block th:each="otherFee : ${otherFees}">
+                                <tr>
+                                    <td th:text="${otherFee.feesType}"></td> <!-- Assuming there's a property named otherFeesType in OtherFee entity -->
+                                    <td th:text="${otherFee.fees}"></td> <!-- Assuming there's a property named fees in OtherFee entity -->
+                                </tr>
+                            </th:block>
                             </tbody>
                         </table>
+                        <hr>
                         <p class="profile-field">Status: <span th:text="${establishment.status} ? 'Active' : 'Inactive'"></span></p>
                         <p class="profile-field">Name: <input type="text" name="name" th:value="${establishment.name}" readonly /></p>
                         <p class="profile-field">Address: <input type="text" name="address" th:value="${establishment.address}" readonly /></p>

@@ -10,11 +10,10 @@ public class OtherFees {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long otherFeesId;
+    @Column(name="feesType")
+    private String feesType;
     @Column(name="fees")
     private Double fees;
-    @ManyToOne
-    @JoinColumn(name = "otherFeesTypeId")
-    private OtherFeesType otherFeesType;
     @ManyToOne
     @JoinColumn(name = "establishmentId") // Assuming the name of the column in Fees table referring to Establishment
     private Establishment establishment;
@@ -22,10 +21,10 @@ public class OtherFees {
     public OtherFees() {
     }
 
-    public OtherFees(Long otherFeesId, Double fees, OtherFeesType otherFeesType, Establishment establishment) {
+    public OtherFees(Long otherFeesId, String feesType, Double fees, Establishment establishment) {
         this.otherFeesId = otherFeesId;
+        this.feesType = feesType;
         this.fees = fees;
-        this.otherFeesType = otherFeesType;
         this.establishment = establishment;
     }
 
@@ -37,20 +36,20 @@ public class OtherFees {
         this.otherFeesId = otherFeesId;
     }
 
+    public String getFeesType() {
+        return feesType;
+    }
+
+    public void setFeesType(String feesType) {
+        this.feesType = feesType;
+    }
+
     public Double getFees() {
         return fees;
     }
 
     public void setFees(Double fees) {
         this.fees = fees;
-    }
-
-    public OtherFeesType getOtherFeesType() {
-        return otherFeesType;
-    }
-
-    public void setOtherFeesType(OtherFeesType otherFeesType) {
-        this.otherFeesType = otherFeesType;
     }
 
     public Establishment getEstablishment() {
@@ -60,5 +59,4 @@ public class OtherFees {
     public void setEstablishment(Establishment establishment) {
         this.establishment = establishment;
     }
-
 }

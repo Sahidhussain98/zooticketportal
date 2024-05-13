@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.practice.zooticketportal.entity.*;
 import com.practice.zooticketportal.repositories.*;
 import com.practice.zooticketportal.service.EstablishmentService;
+import com.practice.zooticketportal.service.OtherFeesService;
 import com.practice.zooticketportal.service.StorageService;
+import com.practice.zooticketportal.serviceimpl.OtherFeesServiceImpl;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -68,12 +70,11 @@ public class EstablishmentController {
     @Autowired
     private NonWorkingDaysRepo nonWorkingDaysRepo;
     @Autowired
-    private OtherFeesTypeRepo otherFeesTypeRepo;
-
-    @Autowired
     private EstablishmentRepo establishmentRepo;
     @Autowired
     private OtherFeesRepo otherFeesRepo;
+    @Autowired
+    private OtherFeesServiceImpl otherFeesService;
     ObjectMapper objectMapper = new ObjectMapper();// needed to load establishmnet page
 
     @Autowired
@@ -224,14 +225,12 @@ public class EstablishmentController {
             List<Category> categories = categoryRepo.findAll();
             List<Nationality> nationalities1 = nationalityRepo.findAll();
             // Fetch other fees types
-            List<OtherFeesType> otherFeesTypes = otherFeesTypeRepo.findAll();
+            List<OtherFees> otherFees = otherFeesService.getOtherFeesByEstablishmentEstablishmentId(establishmentId);
 
-            // Logging to verify if otherFeesTypes is populated correctly
-            System.out.println("Other Fees Types: " + otherFeesTypes);
 
             model.addAttribute("categories", categories);
             model.addAttribute("nationalities", nationalities1);
-            model.addAttribute("otherFeesTypes", otherFeesTypes);
+            model.addAttribute("otherFees", otherFees);
 
             return "createestablishment2"; // Return the HTML template with the establishment details
         } else {
@@ -251,7 +250,7 @@ public class EstablishmentController {
                                      @RequestParam("nationalityId") List<Long> nationalityIds,
                                      @RequestParam("categoryId") List<Long> categoryIds,
                                      @RequestParam("entryFee") List<Double> entryFees,
-                                     @RequestParam("otherFeesType") List<Long> otherFeesTypeIds,
+                                     @RequestParam("feesType") List<String> feesType,
                                      @RequestParam("fees") List<Double> feesList, // Renamed to feesList
                                      Model model) {
         try {
@@ -296,13 +295,13 @@ public class EstablishmentController {
             }
 
             // Save Other Fees
-            for (int i = 0; i < otherFeesTypeIds.size(); i++) {
-                Long otherFeesTypeId = otherFeesTypeIds.get(i);
+            for (int i = 0; i < feesType.size(); i++) {
+                String feeType = feesType.get(i);
                 Double fee = feesList.get(i); // Changed variable name to feesList
                 // Create OtherFees object and link to establishment
                 OtherFees otherFeesEntity = new OtherFees();
+                otherFeesEntity.setFeesType(feeType);
                 otherFeesEntity.setFees(fee);
-                otherFeesEntity.setOtherFeesType(otherFeesTypeRepo.findById(otherFeesTypeId).orElse(null));
                 otherFeesEntity.setEstablishment(establishment);
 
                 otherFeesRepo.save(otherFeesEntity);
@@ -345,8 +344,17 @@ public class EstablishmentController {
     @GetMapping("/edit/{id}")
     public String editEstablishmentForm(@PathVariable Long id, Model model) {
         Establishment existingEstablishment = establishmentService.getEstablishmentById(id);
+        List<OtherFees> otherFees = otherFeesService.getOtherFeesByEstablishmentEstablishmentId(id); // Assuming you have a service for other fees
         model.addAttribute("establishment", existingEstablishment);
+        model.addAttribute("otherFees", otherFees);
+        
         return "edit-establishments";
+    }
+
+    // Service Layer
+    public List<OtherFees> getOtherFeesByEstablishmentId(Long establishmentId) {
+        // Assuming you have a repository method to fetch other fees by establishment id
+        return otherFeesRepo.findByEstablishmentEstablishmentId(establishmentId);
     }
 
     @PostMapping("/{id}")

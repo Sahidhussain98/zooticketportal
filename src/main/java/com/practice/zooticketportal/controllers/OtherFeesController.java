@@ -24,7 +24,7 @@ public class OtherFeesController {
                                                                  @RequestParam("otherFeesTypeId") Long otherFeesTypeId,
                                                                  @RequestParam("numberOfItems") Long numberOfItems) {
         // Query the database to retrieve the list of other fees based on the provided establishment ID and other fees type ID
-        List<OtherFees> otherFeesList = otherFeesRepo.findByEstablishmentEstablishmentIdAndOtherFeesTypeOtherFeesTypeId(establishmentId, otherFeesTypeId);
+        List<OtherFees> otherFeesList = otherFeesRepo.findByEstablishmentEstablishmentId(establishmentId);
 
         // Create a response map to hold the fees per item and total item fees
         Map<String, Double> responseMap = new HashMap<>();

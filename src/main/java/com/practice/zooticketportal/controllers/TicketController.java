@@ -58,10 +58,12 @@ public class TicketController {
                                    Principal principal) {
         // Retrieve authenticated user's username
         String username = principal.getName();
+        System.out.println(username);
 //        System.out.println(username);
 
         // Retrieve user details from the database using the username
         AllUser user = allUserService.findByUsername(username);
+        System.out.println(user);
 
         // Placeholder for phone number and email
         String email = user.getEmail();
@@ -91,13 +93,11 @@ public class TicketController {
         // Fetch nationalities and categories with associated entry fees
         List<Nationality> nationalitiesWithFees = feesRepo.findNationalitiesWithFees(establishmentId);
         List<Category> categoriesWithFees = feesRepo.findCategoriesWithFees(establishmentId);
-        List<OtherFeesType> otherFeesTypeWithFees = otherFeesRepo.findOtherFeesTypeWithFees(establishmentId);
 
 
         // Add filtered nationalities and categories to the model
         model.addAttribute("nationalities", nationalitiesWithFees);
         model.addAttribute("categories", categoriesWithFees);
-        model.addAttribute("otherFeesType", otherFeesTypeWithFees);
 
         return "ticket";
     }
