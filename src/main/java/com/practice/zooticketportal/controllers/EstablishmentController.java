@@ -361,7 +361,9 @@ public class EstablishmentController {
     @PostMapping("/{id}")
     public String updateEstablishment(@PathVariable Long id,
                                       @ModelAttribute("establishment") Establishment establishment,
-                                      @RequestParam("entryFee") List<Double> entryFees) {
+                                      @RequestParam("entryFee") List<Double> entryFees,
+                                      @RequestParam("feesType") List<String> feesTypes,
+                                      @RequestParam("feesOther") List<Double> fees) {
         Establishment existingEstablishment = establishmentService.getEstablishmentById(id);
         existingEstablishment.setName(establishment.getName());
         // Remove setting type here since it's not part of the Establishment entity
@@ -379,7 +381,18 @@ public class EstablishmentController {
                 fee.setEntryFee(entryFees.get(i));
             }
         }
-
+        // Update otherFees
+        List<OtherFees> otherFeesList = existingEstablishment.getOtherFees();
+        for (int i = 0; i < otherFeesList.size(); i++) {
+            OtherFees otherFee = otherFeesList.get(i);
+            if (i < fees.size()) {
+                otherFee.setFees(fees.get(i));
+            }
+            // Update feesType
+            if (i < feesTypes.size()) {
+                otherFee.setFeesType(feesTypes.get(i));
+            }
+        }
         System.out.println(establishmentService.updateEstablishment(existingEstablishment));
 
         establishmentService.updateEstablishment(existingEstablishment);

@@ -1,5 +1,6 @@
 package com.practice.zooticketportal.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public class OtherFees {
     private Double fees;
     @ManyToOne
     @JoinColumn(name = "establishmentId") // Assuming the name of the column in Fees table referring to Establishment
+    @JsonBackReference
     private Establishment establishment;
 
     public OtherFees() {

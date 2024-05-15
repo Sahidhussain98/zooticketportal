@@ -35,29 +35,21 @@ public class UserController {
                             HttpServletRequest req) {
         if (otp.equals(otpService.generateOtp())) {
             System.out.println("Received phone number: " + phoneNumber);
-
-
-//            AllUser user = userRepository.findByPhoneNumber(phoneNumber);
-//
-//            Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), null, null);
-            Authentication authentication = new UsernamePasswordAuthenticationToken("user", null, null);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(phoneNumber.toString(), null, null);
             // Set the authentication object in the SecurityContext
             SecurityContext sc = SecurityContextHolder.getContext();
             sc.setAuthentication(authentication);
             HttpSession session = req.getSession(true);
             session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, sc);
-//            return ResponseEntity.ok("OTP Verified! test");
             System.out.println("OTP Verified");
             userService.registerUserWithCitizenRole(phoneNumber);
 
             return "redirect:/userpage";
         } else {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid OTP");
             System.out.println("test");
             return null;
 
         }
     }
-    // Other controller methods...
 
 }

@@ -120,16 +120,17 @@
                             <tbody>
                             <th:block th:if="${#lists.isEmpty(otherFees)}">
                                 <tr>
-                                    <td colspan="2" class="text-center"> Other fees is not added</td>
+                                    <td colspan="2" class="text-center">Other fees are not added</td>
                                 </tr>
                             </th:block>
                             <th:block th:each="otherFee : ${otherFees}">
                                 <tr>
-                                    <td th:text="${otherFee.feesType}"></td> <!-- Assuming there's a property named otherFeesType in OtherFee entity -->
-                                    <td th:text="${otherFee.fees}"></td> <!-- Assuming there's a property named fees in OtherFee entity -->
+                                    <td><input type="text" name="feesType" th:value="${otherFee.feesType}" readonly /></td>
+                                    <td><input type="text" name="feesOther" th:value="${otherFee.fees}" readonly /></td>
                                 </tr>
                             </th:block>
                             </tbody>
+
                         </table>
                         <hr>
                         <p class="profile-field">Status: <span th:text="${establishment.status} ? 'Active' : 'Inactive'"></span></p>
@@ -191,16 +192,27 @@
             for (var i = 0; i < inputs.length; i++) {
                 inputs[i].removeAttribute("readonly");
             }
+            // Enable editing for otherFees table rows
+            var otherFeeInputs = document.querySelectorAll("#editForm input[name^='otherFees']");
+            for (var i = 0; i < otherFeeInputs.length; i++) {
+                otherFeeInputs[i].removeAttribute("readonly");
+            }
             saveButton.style.display = "inline-block";
             this.textContent = "Cancel edit";
         } else {
             for (var i = 0; i < inputs.length; i++) {
                 inputs[i].setAttribute("readonly", true);
             }
+            // Disable editing for otherFees table rows
+            var otherFeeInputs = document.querySelectorAll("#editForm input[name^='otherFees']");
+            for (var i = 0; i < otherFeeInputs.length; i++) {
+                otherFeeInputs[i].setAttribute("readonly", true);
+            }
             saveButton.style.display = "none";
             this.textContent = "Edit";
         }
     });
+
 
 
     document.getElementById("saveButton").addEventListener("click", function(event) {
@@ -239,6 +251,21 @@
 
 
 </script>
+<script>
+    // Function to validate input and allow only numbers
+    function allowOnlyNumbers(event) {
+        var charCode = (event.which) ? event.which : event.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+            event.preventDefault();
+        }
+    }
+
+    // Attach the 'keypress' event listener to the entryFee and feesOther input fields
+    document.querySelectorAll("input[name='entryFee'], input[name='feesOther']").forEach(function(input) {
+        input.addEventListener('keypress', allowOnlyNumbers);
+    });
+</script>
+
 
 </body>
 </html>

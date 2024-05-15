@@ -5,8 +5,13 @@ import com.practice.zooticketportal.entity.Establishment;
 import com.practice.zooticketportal.repositories.AllUserRepo;
 import com.practice.zooticketportal.service.EstablishmentService;
 import com.practice.zooticketportal.serviceimpl.AllUserServiceImpl;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -84,24 +89,30 @@ public class   UserPageController {
         }
     }
     @GetMapping("/userDetails")
-    public String showUserProfile(Model model,
-                                  Principal principal) {
-        // Retrieve authenticated user's username
-        String username = principal.getName();
-        // Retrieve user data from the UserService
-        AllUser user = allUserRepo.findByUsername(username);
+    public String showUserProfile(Model model, Principal principal) {
+        if (principal != null) {
+            String phoneNumberStr = principal.getName(); // The phone number is used as the principal
+            System.out.println("phoneNumber"+phoneNumberStr);
+            Long phoneNumber = Long.parseLong(phoneNumberStr);
 
-        System.out.println("Username object: " + user); // Print user object
+            // Retrieve user data based on the authenticated user's phone number
+            AllUser user = allUserRepo.findByPhoneNumber(phoneNumber);
 
-        // Check if any user was found
-        if (user != null) {
+            System.out.println("User object: " + user); // Print user object
+
+            // Add user details to the model
             model.addAttribute("user", user);
+
+            // Return the user profile view
             return "userProfile";
         } else {
-            // Handle case when no user is found
+            // Handle case when principal is null
             return "error"; // or whatever error handling you need
         }
     }
+
+
+
     @PostMapping("/changePassword")
     public String changePassword(@RequestParam(name = "currentPassword") String currentPassword,
                                  @RequestParam(name = "password") String newPassword,

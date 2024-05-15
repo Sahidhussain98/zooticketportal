@@ -1,5 +1,6 @@
 package com.practice.zooticketportal.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.ToString;
 import java.time.LocalTime;
@@ -40,6 +41,7 @@ public class Establishment {
     @OneToMany(mappedBy = "establishment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Fees> fees;
     @OneToMany(mappedBy = "establishment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<OtherFees> otherFees;
 
 
@@ -196,5 +198,13 @@ public class Establishment {
 
     public void setTickets(List<Ticket> tickets) {
         this.tickets = tickets;
+    }
+
+    public List<OtherFees> getOtherFees() {
+        return otherFees;
+    }
+
+    public void setOtherFees(List<OtherFees> otherFees) {
+        this.otherFees = otherFees;
     }
 }
