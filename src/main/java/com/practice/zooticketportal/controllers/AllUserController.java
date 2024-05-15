@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -67,26 +68,27 @@ public class AllUserController {
         }
     }
 
-    @PostMapping("/change-password")
-    @ResponseBody
-    public ResponseEntity<String> changePassword(@RequestParam String newPassword) {
-        // Get authenticated user
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String phoneNumberString = authentication.getName();
-// Convert phoneNumberString to Long
-        Long phoneNumber = Long.parseLong(phoneNumberString);
-        // Find user by phone number (assuming phone number is unique)
-        AllUser user = allUserRepo.findByPhoneNumber(phoneNumber);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-        }
+//    @PostMapping("/change-password")
+//    @ResponseBody
+//    public ResponseEntity<String> changePassword(@RequestParam String newPassword) {
+//        // Get authenticated user
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        String phoneNumberString = authentication.getName();
+//// Convert phoneNumberString to Long
+//        Long phoneNumber = Long.parseLong(phoneNumberString);
+//        // Find user by phone number (assuming phone number is unique)
+//        AllUser user = allUserRepo.findByPhoneNumber(phoneNumber);
+//        if (user == null) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+//        }
+//
+//        // Update user's password
+//        user.setPassword(newPassword);
+//        allUserRepo.save(user);
+//
+//        return ResponseEntity.ok("Password changed successfully");
+//    }
 
-        // Update user's password
-        user.setPassword(newPassword);
-        allUserRepo.save(user);
-
-        return ResponseEntity.ok("Password changed successfully");
-    }
 
 
 }

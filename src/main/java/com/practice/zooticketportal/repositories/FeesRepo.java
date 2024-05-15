@@ -11,13 +11,16 @@ import java.util.Map;
 
 public interface FeesRepo extends JpaRepository<Fees,Long> {
 
-
+    List<Fees> findByEstablishmentEstablishmentId(Long establishmentId);
     List<Fees> findByNationalityNationalityIdAndCategoryCategoryIdAndEstablishmentEstablishmentId(Long nationalityId, Long categoryId, Long establishmentId);
     @Query("SELECT DISTINCT f.nationality FROM Fees f WHERE f.establishment.establishmentId = ?1")
     List<Nationality> findNationalitiesWithFees(Long establishmentId);
 
     @Query("SELECT DISTINCT f.category FROM Fees f WHERE f.establishment.establishmentId = ?1")
     List<Category> findCategoriesWithFees(Long establishmentId);
+    boolean existsByNationalityNationalityIdAndCategoryCategoryId(Long nationalityId, Long categoryId);
+
+
 
 
 }

@@ -52,11 +52,20 @@
         .removeFields:hover {
             background-color: #c82333; /* Change background color on hover */
         }
+        .grey-text-field {
+            background-color:#E8E8E8; /* Grey background color */
+            border: 1px solid #ccc; /* Grey border */
+            color: #495057; /* Dark grey text color */
+        }
+
         .removeFieldsContainer {
             display: block;
             margin-top: 10px; /* Adjust the margin-top as needed */
         }
 
+        .addFields {
+            margin-top: 10px; /* Adjust margin-right as needed */
+        }
 
 
 
@@ -92,8 +101,7 @@
                         <!-- Establishment Opening Time -->
                         <div class="form-group">
                             <label>Establishment Opening Time<span class="text-danger">*</span></label>
-
-                            <input type="time" name="openingTime"  th:field="*{openingTime}" class="form-control" th:value="${establishment.openingTime}" required />
+                            <input type="time" name="openingTime" th:field="*{openingTime}" class="form-control" required th:value="${establishment.openingTime}" />
                         </div>
                         <!-- Establishment Closing Time -->
                         <div class="form-group">
@@ -113,6 +121,24 @@
                 <fieldset id="additionalInfo">
                     <legend>Part 2: Additional Information</legend>
                     <div class="form-container">
+                        <!-- Existing Nationality, Category, Entry Fee Fields -->
+                        <div class="existing-fields">
+                            <!-- Loop through existing data and display -->
+                            <div class="form-row" th:each="fee : ${fees}">
+                                <div class="form-group col-md-4">
+                                    <label for="nationality">Nationality</label>
+                                    <input type="text" class="form-control grey-text-field" th:value="${fee.nationality.nationalityType}" readonly>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="category">Category</label>
+                                    <input type="text" class="form-control grey-text-field" th:value="${fee.category.categoryName}" readonly>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label for="entryFee">Entry Fee</label>
+                                    <input type="text" class="form-control grey-text-field" th:value="${fee.entryFee}" readonly>
+                                </div>
+                            </div>
+                        </div>
                         <!-- Nationality, Category, Entry Fee Fields -->
                         <div class="form-row" id="fieldSet1">
                             <div class="form-group col-md-4">
@@ -139,30 +165,46 @@
                         </div>
                         <!-- Add Button for Additional Fields -->
                         <div class="button-group">
-                            <button type="button" id="addFields" class="btn btn-primary addFields">Add</button>
+                            <button type="button" id="addFields" class="btn btn-primary addFields mr-2">Add</button>
                         </div>
 
                     </div>
                 </fieldset>
-                <!-- Additional Information Section for Other Fees -->
+                <!-- Other Fees Type and Fee Fields -->
                 <fieldset id="otherFees">
                     <legend>Part 3: Other Fees</legend>
                     <div class="form-container">
-                        <!-- Other Fees Type and Fee Fields -->
-                        <div class="form-row" id="otherFeesFieldSet1">
+                        <!-- Existing fees -->
+                        <div class="form-row" th:each="fee, feeIndex : ${otherFees}">
+                            <!-- Existing fields -->
                             <div class="form-group col-md-4">
                                 <label for="feesType">Fees Type<span class="text-danger">*</span></label>
-                                <input type="text" id="feesType" name="feesType" class="form-control" placeholder="Enter Fees Type" required>
+                                <input type="text" id="feesType" name="feesType" class="form-control grey-text-field" placeholder="Enter Fees Type" required th:value="${fee.feesType}" readonly>
                             </div>
-
                             <div class="form-group col-md-4">
                                 <label for="fees">Fees<span class="text-danger">*</span></label>
-                                <input type="number" step="1" class="form-control" id="fees" name="fees" placeholder="Enter Fees" required>
+                                <input type="number" step="1" class="form-control grey-text-field" id="fees" name="fees" placeholder="Enter Fees" required th:value="${fee.fees}" readonly>
+                            </div>
+                            <!-- Delete button -->
+                            <div class="form-group col-md-4">
+                                <button type="button" class="btn btn-danger removeFields" th:if="${feeIndex.index == null}">Delete</button>
                             </div>
                         </div>
-                        <!-- Add Button for Additional Other Fees Fields -->
-                        <div class="form-group" id="addOtherFeesContainer">
-                            <button type="button" class="btn btn-primary addOtherFees">Add Fees</button>
+
+                        <!-- New fees -->
+                        <div class="form-row" id="newFeesRow">
+                            <div class="form-group col-md-4">
+                                <label for="newFeesType">Other Fees Type<span class="text-danger">*</span></label>
+                                <input type="text" id="newFeesType" name="newFeesType" class="form-control" placeholder="Enter New Fees Type" required>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="newFees"> Fees<span class="text-danger">*</span></label>
+                                <input type="number" step="1" class="form-control" id="newFees" name="newFees" placeholder="Enter New Fees" required>
+                            </div>
+                        </div>
+                        <!-- Add button for adding new rows -->
+                        <div class="button-group" id="addOtherFeesContainer">
+                            <button type="button" class="btn btn-primary addOtherFees">Add</button>
                         </div>
                     </div>
                 </fieldset>
@@ -187,6 +229,7 @@
 <script th:inline="javascript">
     $(document).ready(function() {
         var counter = 1;
+        var addedCombinations = []; // Array to store added nationality-category combinations
 
         // Function to add fields dynamically
         $("#addFields").click(function() {
@@ -204,8 +247,7 @@
                 text: "Delete"
             });
             deleteButton.appendTo(newFields);
-
-            newFields.appendTo("#additionalInfo .form-container");
+            newFields.insertBefore("#addFields");
         });
 
         // Adjust validateForm() function to include newly added fields
@@ -232,7 +274,76 @@
 
             return true;
         }
+
+        // Function to check if the combination already exists
+        function isCombinationExists(nationalityId, categoryId) {
+            return addedCombinations.some(function(combination) {
+                return combination.nationalityId === nationalityId && combination.categoryId === categoryId;
+            });
+        }
+
+        // For checking duplicate combinations before adding new fields
+        $(document).on("change", ".form-row select", function() {
+            var nationalityId = $(this).closest(".form-row").find("select[name='nationalityId']").val();
+            var categoryId = $(this).closest(".form-row").find("select[name='categoryId']").val();
+
+            if (nationalityId && categoryId) {
+                if (isCombinationExists(nationalityId, categoryId)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'This combination already exists!',
+                    });
+                    $(this).val(""); // Reset select fields
+                } else {
+                    addedCombinations.push({ nationalityId: nationalityId, categoryId: categoryId });
+                }
+            }
+        });
     });
+    // Function to reset select fields to their default values
+    function resetSelectFields() {
+        $(".form-row select").val(""); // Reset select fields
+    }
+
+    // For checking duplicate combinations before adding new fields
+    $(document).on("change", ".form-row select", function() {
+        var nationalityId = $(this).closest(".form-row").find("select[name='nationalityId']").val();
+        var categoryId = $(this).closest(".form-row").find("select[name='categoryId']").val();
+
+        if (nationalityId && categoryId) {
+            isCombinationExists(nationalityId, categoryId);
+        }
+    });
+
+    // Function to check if the combination already exists
+    function isCombinationExists(nationalityId, categoryId) {
+        var exists = false;
+        $.ajax({
+            type: "GET",
+            url: "/establishments/checkCombinationExists",
+            data: { nationalityId: nationalityId, categoryId: categoryId },
+            async: false, // Ensure synchronous execution
+            success: function(response) {
+                exists = response.exists;
+                if (exists) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'This combination already exists!',
+                    }).then(function() {
+                        resetSelectFields(); // Reset select fields after showing alert
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+            }
+        });
+        return exists;
+    }
+
+
     //For OtherFees part
     $(document).ready(function() {
         var counter = 1;
@@ -240,10 +351,10 @@
         // Function to add other fees fields dynamically
         $(".addOtherFees").click(function() {
             counter++;
-            var newFields = $("#otherFeesFieldSet1").clone();
-            newFields.attr("id", "otherFeesFieldSet" + counter);
+            var newFields = $("#newFeesRow").clone(); // Clone the template row
             newFields.find("input").val(""); // Clear input values
-            newFields.find("legend").text("Part " + counter + ": Other Fees");
+            newFields.find("legend").text("Part " + ($(".form-row").length + 1) + ": Other Fees"); // Update legend
+            newFields.insertBefore("#addOtherFeesContainer");
 
             // Add delete button
             var deleteButton = $("<button/>", {
@@ -269,7 +380,6 @@
             counter--;
         });
     });
-
 </script>
 
 </body>

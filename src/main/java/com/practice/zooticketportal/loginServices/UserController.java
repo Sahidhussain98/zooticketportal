@@ -37,9 +37,10 @@ public class UserController {
             System.out.println("Received phone number: " + phoneNumber);
 
 
-            AllUser user = userRepository.findByPhoneNumber(phoneNumber);
-
-            Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), null, null);
+//            AllUser user = userRepository.findByPhoneNumber(phoneNumber);
+//
+//            Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), null, null);
+            Authentication authentication = new UsernamePasswordAuthenticationToken("user", null, null);
             // Set the authentication object in the SecurityContext
             SecurityContext sc = SecurityContextHolder.getContext();
             sc.setAuthentication(authentication);

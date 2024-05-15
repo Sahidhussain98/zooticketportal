@@ -6,6 +6,7 @@ import com.practice.zooticketportal.repositories.*;
 import com.practice.zooticketportal.service.EstablishmentService;
 import com.practice.zooticketportal.service.OtherFeesService;
 import com.practice.zooticketportal.service.StorageService;
+import com.practice.zooticketportal.serviceimpl.FeesServiceImpl;
 import com.practice.zooticketportal.serviceimpl.OtherFeesServiceImpl;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +30,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -75,6 +73,8 @@ public class EstablishmentController {
     private OtherFeesRepo otherFeesRepo;
     @Autowired
     private OtherFeesServiceImpl otherFeesService;
+    @Autowired
+    private FeesServiceImpl feesServiceImpl;
     ObjectMapper objectMapper = new ObjectMapper();// needed to load establishmnet page
 
     @Autowired
@@ -215,7 +215,8 @@ public class EstablishmentController {
 
 
     @GetMapping("/show")
-    public String showEstablishmentDetails(@RequestParam("id") Long establishmentId, Model model) {
+    public String showEstablishmentDetails(@RequestParam("id") Long establishmentId,
+                                           Model model) {
         Establishment establishment = establishmentRepo.findById(establishmentId).orElse(null);
 
         if (establishment != null) {
@@ -226,11 +227,11 @@ public class EstablishmentController {
             List<Nationality> nationalities1 = nationalityRepo.findAll();
             // Fetch other fees types
             List<OtherFees> otherFees = otherFeesService.getOtherFeesByEstablishmentEstablishmentId(establishmentId);
-
-
+            List<Fees> fees = feesRepo.findByEstablishmentEstablishmentId(establishmentId);
             model.addAttribute("categories", categories);
             model.addAttribute("nationalities", nationalities1);
             model.addAttribute("otherFees", otherFees);
+            model.addAttribute("fees", fees);
 
             return "createestablishment2"; // Return the HTML template with the establishment details
         } else {
@@ -250,8 +251,8 @@ public class EstablishmentController {
                                      @RequestParam("nationalityId") List<Long> nationalityIds,
                                      @RequestParam("categoryId") List<Long> categoryIds,
                                      @RequestParam("entryFee") List<Double> entryFees,
-                                     @RequestParam("feesType") List<String> feesType,
-                                     @RequestParam("fees") List<Double> feesList, // Renamed to feesList
+                                     @RequestParam("newFeesType") List<String> feesType,
+                                     @RequestParam("newFees") List<Double> feesList, // Renamed to feesList
                                      Model model) {
         try {
             // Fetch the existing establishment object from the database
@@ -440,6 +441,14 @@ public class EstablishmentController {
             e.printStackTrace(); // Print the stack trace for debugging purposes
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Return an appropriate response
         }
+    }
+    @GetMapping("/checkCombinationExists")
+    @ResponseBody
+    public Map<String, Boolean> checkCombinationExists(@RequestParam Long nationalityId, @RequestParam Long categoryId) {
+        boolean exists = feesServiceImpl.combinationExists(nationalityId, categoryId);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("exists", exists);
+        return response;
     }
 
 }

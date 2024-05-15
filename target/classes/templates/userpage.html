@@ -69,7 +69,6 @@
     </div>
 </div>
 <!-- Modal -->
-<!-- Modal -->
 <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -105,46 +104,6 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
-
-    // Function to save user data
-    function saveUserData() {
-        // Retrieve username and email from input fields
-        const username = $('#usernameInput').val();
-        const email = $('#emailInput').val();
-
-        // Data object containing username and email
-        const data = { username: username, email: email };
-
-        // AJAX POST request to save user data
-        $.ajax({
-            url: "/saveUser",
-            type: "POST",
-            contentType: "application/json", // Set content type to JSON
-            data: JSON.stringify(data), // Convert data to JSON string
-            success: function (response) {
-                console.log(response);
-                // Handle success response
-                Swal.fire(
-                    'User data saved!',
-                    'Your username and email have been successfully saved.',
-                    'success'
-                );
-            },
-            error: function (error) {
-                console.log(error);
-                // Handle error response
-                Swal.fire(
-                    'Error',
-                    'Failed to save username and email.',
-                    'error'
-                );
-            }
-        });
-    }
-
-    // Execute saveUserData function when the Save button is clicked
-    $('#saveUserDataBtn').click(saveUserData);
-
 
 </script>
 </body>
