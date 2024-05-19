@@ -23,7 +23,6 @@ public class AllUserServiceImpl implements AllUserService {
         this.allUserRepo = allUserRepo;
     }
 
-
     @Override
     public AllUser findByPhoneNumber(String phoneNumber) {
         // Convert phoneNumber String to Long
@@ -38,12 +37,15 @@ public class AllUserServiceImpl implements AllUserService {
 
         return allUserRepo.findByPhoneNumber(phoneNumberLong);
     }
-
-
-    @Override
-    public AllUser findByUsername(String username){
-        System.out.println("Username"+username+ "\n" +allUserRepo.findByUsername(username));
-        return (AllUser) allUserRepo.findByUsername(username);
+    public boolean saveUserData(Long phoneNumber, String username, String email) {
+        AllUser user = allUserRepo.findByPhoneNumber(phoneNumber);
+        if (user != null) {
+            user.setUsername(username);
+            user.setEmail(email);
+            allUserRepo.save(user);
+            return true; // Indicate success
+        }
+        return false; // Indicate failure
     }
 
 }

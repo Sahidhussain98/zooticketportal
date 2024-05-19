@@ -8,7 +8,7 @@ public interface AllUserService {
     AllUser saveUserDetails(AllUser allUser);
     AllUser findByPhoneNumber(String phoneNumber);
 //    List<AllUser> findByUsername(String username);
-    AllUser findByUsername(String username);
+
 
 
 

@@ -51,7 +51,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         // You can customize the UserDetails creation based on your AllUser entity
         return org.springframework.security.core.userdetails.User
-                .withUsername(user.getUsername())
+                .withUsername(user.getPhoneNumber().toString())
                 .password(user.getPassword())
                 .authorities(authorities)
                 .build();

@@ -3,6 +3,7 @@ package com.practice.zooticketportal.controllers;
 import com.practice.zooticketportal.entity.AllUser;
 import com.practice.zooticketportal.entity.Establishment;
 import com.practice.zooticketportal.repositories.AllUserRepo;
+import com.practice.zooticketportal.service.AllUserService;
 import com.practice.zooticketportal.service.EstablishmentService;
 import com.practice.zooticketportal.serviceimpl.AllUserServiceImpl;
 import jakarta.servlet.http.HttpSession;
@@ -18,10 +19,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Controller
@@ -47,38 +51,17 @@ public class   UserPageController {
         return "userpage";
     }
 
-//    @GetMapping("/userDetails")
-//    public String getUserDetails(Model model) {
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        String phoneNumber = auth.getName(); // Assuming phoneNumber is the username used for authentication
-//        // Here, use the phoneNumber to fetch user details directly from the repository
-//        AllUser user = allUserRepo.findByPhoneNumber(Long.valueOf(String.valueOf(Long.valueOf(phoneNumber))));
-//        if (user != null) {
-//            model.addAttribute("user", user);
-//            System.out.println("phoneNumber"+phoneNumber);
-//        } else {
-//            // Handle case when user is not found
-//            // You can redirect to an error page or display a message
-//            // For example:
-//            model.addAttribute("errorMessage", "User details not found");
-//        }
-//        return "adminProfile"; // Name of your Thymeleaf template
-//    }
-
-
     @GetMapping("/adminProfile")
     public String showUserDetails(Model model,
                                   Principal principal) {
         // Retrieve authenticated user's username
-        String username = principal.getName();
-
-        System.out.println("Authenticated username: " + username);
-
+        String phoneNumberStr = principal.getName(); // The phone number is used as the principal
+        System.out.println("phoneNumber"+phoneNumberStr);
+        Long phoneNumber = Long.parseLong(phoneNumberStr);
+        System.out.println("Authenticated username: " + phoneNumber);
         // Retrieve user data from the UserService
-        AllUser user = allUserRepo.findByUsername(username);
-
+        AllUser user = allUserRepo.findByPhoneNumber(phoneNumber);
         System.out.println("Username object: " + user); // Print user object
-
         // Check if any user was found
         if (user != null) {
             model.addAttribute("user", user);
@@ -92,17 +75,13 @@ public class   UserPageController {
     public String showUserProfile(Model model, Principal principal) {
         if (principal != null) {
             String phoneNumberStr = principal.getName(); // The phone number is used as the principal
-            System.out.println("phoneNumber"+phoneNumberStr);
+            System.out.println("phoneNumber "+phoneNumberStr);
             Long phoneNumber = Long.parseLong(phoneNumberStr);
-
             // Retrieve user data based on the authenticated user's phone number
             AllUser user = allUserRepo.findByPhoneNumber(phoneNumber);
-
             System.out.println("User object: " + user); // Print user object
-
             // Add user details to the model
             model.addAttribute("user", user);
-
             // Return the user profile view
             return "userProfile";
         } else {
@@ -120,10 +99,11 @@ public class   UserPageController {
                                  RedirectAttributes redirectAttributes) {
 
         // Retrieve authenticated user's username
-        String username = principal.getName();
+        String phoneNumberStr = principal.getName();
+        Long phoneNumber = Long.parseLong(phoneNumberStr);
 
         // Retrieve user from the repository based on the username
-        AllUser user = allUserRepo.findByUsername(username);
+        AllUser user = allUserRepo.findByPhoneNumber(phoneNumber);
 
         if (user != null) {
             // Check if the current password matches the stored password
@@ -162,6 +142,48 @@ public class   UserPageController {
             return "redirect:/adminProfile";
         }
     }
+    @PostMapping("/saveUserData")
+    public String saveUserData(@RequestParam String username, @RequestParam String email,
+                               Principal principal, RedirectAttributes redirectAttributes) {
+
+        // Get the phone number from the principal
+        String phoneNumberStr = principal.getName();
+        Long phoneNumber = Long.parseLong(phoneNumberStr);
+
+        boolean success = allUserServiceImpl.saveUserData(phoneNumber, username, email);
+
+        if (success) {
+            redirectAttributes.addFlashAttribute("message", "User data saved successfully!");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Failed to save user data.");
+        }
+
+        return "redirect:/userpage"; // Redirect to a relevant page
+    }
+    @GetMapping("/checkUserSavedData")
+    @ResponseBody
+    public Map<String, Object> checkUserSavedData(Principal principal) {
+        String phoneNumberStr = principal.getName();
+        Long phoneNumber = Long.parseLong(phoneNumberStr);
+
+        AllUser user = allUserRepo.findByPhoneNumber(phoneNumber);
+        Map<String, Object> response = new HashMap<>();
+
+        System.out.println("checking username and email");
+
+        // Check if user or user data is not present
+        if (user == null || user.getUsername() == null || user.getEmail() == null) {
+            response.put("saved", false);
+            System.out.println("showing");
+        } else {
+            response.put("saved", true);
+            System.out.println("not showing");
+        }
+
+        return response;
+    }
+
+
 
 
 }

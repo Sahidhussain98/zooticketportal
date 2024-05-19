@@ -15,7 +15,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <span th:if="${#authorization.expression('isAuthenticated()')}">
-         <span>Welcome <span th:text="${#authentication.name}"></span></span>
+         <span>Welcome <span th:text="${#authentication.getName()}"></span></span>
     </span>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">

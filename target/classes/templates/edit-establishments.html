@@ -85,8 +85,7 @@
                                 <th>NATIONALITY</th>
                                 <th>CATEGORY</th>
                                 <th>FEE</th>
-                                <th>ENTERED ON</th>
-                                <th>ENTERED BY</th>
+                                <th>Action</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -101,9 +100,10 @@
                                 <td th:text="${fee.getNationality().getNationalityType()}"></td>
                                 <td th:text="${fee.getCategory().getCategoryName()}"></td>
                                 <td><input type="text" name="entryFee" th:value="${fee.entryFee}" readonly /></td>
-                                <td th:text="${fee.enteredOn}"></td>
-
-                                <td th:text="${fee.enteredBy}"></td>
+                                <td>
+                                    <a th:href="@{/}"
+                                       class="btn btn-danger">Delete</a>
+                                </td>
                                 <!--                                <td><button type="button" class="btn btn-danger delete-button" onclick="deleteFee(${row.index})">Delete</button></td>-->
                             </tr>
 
@@ -115,6 +115,7 @@
                             <tr>
                                 <th>Other Fees Type</th>
                                 <th>Fees</th>
+                                <th>Action</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -127,6 +128,9 @@
                                 <tr>
                                     <td><input type="text" name="feesType" th:value="${otherFee.feesType}" readonly /></td>
                                     <td><input type="text" name="feesOther" th:value="${otherFee.fees}" readonly /></td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger delete-button" onclick="deleteOtherFee(${otherFee.id})">Delete</button>
+                                    </td>
                                 </tr>
                             </th:block>
                             </tbody>

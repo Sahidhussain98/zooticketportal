@@ -51,56 +51,54 @@ public class TicketController {
     private FeesRepo feesRepo;
     @Autowired
     private OtherFeesRepo otherFeesRepo;
+    @Autowired
+    private AllUserRepo allUserRepo;
 
     @GetMapping("/showCheckoutForm/{establishmentId}")
     public String showCheckoutForm(@PathVariable Long establishmentId,
                                    Model model,
                                    Principal principal) {
-        // Retrieve authenticated user's username
-        String username = principal.getName();
-        System.out.println(username);
-//        System.out.println(username);
+        if (principal != null) {
+            String phoneNumberStr = principal.getName(); // The phone number is used as the principal
+            Long phoneNumber = Long.parseLong(phoneNumberStr);
 
-        // Retrieve user details from the database using the username
-        AllUser user = allUserService.findByUsername(username);
-        System.out.println(user);
+            // Retrieve user details based on the authenticated user's phone number
+            AllUser user = allUserRepo.findByPhoneNumber(phoneNumber);
 
-        // Placeholder for phone number and email
-        String email = user.getEmail();
-        String phoneNumber = String.valueOf(user.getPhoneNumber());
-        // Check if any user was found
-//        System.out.print("phoneNumber"+phoneNumber);
-//        System.out.print("email"+email);
+            // Placeholder for email
+            String email = user.getEmail();
 
-        // Here, you can add logic to retrieve the establishment details
-        // based on the establishmentId from the database
-        Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
+            // Retrieve establishment details based on establishmentId
+            Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
 
-        // Create a ticket object
-        Ticket ticket = new Ticket();
-        ticket.setEmail(email);
-        ticket.setPhoneNumber(Long.parseLong(phoneNumber));
+            // Create a ticket object
+            Ticket ticket = new Ticket();
+            ticket.setEmail(email);
+            ticket.setPhoneNumber(phoneNumber);
 
+            // Add ticket and establishment objects to the model
+            model.addAttribute("theTicket", ticket);
+            model.addAttribute("establishment", establishment);
+            model.addAttribute("phoneNumber", phoneNumber);
+            model.addAttribute("email", email);
 
-        // Add ticket and establishment objects to the model
-        model.addAttribute("theTicket", ticket);
-        System.out.println("Ticket "+ticket);
-        model.addAttribute("establishment", establishment);
-        model.addAttribute("phoneNumber", phoneNumber);
-        model.addAttribute("email", email);
+            // Fetch nationalities and categories with associated entry fees
+            List<Nationality> nationalitiesWithFees = feesRepo.findNationalitiesWithFees(establishmentId);
+            List<Category> categoriesWithFees = feesRepo.findCategoriesWithFees(establishmentId);
+            List<OtherFees> otherFees = otherFeesRepo.findByEstablishmentEstablishmentId(establishmentId);
 
-        // add the list of countries to the model
-        // Fetch nationalities and categories with associated entry fees
-        List<Nationality> nationalitiesWithFees = feesRepo.findNationalitiesWithFees(establishmentId);
-        List<Category> categoriesWithFees = feesRepo.findCategoriesWithFees(establishmentId);
+            // Add filtered nationalities and categories to the model
+            model.addAttribute("nationalities", nationalitiesWithFees);
+            model.addAttribute("categories", categoriesWithFees);
+            model.addAttribute("otherFees", otherFees);
 
-
-        // Add filtered nationalities and categories to the model
-        model.addAttribute("nationalities", nationalitiesWithFees);
-        model.addAttribute("categories", categoriesWithFees);
-
-        return "ticket";
+            return "ticket";
+        } else {
+            // Handle case when principal is null
+            return "error"; // or whatever error handling you need
+        }
     }
+
 
 
     @PostMapping("/processCheckoutForm/{establishmentId}")

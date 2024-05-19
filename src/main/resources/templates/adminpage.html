@@ -30,31 +30,31 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="userInfoModal" tabindex="-1" role="dialog" aria-labelledby="userInfoModalLabel" aria-hidden="true">
+<div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="userInfoModalLabel">Enter Username & Email</h5>
+                <h5 class="modal-title text-center w-100" id="userModalLabel">Enter your username and email</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
-                <form id="userInfoForm">
+            <form id="userForm" th:action="@{/saveUserData}" th:method="post">
+                <div class="modal-body">
                     <div class="form-group">
-                        <label for="username">Username:</label>
-                        <input type="text" class="form-control" id="username" name="username" required>
+                        <label for="usernameInput" class="dark-label">Username<span class="text-danger">*</span></label>
+                        <input id="usernameInput" class="form-control dark-grey-text" name="username" placeholder="Enter Your Username" required pattern="[A-Za-z]+" title="Please enter a valid username. It should contain only alphabetic characters">
                     </div>
                     <div class="form-group">
-                        <label for="email">Email:</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
+                        <label for="emailInput" class="dark-label">Email<span class="text-danger">*</span></label>
+                        <input id="emailInput" class="form-control dark-grey-text" name="email" placeholder="Enter Your Email address" required>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="submitUserInfo()">Submit</button>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -65,40 +65,30 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
-    function submitUserInfo() {
-        var username = $('#username').val();
-        var email = $('#email').val();
+    $(document).ready(function(){
+        // Function to check if username and email are not saved
+        function shouldShowModal() {
+            // Perform an AJAX request to check if username and email are saved
+            $.ajax({
+                url: "/checkUserSavedData", // Endpoint to check if user data is saved
+                method: "GET",
+                success: function(response) {
+                    // If user data is not saved, show the modal
+                    if (!response.saved) {
+                        $('#userModal').modal('show');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Handle error if needed
+                    console.error(error);
+                }
+            });
+        }
 
-        // Make an AJAX request to save the data
-        $.ajax({
-            type: 'POST',
-            url: '/saveUserInfo', // Replace this with your endpoint to save user info
-            data: {
-                username: username,
-                email: email
-            },
-            success: function(response) {
-                // Show success message using SweetAlert2
-                Swal.fire({
-                    icon: 'success',
-                    title: 'User Info Saved Successfully!',
-                    showConfirmButton: false,
-                    timer: 2000
-                });
-            },
-            error: function(xhr, status, error) {
-                // Show error message if AJAX request fails
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'An error occurred while saving user info!'
-                });
-            }
-        });
+        // Check if modal should be shown on page load
+        shouldShowModal();
+    });
 
-        // Close the modal after submission
-        $('#userInfoModal').modal('hide');
-    }
 </script>
 </body>
 

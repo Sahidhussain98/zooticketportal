@@ -463,5 +463,9 @@ public class EstablishmentController {
         response.put("exists", exists);
         return response;
     }
+    @DeleteMapping("/fees/{feeId}")
+    public void deleteFee(@PathVariable Long feeId) {
+        feesRepo.deleteById(feeId);
+    }
 
 }
