@@ -210,14 +210,14 @@
                 <div class="feeEntryRow">
                     <div class="feeEntry">
                         <label for="feeType">Fee Type:</label>
-                        <select id="feeType" name="feeType" required>
-                            <option value="">--SELECT FEE TYPE--</option>
+                        <select id="feeType" name="feeType" class="feeType" required>
+                            <option value="">SELECT FEE TYPE</option>
                             <option th:each="otherFees : ${otherFees}" th:value="${otherFees.feesType}" th:text="${otherFees.feesType}"></option>
                         </select>
                     </div>
                     <div class="feeEntry">
                         <label for="feePerItem">Fee per Item:</label>
-                        <input type="number" id="feePerItem" placeholder="Enter fee per item" />
+                        <input type="number" id="feePerItem"  readonly />
                     </div>
                     <div class="feeEntry">
                         <label for="numItems">Number of Items:</label>
@@ -519,6 +519,33 @@
     // });
 </script>
 <script>
+    $(document).ready(function() {
+        $(document).on('change', '.feeType', function() {
+            const feeType = $(this).val();
+            const feePerItemElement = $(this).closest('.feeEntryRow').find('input[id="feePerItem"]');
+            const establishmentId = $('#establishmentId').val();
+
+            if (feeType) {
+                $.ajax({
+                    type: 'GET',
+                    url: '/fetchOtherFees',
+                    data: {
+                        feesType: feeType,
+                        establishmentId: establishmentId
+                    },
+                    success: function(fee) { // Assuming the fee is a direct numeric value
+                        feePerItemElement.val(fee); // Update the input field
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Failed to fetch fee per item:', error);
+                        feePerItemElement.val(''); // Clear the field on error
+                    }
+                });
+            } else {
+                feePerItemElement.val('');
+            }
+        });
+    });
 
 </script>
 </body>
