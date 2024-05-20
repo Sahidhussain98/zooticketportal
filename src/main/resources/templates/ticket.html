@@ -222,7 +222,7 @@
                     </div>
                     <div class="feeEntry">
                         <label for="numItems">Number of Items:</label>
-                        <input type="number" id="numItems" required min="1" />
+                        <input type="number" id="numItems" class="number-of-items" required min="1" />
                     </div>
                     <div class="feeEntry">
                         <label for="totalItemFees">Total Item Fees:</label>
@@ -244,7 +244,7 @@
                 </div>
                 <div class="form-group-quarter">
                     <label for="totalItems">Total Items:</label>
-                    <input type="number" id="totalItems" th:field="*{totalItems}" required min="0" />
+                    <input type="number" id="totalItems" th:field="*{totalItems}" required min="0" readonly />
                 </div>
                 <div class="form-group-quarter">
                     <label for="fees">Fees:</label>
@@ -252,7 +252,7 @@
                 </div>
                 <div class="form-group-quarter">
                     <label for="itemFees">Item Fees:</label>
-                    <input type="text" id="itemFees" class="item-fees" readonly onchange="calculateOtherFees()" />
+                    <input type="text" id="itemFees" class="item-fees" readonly />
                 </div>
             </div>
             <div class="form-row" style="margin-top: 15px;">
@@ -294,7 +294,7 @@
     function calculateFees() {
         var totalFees = 0;
 
-        $(".form-row").each(function() {
+        $("#selections .form-row").each(function() {
             var establishmentId = $("#establishmentId").val();
             var nationalityId = $(this).find("#nationalities").val();
             var categoryId = $(this).find("#categories").val();
@@ -332,9 +332,44 @@
         });
     }
 
+    // Function to calculate other fees and update the total item fees
+    function calculateOtherFees() {
+        var totalItemFees = 0;
+
+        $("#feesList .feeEntryRow").each(function() {
+            var numItems = $(this).find("#numItems").val();
+            var feePerItem = $(this).find("#feePerItem").val();
+
+            // Calculate total item fees
+            if (numItems && feePerItem) {
+                var itemFees = numItems * feePerItem;
+                $(this).find("#totalItemFees").val(itemFees.toFixed(2));
+                totalItemFees += parseFloat(itemFees);
+            }
+        });
+
+        // Update the Item Fees field with the total item fees
+        $("#itemFees").val(totalItemFees.toFixed(2));
+        calculateTotalAmount();
+    }
+
+    // Function to calculate the total amount
+    function calculateTotalAmount() {
+        var fees = parseFloat($("#fees").val()) || 0;
+        var itemFees = parseFloat($("#itemFees").val()) || 0;
+        var totalAmount = fees + itemFees;
+
+        $("#totalAmount").val(totalAmount.toFixed(2));
+    }
+
     // Call calculateFees() whenever there is a change in nationality, category, establishment, or number of people
     $(document).on("change", "#establishmentId, #nationalities, #categories, #numberOfPeople", function() {
         calculateFees();
+    });
+
+    // Call calculateOtherFees() whenever there is a change in number of items or fee type
+    $(document).on("change", "#numItems, .feeType", function() {
+        calculateOtherFees();
     });
 
     // For nationality and category and total person calculation
@@ -538,6 +573,10 @@
             const totalItemFeesElement = numItemsElement.closest('.feeEntryRow').find('#totalItemFees');
 
             calculateTotalItemFees(numItemsElement, feePerItem, totalItemFeesElement);
+
+            // Recalculate total items when changing the number of items
+            calculateTotalItems();
+            calculateOtherFees();
         });
 
         // DELETE BUTTON FOR OTHER FEES PART
@@ -573,6 +612,10 @@
 
                 // Append the new row (with the delete button) below the new fee entry row
                 deleteButtonRow.appendTo("#feesList");
+
+                // Recalculate total items when adding a new row
+                calculateTotalItems();
+                calculateOtherFees();
             });
 
             // Function to remove fee entry rows dynamically along with their corresponding delete button row
@@ -580,6 +623,10 @@
                 var feeRow = $(this).closest('.row').prev('.feeEntryRow'); // Get the corresponding fee entry row
                 $(this).closest('.row').remove(); // Remove the row containing the delete button
                 feeRow.remove(); // Remove the fee entry row
+
+                // Recalculate total items when removing a row
+                calculateTotalItems();
+                calculateOtherFees();
             });
 
             // Handle changes to feeType to prevent duplicate selections
@@ -600,6 +647,27 @@
                     $(this).val(''); // Reset the current selection if it's a duplicate
                 }
             });
+        });
+
+        // Calculate total items
+        function calculateTotalItems() {
+            var totalItems = 0;
+
+            // Sum up the number of items in each row
+            $(".number-of-items").each(function() {
+                var numItems = parseInt($(this).val());
+                if (!isNaN(numItems)) {
+                    totalItems += numItems;
+                }
+            });
+
+            // Update the total items field
+            $("#totalItems").val(totalItems);
+        }
+
+        // Bind event listener to number of items input
+        $(document).on("input", ".number-of-items", function() {
+            calculateTotalItems();
         });
     });
 </script>

@@ -30,21 +30,21 @@ public class OtherFeesController {
     private EstablishmentService establishmentService;
     @GetMapping("/fetchOtherFees")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> fetchFee(@RequestParam String feesType, @RequestParam Long establishmentId, @RequestParam(required = false) Integer numItems) {
-//        System.out.println("Fetching Fees for type: " + feesType + ", establishmentId: " + establishmentId);
+    public ResponseEntity<Map<String, Object>> fetchFee(@RequestParam String feesType, @RequestParam Long establishmentId, @RequestParam(required = false) Long numItems) {
         OtherFees fees = otherFeesRepo.findByFeesTypeAndEstablishment_EstablishmentId(feesType, establishmentId);
         if (fees != null) {
             Map<String, Object> response = new HashMap<>();
-            Double feePerItem = fees.getFees(); // Assuming getFees() returns the fee value per item
+            Double feePerItem = fees.getFees();
             response.put("feePerItem", feePerItem);
 
             if (numItems != null && numItems > 0) {
                 Double totalItemFees = numItems * feePerItem;
-                response.put("totalItemFees", totalItemFees); // Calculate total fees only if numItems is provided
+                response.put("totalItemFees", totalItemFees);
             }
             return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
+
 }
