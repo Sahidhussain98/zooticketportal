@@ -29,7 +29,9 @@ public class Ticket {
     private String totalAmount;
     private LocalDate dateTime;
     private LocalDateTime enteredBy;
+    //validated by officer
     private String enteredOn;
+    // localdatetime, validateON
     @ManyToOne
     @JoinColumn(name = "user_id")  // Assuming this column exists in the Ticket table
     private AllUser user;
