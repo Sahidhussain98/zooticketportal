@@ -237,7 +237,7 @@
         </div>
     </div>
 </div>
-<!-- Entry Fee Add Modal -->
+<!-- Add Entry Fee Modal -->
 <div class="modal fade" id="addEntryFeeModal" tabindex="-1" role="dialog" aria-labelledby="addEntryFeeModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -248,22 +248,25 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="addEntryFeeForm" th:action="@{/establishments/addEntryFee}" method="POST">
+                <form id="addEntryFeeForm" th:action="@{/establishments/addEntryFees}" method="POST">
+                    <input type="hidden" name="establishmentId" th:value="${establishment.establishmentId}">
                     <div class="form-group">
                         <label for="nationality">Nationality</label>
-                        <select class="form-control" id="nationality" name="nationality">
-                            <option></option>
+                        <select class="form-control" id="nationality" name="nationality" required>
+                            <option value="" disabled selected>Select nationality</option>
+                            <option th:each="nationality : ${nationalities}" th:value="${nationality.nationalityId}" th:text="${nationality.nationalityType}"></option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="category">Category</label>
-                        <select class="form-control" id="category" name="category">
-                            <option></option>
+                        <select class="form-control" id="category" name="category" required>
+                            <option value="" disabled selected>Select category</option>
+                            <option th:each="category : ${categories}" th:value="${category.categoryId}" th:text="${category.categoryName}"></option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="entryFeeValue">Entry Fee</label>
-                        <input type="text" class="form-control" id="entryFee" name="entryFee">
+                        <input type="text" class="form-control" id="entryFee" name="entryFee" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Add Entry Fee</button>
                 </form>
@@ -276,6 +279,7 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
+    //Function to show confirm delete alert
     //Function to show confirm delete alert
     function confirmDelete(event, feesId) {
         event.preventDefault();
@@ -304,6 +308,12 @@
         } else {
             console.error("Error: Establishment ID not found in input field");
         }
+    }
+
+    // Extract establishment ID from the hidden input field
+    function extractEstablishmentIdFromHTML() {
+        var establishmentIdInput = document.querySelector('input[name="establishmentId"]');
+        return establishmentIdInput ? establishmentIdInput.value : null;
     }
 
     //For last edit button toogle to shoe save and cance edit button

@@ -288,6 +288,10 @@ public class EstablishmentController {
         List<OtherFees> otherFees = otherFeesService.getOtherFeesByEstablishmentEstablishmentId(id);
         model.addAttribute("establishment", existingEstablishment);
         model.addAttribute("otherFees", otherFees);
+        List<Nationality> nationalities = nationalityRepo.findAll();
+        List<Category> categories = categoryRepo.findAll();
+        model.addAttribute("nationalities", nationalities);
+        model.addAttribute("categories", categories);
         return "edit-establishments";
     }
 
@@ -389,17 +393,39 @@ public class EstablishmentController {
     public void deleteFee(@PathVariable Long feeId) {
         feesRepo.deleteById(feeId);
     }
+    //For savinf entryFees from modal in admin side
+    @PostMapping("/addEntryFees")
+    public ResponseEntity<String> addEntryFee(@RequestParam("establishmentId") Long establishmentId,
+                                              @RequestParam("nationality") Long nationalityId,
+                                              @RequestParam("category") Long categoryId,
+                                              @RequestParam("entryFee") Double entryFee) {
+        try {
+            Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
+            if (establishment == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Establishment not found");
+            }
 
-    @GetMapping("/showDropdown")
-    @ResponseBody
-    public ResponseEntity<?> showDropdown(Model model) {
-        List<Nationality> nationalities = nationalityRepo.findAll();
-        List<Category> categories = categoryRepo.findAll();
+            Fees fees = new Fees();
+            fees.setEstablishment(establishment);
+            fees.setNationality(nationalityRepo.findById(nationalityId).orElseThrow(() -> new IllegalArgumentException("Invalid nationality ID")));
+            fees.setCategory(categoryRepo.findById(categoryId).orElseThrow(() -> new IllegalArgumentException("Invalid category ID")));
+            fees.setEntryFee(entryFee);
+            fees.setEnteredOn(LocalDateTime.now());
 
-        Map<String, Object> dropdownData = new HashMap<>();
-        dropdownData.put("nationalities", nationalities);
-        dropdownData.put("categories", categories);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            fees.setEnteredBy(authentication.getName());
 
-        return ResponseEntity.ok(dropdownData);
+            feesRepo.save(fees);
+
+            return ResponseEntity.status(HttpStatus.OK).body("Entry fee added successfully!");
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while adding the entry fee");
+        }
     }
+
+
+
 }

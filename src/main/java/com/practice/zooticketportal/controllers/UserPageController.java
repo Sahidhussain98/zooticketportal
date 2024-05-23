@@ -26,7 +26,6 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 
 @Controller
@@ -183,37 +182,36 @@ public class   UserPageController {
 
         return response;
     }
-    @PostMapping("/updateUserProfile")
+    @PostMapping("updateUserProfile")
     public String updateUserProfile(@RequestParam("updatedUsername") String updatedUsername,
                                     @RequestParam("updatedEmail") String updatedEmail,
                                     @RequestParam("updatedPhoneNumber") Long updatedPhoneNumber,
                                     Authentication authentication, Model model) {
-        Long allUserId = Long.parseLong(authentication.getName());  // Assuming user ID is stored as the name for simplicity
-        Optional<AllUser> existingUser = allUserRepo.findByPhoneNumberAndAllUserIdNot(updatedPhoneNumber, allUserId);
+        String phoneNumberStr = authentication.getName(); // The phone number is used as the principal
+        Long phoneNumber = Long.parseLong(phoneNumberStr);
+        // Retrieve user data based on the authenticated user's phone number
+        AllUser user = allUserRepo.findByPhoneNumber(phoneNumber);
 
-        if (existingUser.isPresent()) {
-            model.addAttribute("error", "Phone number already in use by another account.");
-            return "userProfile";
-        }
-
-        AllUser user = allUserRepo.findById(allUserId).orElse(null);
         if (user != null) {
+            // Update user details
             user.setUsername(updatedUsername);
             user.setEmail(updatedEmail);
             user.setPhoneNumber(updatedPhoneNumber);
+            // Save updated user
             allUserRepo.save(user);
+            System.out.println("Updated User Profile: " + user);
+            model.addAttribute("user", user);
             model.addAttribute("message", "Profile updated successfully!");
         } else {
             model.addAttribute("error", "User not found!");
         }
 
-        return "userProfile";
+        // Return the user profile view
+        return "userProfile"; // Redirect or forward to a confirmation page or back to the form
     }
 
 
-
-
-}
+    }
 
 
 
