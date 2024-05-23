@@ -12,4 +12,9 @@ public class FeesServiceImpl implements FeesService {
     public boolean combinationExists(Long nationalityId, Long categoryId) {
         return feesRepo.existsByNationalityNationalityIdAndCategoryCategoryId(nationalityId, categoryId);
     }
+
+    @Override
+    public void deleteFeesById(Long feesId) {
+        feesRepo.deleteById(feesId);
+    }
 }

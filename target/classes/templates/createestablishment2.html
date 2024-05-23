@@ -96,19 +96,18 @@
                         <!-- Establishment Address -->
                         <div class="form-group">
                             <label>Establishment Address<span class="text-danger">*</span></label>
-                            <input type="text" name="address" th:field="*{address}" class="form-control" placeholder="Enter Establishment Address" required th:value="${establishment.address}"/>
+                            <input type="text" name="address" th:field="*{address}" class="form-control" placeholder="Enter Establishment Address" required/>
                         </div>
                         <!-- Establishment Opening Time -->
                         <div class="form-group">
                             <label>Establishment Opening Time<span class="text-danger">*</span></label>
-                            <input type="time" name="openingTime" th:field="*{openingTime}" class="form-control" required th:value="${establishment.openingTime}" />
+                            <input type="time" name="openingTime" th:field="*{openingTime}" class="form-control" required/>
                         </div>
                         <!-- Establishment Closing Time -->
                         <div class="form-group">
                             <label>Establishment Closing Time<span class="text-danger">*</span></label>
-                            <input type="time" name="closingTime" th:field="*{closingTime}" class="form-control" th:value="${establishment.closingTime}" required/>
+                            <input type="time" name="closingTime" th:field="*{closingTime}" class="form-control" required/>
                         </div>
-
                         <!-- Upload Additional Images -->
                         <div class="form-group">
                             <label>Upload Additional Images<span class="text-danger">*</span></label>
@@ -121,25 +120,6 @@
                 <fieldset id="additionalInfo">
                     <legend>Part 2: Additional Information</legend>
                     <div class="form-container">
-                        <!-- Existing Nationality, Category, Entry Fee Fields -->
-                        <div class="existing-fields">
-                            <!-- Loop through existing data and display -->
-                            <div class="form-row" th:each="fee : ${fees}">
-                                <div class="form-group col-md-4">
-                                    <label for="nationality">Nationality</label>
-                                    <input type="text" class="form-control grey-text-field" th:value="${fee.nationality.nationalityType}" readonly>
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label for="category">Category</label>
-                                    <input type="text" class="form-control grey-text-field" th:value="${fee.category.categoryName}" readonly>
-                                </div>
-                                <div class="form-group col-md-3">
-                                    <label for="entryFee">Entry Fee</label>
-                                    <input type="text" class="form-control grey-text-field" th:value="${fee.entryFee}" readonly>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Nationality, Category, Entry Fee Fields -->
                         <div class="form-row" id="fieldSet1">
                             <div class="form-group col-md-4">
                                 <label for="nationality">Nationality<span class="text-danger">*</span></label>
@@ -175,23 +155,6 @@
                     <legend>Part 3: Other Fees</legend>
                     <div class="form-container">
                         <!-- Existing fees -->
-                        <div class="form-row" th:each="fee, feeIndex : ${otherFees}">
-                            <!-- Existing fields -->
-                            <div class="form-group col-md-4">
-                                <label for="feesType">Fees Type<span class="text-danger">*</span></label>
-                                <input type="text" id="feesType" name="feesType" class="form-control grey-text-field" placeholder="Enter Fees Type" required th:value="${fee.feesType}" readonly>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="fees">Fees<span class="text-danger">*</span></label>
-                                <input type="number" step="1" class="form-control grey-text-field" id="fees" name="fees" placeholder="Enter Fees" required th:value="${fee.fees}" readonly>
-                            </div>
-                            <!-- Delete button -->
-                            <div class="form-group col-md-4">
-                                <button type="button" class="btn btn-danger removeFields" th:if="${feeIndex.index == null}">Delete</button>
-                            </div>
-                        </div>
-
-                        <!-- New fees -->
                         <div class="form-row" id="newFeesRow">
                             <div class="form-group col-md-4">
                                 <label for="newFeesType">Other Fees Type<span class="text-danger">*</span></label>
@@ -208,7 +171,6 @@
                         </div>
                     </div>
                 </fieldset>
-
                 <!-- Submit Button -->
                 <button type="submit" class="submit-btn">Submit</button>
             </form>

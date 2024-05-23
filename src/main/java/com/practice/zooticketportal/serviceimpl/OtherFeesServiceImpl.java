@@ -17,6 +17,20 @@ public class OtherFeesServiceImpl implements OtherFeesService {
         return otherFeesRepo.findByEstablishmentEstablishmentId(establishmentId);
     }
 
+    @Override
+    public void deleteOtherFee(Long otherFeesId) {
+        otherFeesRepo.deleteById(otherFeesId);
+    }
+
+    @Override
+    public OtherFees findById(Long id) {
+        return otherFeesRepo.findById(id).orElse(null);
+    }
+
+    @Override
+    public OtherFees save(OtherFees otherFees) {
+        return otherFeesRepo.save(otherFees);
+    }
 
 
 }

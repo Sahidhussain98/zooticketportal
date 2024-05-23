@@ -12,31 +12,39 @@
 <a th:href="@{/export/pdf(id=${theTicket.id})}" class="btn btn-success" id="downloadPdf">Download PDF Report</a>
 <script>
     document.getElementById('downloadPdf').addEventListener('click', function() {
-        // Store reference to current scope
-        var self = this;
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', this.href, true);
+        xhr.responseType = 'blob'; // Handle PDF download
 
-        // Check for the email sent flag after a delay to ensure the response is received
-        setTimeout(function() {
-            var xhr = new XMLHttpRequest();
-            xhr.open('HEAD', self.href, true);
-            xhr.onload = function () {
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                // Check the email sent header
                 var emailSent = xhr.getResponseHeader('X-Email-Sent');
-                if (emailSent === 'true') {
-                    // Display a success message
-                    var successMessage = document.createElement('div');
-                    successMessage.textContent = 'Email sent successfully';
-                    successMessage.classList.add('alert', 'alert-success');
-                    document.body.appendChild(successMessage);
-                } else {
-                    // Display an error message if email was not sent
-                    var errorMessage = document.createElement('div');
-                    errorMessage.textContent = 'Error sending email';
-                    errorMessage.classList.add('alert', 'alert-danger');
-                    document.body.appendChild(errorMessage);
+                if (emailSent === 'false') {
+                    alert('Error sending email.');
                 }
-            };
-            xhr.send(null);
-        }, 200); // Adjust the delay as needed
+
+                // Handle the PDF download
+                var blob = new Blob([xhr.response], {type: 'application/pdf'});
+                var downloadUrl = URL.createObjectURL(blob);
+                var a = document.createElement("a");
+                a.href = downloadUrl;
+                a.download = "ticket.pdf";
+                document.body.appendChild(a);
+                a.click();
+
+                // Optionally, remove the temporary link
+                a.remove();
+            } else if (xhr.status === 500) {
+                alert('Error downloading PDF.');
+            }
+        };
+
+        xhr.onerror = function () {
+            alert('Request failed. Please try again.');
+        };
+
+        xhr.send();
     });
 
 </script>

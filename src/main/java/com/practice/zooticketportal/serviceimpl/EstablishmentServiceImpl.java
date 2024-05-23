@@ -45,6 +45,11 @@ public class EstablishmentServiceImpl implements EstablishmentService{
     }
 
     @Override
+    public Establishment findById(Long id) {
+        return establishmentRepository.findById(id).orElse(null);
+    }
+
+    @Override
     public Establishment getEstablishmentById(Long id) {
         Optional<Establishment> optionalEstablishment = establishmentRepository.findById(id);
         return optionalEstablishment.orElse(null);

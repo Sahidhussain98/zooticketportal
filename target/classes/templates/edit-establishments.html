@@ -3,82 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <title>Establishment Profile</title>
-    <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
           crossorigin="anonymous">
     <style>
-        /* Custom CSS for establishment profile page */
         .profile-container {
             background-color: #f8f9fa;
             border: 1px solid #dee2e6;
             border-radius: 10px;
             padding: 30px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 100%; /* Set the maximum width to 100% */
-            margin: 0 auto; /* Center the container horizontally */
-            overflow-x: auto; /* Enable horizontal scrolling if needed */
+            max-width: 100%;
+            margin: 0 auto;
+            overflow-x: auto;
         }
-
-
         .profile-image {
             max-width: 200px;
             border-radius: 5px;
             margin-bottom: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-
         .profile-details {
             margin-bottom: 30px;
         }
-
         .profile-field {
             font-weight: bold;
             margin-bottom: 10px;
         }
-
-        /* Styling for buttons */
         .edit-button {
             margin-top: 10px;
         }
-
         .save-button {
             margin-top: 10px;
         }
         input[readonly] {
-            background-color: #f8f9fa; /* Light gray background color */
-            border: 1px solid #ced4da; /* Gray border */
-            padding: 5px; /* Padding to make it more visible */
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+            padding: 5px;
         }
-
-        /* Style for editable input fields */
         input:not([readonly]) {
-            background-color: #fff; /* White background color */
-            border: 1px solid #007bff; /* Blue border */
-            padding: 5px; /* Padding to make it more visible */
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add shadow for emphasis */
+            background-color: #fff;
+            border: 1px solid #007bff;
+            padding: 5px;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .button-container button {
+            margin-right: 10px;
+            min-width: 100px;
         }
     </style>
 </head>
 <body>
-<!-- Include your navigation menu -->
-<div th:replace="fragments/adminNavMenu :: header"></div>
+<div th:replace="~{fragments/adminNavMenu :: header}"></div>
 <br>
-<div class="container">
+<div class="">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="profile-container">
                 <h1 class="text-center mb-4">Establishment Profile</h1>
                 <div class="text-center">
-                    <!-- Display profile image -->
                     <img th:src="@{/establishments/user/{establishmentId}(establishmentId=${establishment.establishmentId})}" alt="Profile Image" class="profile-image">
                 </div>
                 <div class="profile-details">
-                    <form id="editForm" th:action="@{/establishments/{id}(id=${establishment.establishmentId})}" th:object="${establishment}" method="POST">
+                    <form id="editForm" th:action="@{/establishments/update/{id}(id=${establishment.establishmentId})}" th:object="${establishment}" method="POST">
                         <input type="hidden" name="establishmentId" th:value="${establishment.establishmentId}" />
                         <p class="profile-field">Entered On: <span th:text="${establishment.enteredOn}"></span></p>
                         <p class="profile-field">Entered By: <span th:text="${establishment.enteredBy}"></span></p>
                         <p class="profile-field">Village : <span th:text="${establishment.village.villageName}"></span></p>
+                        <div class="text-right mb-1">
+                            <button type="button" class="btn btn-success mt-2 add-entry-fee" onclick="showAddEntryFeeModal()">Add Entry Fee</button>
+                        </div>
+                        <hr>
                         <table class="table">
                             <thead>
                             <tr>
@@ -89,27 +89,29 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <!-- Check if establishment fees are empty -->
                             <th:block th:if="${#lists.isEmpty(establishment.fees)}">
                                 <tr>
                                     <td colspan="5" class="text-center">No fees added, add at least one to make establishment active</td>
                                 </tr>
                             </th:block>
-                            <!-- Iterate over fees if they exist -->
                             <tr th:each="fee : ${establishment.fees}">
                                 <td th:text="${fee.getNationality().getNationalityType()}"></td>
                                 <td th:text="${fee.getCategory().getCategoryName()}"></td>
-                                <td><input type="text" name="entryFee" th:value="${fee.entryFee}" readonly /></td>
+                                <td th:text="${fee.entryFee}" readonly></td>
                                 <td>
-                                    <a th:href="@{/}"
-                                       class="btn btn-danger">Delete</a>
-                                </td>
-                                <!--                                <td><button type="button" class="btn btn-danger delete-button" onclick="deleteFee(${row.index})">Delete</button></td>-->
-                            </tr>
+                                    <button type="button" class="btn btn-primary edit-entry-fee">
+                                        Edit
+                                    </button>
 
+                                    <a th:href="@{/establishments/deleteFees/{feesId}(feesId=${fee.feesId})}" class="btn btn-danger" onclick="confirmDelete(event, ${fee.feesId})">Delete</a>
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
-                        <!-- Table for other fees -->
+                        <div class="text-right mb-1">
+                            <button type="button" class="btn btn-success mt-2" onclick="showAddOtherFeeModal()">Add Other Fee</button>
+                        </div>
+                        <hr>
                         <table class="table">
                             <thead>
                             <tr>
@@ -121,20 +123,19 @@
                             <tbody>
                             <th:block th:if="${#lists.isEmpty(otherFees)}">
                                 <tr>
-                                    <td colspan="2" class="text-center">Other fees are not added</td>
+                                    <td colspan="3" class="text-center">Other fees are not added</td>
                                 </tr>
                             </th:block>
-                            <th:block th:each="otherFee : ${otherFees}">
-                                <tr>
-                                    <td><input type="text" name="feesType" th:value="${otherFee.feesType}" readonly /></td>
-                                    <td><input type="text" name="feesOther" th:value="${otherFee.fees}" readonly /></td>
-                                    <td>
-                                        <button type="button" class="btn btn-danger delete-button" onclick="deleteOtherFee(${otherFee.id})">Delete</button>
-                                    </td>
-                                </tr>
-                            </th:block>
-                            </tbody>
+                            <tr th:each="otherFee : ${otherFees}" th:data-other-fees-id="${otherFee.otherFeesId}">
+                                <td th:text="${otherFee.feesType}" readonly></td>
+                                <td th:text="${otherFee.fees}" readonly></td>
+                                <td>
+                                    <button type="button" class="btn btn-primary edit-other-fee" onclick="editOtherFee(${otherFee.otherFeesId})">Edit</button>
 
+                                    <a th:href="@{/establishments/deleteOtherFee/{otherFeesId}(otherFeesId=${otherFee.otherFeesId})}" class="btn btn-danger" onclick="confirmDelete(event, ${otherFee.otherFeesId})">Delete</a>
+                                </td>
+                            </tr>
+                            </tbody>
                         </table>
                         <hr>
                         <p class="profile-field">Status: <span th:text="${establishment.status} ? 'Active' : 'Inactive'"></span></p>
@@ -142,104 +143,156 @@
                         <p class="profile-field">Address: <input type="text" name="address" th:value="${establishment.address}" readonly /></p>
                         <p class="profile-field">Opening Time: <input type="time" name="openingTime" th:value="${establishment.openingTime}" readonly /></p>
                         <p class="profile-field">Closing Time: <input type="time" name="closingTime" th:value="${establishment.closingTime}" readonly /></p>
-                        <!-- Add more input fields for other editable fields as needed -->
-
                         <button type="submit" id="saveButton" class="btn btn-primary save-button" style="display: none;">Save</button>
                     </form>
-
                     <button type="button" id="editButton" class="btn btn-secondary edit-button">Edit</button>
                 </div>
-                <div><h6>If additional Data is not already submitted click on the button below </h6></div>
-                <button type="button" class="btn btn-primary" onclick="showEstablishmentDetails()">Add Additional Establishment Details</button>
-                <!-- Button for adding NonWorking Dates -->
-                <br>
                 <button type="button" class="btn btn-info mt-3" onclick="addNonWorkingDates()">Add NonWorking Dates</button>
             </div>
         </div>
     </div>
 </div>
+<!-- Entry Fee Edit Modal -->
+<div class="modal fade" id="entryFeeModal" tabindex="-1" role="dialog" aria-labelledby="entryFeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="entryFeeModalLabel">Edit Entry Fee</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="entryFeeEditForm">
+                    <div class="form-group">
+                        <label for="entryFeeNationality">Nationality</label>
+                        <input type="text" class="form-control" id="entryFeeNationality" name="nationality">
+                    </div>
+                    <div class="form-group">
+                        <label for="entryFeeCategory">Category</label>
+                        <input type="text" class="form-control" id="entryFeeCategory" name="category">
+                    </div>
+                    <div class="form-group">
+                        <label for="entryFeeValue">Fee</label>
+                        <input type="text" class="form-control" id="entryFeeValue" name="fee">
+                    </div>
+                    <button type="submit" class="btn btn-primary" onclick="saveEntryFeeChanges()">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
-
-<!-- Include Bootstrap JS and jQuery -->
+<!-- Other Fees Edit Modal -->
+<div class="modal fade" id="otherFeeModal" tabindex="-1" role="dialog" aria-labelledby="otherFeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="otherFeeModalLabel">Edit Other Fee</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="otherFeeEditForm" th:action="@{/establishments/updateOtherFees}" method="POST">
+                    <div class="form-group">
+                        <label for="otherFeeType">Other Fees Type</label>
+                        <input type="text" class="form-control" id="otherFeeType" name="feesType">
+                    </div>
+                    <div class="form-group">
+                        <label for="otherFeeValue">Fees</label>
+                        <input type="text" class="form-control" id="otherFeeValue" name="fees">
+                    </div>
+                    <input type="hidden" name="otherFeesId" id="otherFeesIdInput">
+                    <input type="hidden" name="establishmentId" th:value="${establishment.establishmentId}">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Add Other Fee Modal -->
+<div class="modal fade" id="addOtherFeeModal" tabindex="-1" role="dialog" aria-labelledby="addOtherFeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addOtherFeeModalLabel">Add Other Fee</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addOtherFeeForm" th:action="@{/addOtherFees}" method="POST">
+                    <div class="form-group">
+                        <label for="newFeesType">Fees Type</label>
+                        <input type="text" class="form-control" id="newFeesType" name="feesType">
+                    </div>
+                    <div class="form-group">
+                        <label for="newFees">Fees</label>
+                        <input type="text" class="form-control" id="newFees" name="fees">
+                    </div>
+                    <input type="hidden" name="establishmentId" th:value="${establishment.establishmentId}">
+                    <button type="submit" class="btn btn-primary">Add Fee</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Entry Fee Add Modal -->
+<div class="modal fade" id="addEntryFeeModal" tabindex="-1" role="dialog" aria-labelledby="addEntryFeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addEntryFeeModalLabel">Add Entry Fee</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addEntryFeeForm" th:action="@{/establishments/addEntryFee}" method="POST">
+                    <div class="form-group">
+                        <label for="nationality">Nationality</label>
+                        <select class="form-control" id="nationality" name="nationality">
+                            <option></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select class="form-control" id="category" name="category">
+                            <option></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="entryFeeValue">Entry Fee</label>
+                        <input type="text" class="form-control" id="entryFee" name="entryFee">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Entry Fee</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<!-- Include SweetAlert library -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
-
-    function showEstablishmentDetails() {
-        // Retrieve establishment ID from the input field
-        var establishmentId = extractEstablishmentIdFromHTML();
-
-        // Make sure establishment ID is valid
-        if (establishmentId) {
-            // Redirect to "createestablishment2" page with establishment ID included in the URL
-            window.location.href = '/establishments/show?id=' + establishmentId;
-        } else {
-            console.error("Error: Establishment ID not found in input field");
+    //Function to show confirm delete alert
+    function confirmDelete(event, feesId) {
+        event.preventDefault();
+        if (confirm("Are you sure you want to delete this fee?")) {
+            var deleteUrl = `/establishments/deleteFees/${feesId}`;
+            window.location.href = deleteUrl;
         }
     }
-
-    function extractEstablishmentIdFromHTML() {
-        // Retrieve establishment ID directly from the input field
-        var establishmentId = $("input[name='establishmentId']").val();
-        return establishmentId;
-    }
-
-
-    document.getElementById("editButton").addEventListener("click", function() {
-        var inputs = document.querySelectorAll("#editForm input[type='text'], #editForm input[type='time']"); // Select both text and time inputs
-        var saveButton = document.getElementById("saveButton");
-
-        if (this.textContent === "Edit") {
-            for (var i = 0; i < inputs.length; i++) {
-                inputs[i].removeAttribute("readonly");
-            }
-            // Enable editing for otherFees table rows
-            var otherFeeInputs = document.querySelectorAll("#editForm input[name^='otherFees']");
-            for (var i = 0; i < otherFeeInputs.length; i++) {
-                otherFeeInputs[i].removeAttribute("readonly");
-            }
-            saveButton.style.display = "inline-block";
-            this.textContent = "Cancel edit";
-        } else {
-            for (var i = 0; i < inputs.length; i++) {
-                inputs[i].setAttribute("readonly", true);
-            }
-            // Disable editing for otherFees table rows
-            var otherFeeInputs = document.querySelectorAll("#editForm input[name^='otherFees']");
-            for (var i = 0; i < otherFeeInputs.length; i++) {
-                otherFeeInputs[i].setAttribute("readonly", true);
-            }
-            saveButton.style.display = "none";
-            this.textContent = "Edit";
+    //Function to show alert for otherFees table confirm delete
+    function confirmDelete(event, otherFeesId) {
+        event.preventDefault();
+        if (confirm("Are you sure you want to delete this fee?")) {
+            var deleteUrl = `/establishments/deleteOtherFee/${otherFeesId}`;
+            window.location.href = deleteUrl;
         }
-    });
-
-
-
-    document.getElementById("saveButton").addEventListener("click", function(event) {
-        event.preventDefault(); // Prevent default form submission
-
-        // Show SweetAlert confirmation
-        Swal.fire({
-            title: "Confirm updates?",
-            showCancelButton: true,
-            confirmButtonText: "Confirm",
-            cancelButtonText: "Cancel"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // If user confirms, submit the form
-                document.getElementById("editForm").submit();
-            }
-        });
-    });
-    //For Adding NonWorking Dates
-    // function addNonWorkingDates() {
-    //     // Redirect to the page where NonWorking Dates can be entered
-    //     window.location.href = '/establishments/nonworkingdates';
-    // }
+    }
+    //Function for going into nonWorking days adding page
     function addNonWorkingDates() {
         // Retrieve establishment ID from the input field
         var establishmentId = extractEstablishmentIdFromHTML();
@@ -253,23 +306,78 @@
         }
     }
 
+    //For last edit button toogle to shoe save and cance edit button
+    document.getElementById("editButton").addEventListener("click", function() {
+        var fieldsToEdit = document.querySelectorAll("input[name='name'], input[name='address'], input[name='openingTime'], input[name='closingTime']");
+        var saveButton = document.getElementById("saveButton");
 
-</script>
-<script>
-    // Function to validate input and allow only numbers
-    function allowOnlyNumbers(event) {
-        var charCode = (event.which) ? event.which : event.keyCode;
-        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
-            event.preventDefault();
+        if (this.textContent === "Edit") {
+            for (var i = 0; i < fieldsToEdit.length; i++) {
+                fieldsToEdit[i].removeAttribute("readonly");
+            }
+            saveButton.style.display = "inline-block";
+            this.textContent = "Cancel edit";
+        } else {
+            for (var i = 0; i < fieldsToEdit.length; i++) {
+                fieldsToEdit[i].setAttribute("readonly", true);
+            }
+            saveButton.style.display = "none";
+            this.textContent = "Edit";
         }
+    });
+
+    document.getElementById("saveButton").addEventListener("click", function(event) {
+        event.preventDefault();
+        Swal.fire({
+            title: "Confirm updates?",
+            showCancelButton: true,
+            confirmButtonText: "Confirm",
+            cancelButtonText: "Cancel"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById("editForm").submit();
+            }
+        });
+    });
+
+    //For saving the edited otherfees inn server
+    $(document).ready(function() {
+        // Add event listeners to Edit buttons in the other fees table
+        $('.edit-other-fee').on('click', function () {
+            var row = $(this).closest('tr');
+            var otherFeesId = row.data('otherFeesId');
+            var feesType = row.find('td:eq(0)').text();
+            var fees = row.find('td:eq(1)').text();
+
+            // Set the values in the modal inputs
+            $('#otherFeeModal #otherFeeType').val(feesType);
+            $('#otherFeeModal #otherFeeValue').val(fees);
+            $('#otherFeeModal #otherFeesIdInput').val(otherFeesId);
+
+            // Show the modal
+            $('#otherFeeModal').modal('show');
+        });
+    });
+
+    //To show the entryfees modal
+    $(document).ready(function() {
+        $('.edit-entry-fee').on('click', function() {
+            $('#entryFeeModal').modal('show');
+        });
+    });
+
+    //To show otherfees add button model
+    function showAddOtherFeeModal() {
+        $('#addOtherFeeModal').modal('show');
+    }
+    // JavaScript function to show the modal for adding entry fees
+    function showAddEntryFeeModal() {
+        // Show the modal
+        $('#addEntryFeeModal').modal('show');
     }
 
-    // Attach the 'keypress' event listener to the entryFee and feesOther input fields
-    document.querySelectorAll("input[name='entryFee'], input[name='feesOther']").forEach(function(input) {
-        input.addEventListener('keypress', allowOnlyNumbers);
-    });
+    // For showing nationality and category in dropdown
+
 </script>
-
-
 </body>
 </html>

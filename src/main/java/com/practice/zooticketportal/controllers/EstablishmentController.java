@@ -1,6 +1,5 @@
 package com.practice.zooticketportal.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.practice.zooticketportal.entity.*;
 import com.practice.zooticketportal.repositories.*;
 import com.practice.zooticketportal.service.EstablishmentService;
@@ -20,10 +19,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -31,7 +29,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/establishments")
@@ -75,13 +72,11 @@ public class EstablishmentController {
     private OtherFeesServiceImpl otherFeesService;
     @Autowired
     private FeesServiceImpl feesServiceImpl;
-    ObjectMapper objectMapper = new ObjectMapper();// needed to load establishmnet page
 
     @Autowired
     public EstablishmentController(EstablishmentService establishmentService) {
         this.establishmentService = establishmentService;
     }
-
 
     @GetMapping
     public String listEstablishments(Model model) {
@@ -90,39 +85,32 @@ public class EstablishmentController {
         return "establishments";
     }
 
-
     @GetMapping("/new")
     public String createEstablishmentForm(Model model) {
         List<MasterEstablishment> establishmentTypes = masterEstablishmentRepo.findAll();
         List<Nationality> nationalities = nationalityRepo.findAll();
         List<Category> categories = categoryRepo.findAll();
-        Optional<State> state = stateRepo.findById(16L); // Fetch state with ID 16 from the database
-        String stateName = state.isPresent() ? state.get().getStateName() : "Unknown"; // Get the state name, or use a default value
+        Optional<State> state = stateRepo.findById(16L);
+        String stateName = state.isPresent() ? state.get().getStateName() : "Unknown";
         model.addAttribute("establishmentTypes", establishmentTypes);
         model.addAttribute("nationalities", nationalities);
         model.addAttribute("categories", categories);
-        model.addAttribute("stateName", stateName); // Pass the state name to the model
+        model.addAttribute("stateName", stateName);
         Establishment establishment = new Establishment();
         model.addAttribute("establishment", establishment);
         return "create-establishments";
     }
 
-
-
-
     @PostMapping
     public String saveEstablishment(@RequestParam("name") String name,
-                                    @RequestParam("typeId") Long typeId, // Change type parameter to typeId
+                                    @RequestParam("typeId") Long typeId,
                                     @RequestParam("villageId") Long villageId,
                                     @RequestParam("image") MultipartFile imageFile,
-
                                     Model model) {
         try {
-            // Create the establishment object
             Establishment establishment = new Establishment();
             establishment.setName(name);
 
-            // Fetch the MasterEstablishment entity by typeId
             MasterEstablishment masterEstablishment = masterEstablishmentRepo.findById(typeId)
                     .orElseThrow(() -> new IllegalArgumentException("Invalid establishment type id"));
             establishment.setMasterEstablishment(masterEstablishment);
@@ -132,38 +120,25 @@ public class EstablishmentController {
             String enteredBy = authentication.getName();
             establishment.setEnteredBy(enteredBy);
 
-            // Read image data from MultipartFile
             byte[] imageData = imageFile.getBytes();
-            establishment.setProfileImage(imageData); // Set image data to the profileImage field
+            establishment.setProfileImage(imageData);
 
-
-            // Save the establishment first
             establishmentService.saveEstablishment(establishment);
 
-
-            // Save the image and get its imageId
-
             model.addAttribute("message", "Establishment created successfully!");
-//            return ResponseEntity.ok(String.valueOf(establishment.getEstablishmentId()));
-            //showEstablishmentDetails(establishment.getEstablishmentId());
-            System.out.println(establishment.getEstablishmentId());
             return "redirect:/establishments/show?id=" + establishment.getEstablishmentId();
 
         } catch (IOException e) {
-            // Handle file upload error
             model.addAttribute("error", "Failed to upload image. Please try again.");
-            return "errorPage"; // Return an error page or handle the error accordingly
+            return "errorPage";
         }
-
-//        return "redirect:/establishments"; // Redirect to the home page or any other appropriate page
     }
 
     @GetMapping("/nonworkingdates")
     public String showAddNonWorkingDatesPage(@RequestParam("id") Long establishmentId, Model model) {
         Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
         model.addAttribute("establishment", establishment);
-        // Return the name of the HTML template for the "Add NonWorking Dates" page
-        return "nonWorkingDates"; // Assuming "addNonWorkingDates.html" is the name of your HTML template
+        return "nonWorkingDates";
     }
 
     @PostMapping("/nonworkingdates/save")
@@ -175,72 +150,46 @@ public class EstablishmentController {
         List<String> reasons = new ArrayList<>();
 
         for (Map<String, String> dateMap : nonWorkingDates) {
-            dates.add(dateMap.get("nonWorkingDate")); // Extract date string from the map
+            dates.add(dateMap.get("nonWorkingDate"));
             reasons.add(dateMap.get("reason"));
         }
 
-        System.out.println(establishmentId);
-        System.out.println(nonWorkingDates);
-        System.out.println(reasons);
-
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-        // Iterate through the lists of dates and reasons
-        for (int i = 0; i < dates.size(); i++) { // Use dates.size() instead of nonWorkingDates.size()
+        for (int i = 0; i < dates.size(); i++) {
             NonWorkingDays nonWorkingDay = new NonWorkingDays();
-
-            // Parse the date string using the formatter
-            LocalDate parsedDate = LocalDate.parse(dates.get(i), dateFormatter); // Use dates.get(i) instead of nonWorkingDates.get(i)
-
+            LocalDate parsedDate = LocalDate.parse(dates.get(i), dateFormatter);
             nonWorkingDay.setNonWorkingDate(parsedDate);
             nonWorkingDay.setReason(reasons.get(i));
-            nonWorkingDay.setEnteredOn(LocalDateTime.now()); // Timestamp when the data is entered
-            nonWorkingDay.setEnteredBy("YourUsername"); // Assuming you have a way to get the username
-
-            // Assuming you have a method to find the establishment by ID
+            nonWorkingDay.setEnteredOn(LocalDateTime.now());
+            nonWorkingDay.setEnteredBy("YourUsername");
             Establishment establishment = establishmentRepo.findById(establishmentId).orElse(null);
             if (establishment != null) {
                 nonWorkingDay.setEstablishment(establishment);
-                nonWorkingDaysRepo.save(nonWorkingDay); // Save the non-working day to the database
+                nonWorkingDaysRepo.save(nonWorkingDay);
             } else {
-                // Handle error if establishment is not found
                 return ResponseEntity.badRequest().body("Error: Establishment not found with ID " + establishmentId);
             }
         }
 
-        // Return success message
-        System.out.println("Data Saved");
         return ResponseEntity.ok("Non-working dates saved successfully.");
     }
 
-
     @GetMapping("/show")
-    public String showEstablishmentDetails(@RequestParam("id") Long establishmentId,
-                                           Model model) {
+    public String showEstablishmentDetails(@RequestParam("id") Long establishmentId, Model model) {
         Establishment establishment = establishmentRepo.findById(establishmentId).orElse(null);
 
         if (establishment != null) {
             model.addAttribute("establishment", establishment);
-
-            // Retrieve additional data from createEstablishmentForm2 method
             List<Category> categories = categoryRepo.findAll();
             List<Nationality> nationalities1 = nationalityRepo.findAll();
-            // Fetch other fees types
-            List<OtherFees> otherFees = otherFeesService.getOtherFeesByEstablishmentEstablishmentId(establishmentId);
-            List<Fees> fees = feesRepo.findByEstablishmentEstablishmentId(establishmentId);
             model.addAttribute("categories", categories);
             model.addAttribute("nationalities", nationalities1);
-            model.addAttribute("otherFees", otherFees);
-            model.addAttribute("fees", fees);
-
-            return "createestablishment2"; // Return the HTML template with the establishment details
+            return "createestablishment2";
         } else {
-            // Handle case where establishment is not found
-            return "error"; // For example, return an error page
+            return "error";
         }
     }
-
-
 
     @PostMapping("/save2")
     public String saveEstablishment2(@RequestParam("establishmentId") Long establishmentId,
@@ -252,15 +201,13 @@ public class EstablishmentController {
                                      @RequestParam("categoryId") List<Long> categoryIds,
                                      @RequestParam("entryFee") List<Double> entryFees,
                                      @RequestParam("newFeesType") List<String> feesType,
-                                     @RequestParam("newFees") List<Double> feesList, // Renamed to feesList
+                                     @RequestParam("newFees") List<Double> feesList,
                                      Model model) {
         try {
-            // Fetch the existing establishment object from the database
             Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
 
             SimpleDateFormat hM = new SimpleDateFormat("HH:mm");
-            // Update the establishment object with the new data
-            establishment.setAddress(address);// Convert String to LocalDateTime
+            establishment.setAddress(address);
             LocalTime openingTime = LocalTime.parse(openingTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
             LocalTime closingTime = LocalTime.parse(closingTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
             establishment.setOpeningTime(openingTime);
@@ -269,19 +216,14 @@ public class EstablishmentController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String enteredBy = authentication.getName();
             establishment.setEnteredBy(enteredBy);
-
-            // Save the establishment first
             establishmentService.saveEstablishment(establishment);
 
-            // Save the image and get its imageId
-            Long imageId = storageService.uploadImage(imageFile, establishmentId); // Pass the establishment ID to link the image with the establishment
+            Long imageId = storageService.uploadImage(imageFile, establishmentId);
 
-            // Save Entry Fees
             for (int i = 0; i < nationalityIds.size(); i++) {
                 Long nationalityId = nationalityIds.get(i);
                 Long categoryId = categoryIds.get(i);
                 Double entryFee = entryFees.get(i);
-                // Create Fees object and link to establishment
                 Fees fees = new Fees();
                 fees.setEntryFee(entryFee);
                 fees.setNationality(nationalityRepo.findById(nationalityId).orElse(null));
@@ -295,11 +237,9 @@ public class EstablishmentController {
                 feesRepo.save(fees);
             }
 
-            // Save Other Fees
             for (int i = 0; i < feesType.size(); i++) {
                 String feeType = feesType.get(i);
-                Double fee = feesList.get(i); // Changed variable name to feesList
-                // Create OtherFees object and link to establishment
+                Double fee = feesList.get(i);
                 OtherFees otherFeesEntity = new OtherFees();
                 otherFeesEntity.setFeesType(feeType);
                 otherFeesEntity.setFees(fee);
@@ -308,18 +248,14 @@ public class EstablishmentController {
                 otherFeesRepo.save(otherFeesEntity);
             }
 
-            // Optionally, you can add a success message to the model
             model.addAttribute("message", "Establishment updated successfully!");
         } catch (IOException e) {
-            // Handle file upload error
             model.addAttribute("error", "Failed to upload image. Please try again.");
-            return "errorPage"; // Return an error page or handle the error accordingly
+            return "errorPage";
         }
 
-        return "redirect:/establishments"; // Redirect to the home page or any other appropriate page
+        return "redirect:/establishments";
     }
-
-
 
     @GetMapping("/districts/{stateCode}")
     @ResponseBody
@@ -331,115 +267,100 @@ public class EstablishmentController {
         List<District> districts = state.getDistrict();
         return ResponseEntity.ok(districts);
     }
+
     @GetMapping("/blocks/{districtId}")
     public ResponseEntity<?> getBlocksByDistrictId(@PathVariable Long districtId) throws Exception {
-        List<Block> blocks=Optional.ofNullable(blockRepo.findByDistrictDistrictId(districtId)).orElseThrow(()->new Exception("District not Found"));
+        List<Block> blocks = Optional.ofNullable(blockRepo.findByDistrictDistrictId(districtId))
+                .orElseThrow(() -> new Exception("District not Found"));
         return ResponseEntity.ok(blocks);
     }
 
     @GetMapping("/villages/{blockId}")
     public ResponseEntity<?> getVillageByBlockId(@PathVariable Long blockId) throws Exception {
-        List<Village> villages=Optional.ofNullable(villageRepo.findByBlockBlockId(blockId)).orElseThrow(()->new Exception("Block id not found"));
+        List<Village> villages = Optional.ofNullable(villageRepo.findByBlockBlockId(blockId))
+                .orElseThrow(() -> new Exception("Block id not found"));
         return ResponseEntity.ok(villages);
     }
-    @GetMapping("/edit/{id}")
+
+    @GetMapping("/viewEstablishment/{id}")
     public String editEstablishmentForm(@PathVariable Long id, Model model) {
         Establishment existingEstablishment = establishmentService.getEstablishmentById(id);
-        List<OtherFees> otherFees = otherFeesService.getOtherFeesByEstablishmentEstablishmentId(id); // Assuming you have a service for other fees
+        List<OtherFees> otherFees = otherFeesService.getOtherFeesByEstablishmentEstablishmentId(id);
         model.addAttribute("establishment", existingEstablishment);
         model.addAttribute("otherFees", otherFees);
-        
         return "edit-establishments";
     }
 
-    // Service Layer
-    public List<OtherFees> getOtherFeesByEstablishmentId(Long establishmentId) {
-        // Assuming you have a repository method to fetch other fees by establishment id
-        return otherFeesRepo.findByEstablishmentEstablishmentId(establishmentId);
-    }
-
-    @PostMapping("/{id}")
+    @PostMapping("/update/{id}")
     public String updateEstablishment(@PathVariable Long id,
-                                      @ModelAttribute("establishment") Establishment establishment,
-                                      @RequestParam("entryFee") List<Double> entryFees,
-                                      @RequestParam("feesType") List<String> feesTypes,
-                                      @RequestParam("feesOther") List<Double> fees) {
+                                      @ModelAttribute("establishment") Establishment establishment) {
         Establishment existingEstablishment = establishmentService.getEstablishmentById(id);
         existingEstablishment.setName(establishment.getName());
-        // Remove setting type here since it's not part of the Establishment entity
-
-        // Update establishment fields
         existingEstablishment.setAddress(establishment.getAddress());
         existingEstablishment.setOpeningTime(establishment.getOpeningTime());
         existingEstablishment.setClosingTime(establishment.getClosingTime());
 
-        // Update fees
-        List<Fees> feeList = existingEstablishment.getFees();
-        for (int i = 0; i < feeList.size(); i++) {
-            Fees fee = feeList.get(i);
-            if (i < entryFees.size()) {
-                fee.setEntryFee(entryFees.get(i));
-            }
-        }
-        // Update otherFees
-        List<OtherFees> otherFeesList = existingEstablishment.getOtherFees();
-        for (int i = 0; i < otherFeesList.size(); i++) {
-            OtherFees otherFee = otherFeesList.get(i);
-            if (i < fees.size()) {
-                otherFee.setFees(fees.get(i));
-            }
-            // Update feesType
-            if (i < feesTypes.size()) {
-                otherFee.setFeesType(feesTypes.get(i));
-            }
-        }
-        System.out.println(establishmentService.updateEstablishment(existingEstablishment));
-
         establishmentService.updateEstablishment(existingEstablishment);
-        System.out.printf("update1");
         return "redirect:/establishments";
     }
 
+    @PostMapping("/updateStatus/{id}")
+    public String updateStatus(@PathVariable Long id,
+                               @RequestParam("status") String status) {
+        Establishment existingEstablishment = establishmentService.getEstablishmentById(id);
+        existingEstablishment.setStatus(status.equals("Active"));
+        establishmentService.updateEstablishment(existingEstablishment);
+        return "redirect:/establishments";
+    }
 
+    @PostMapping("/updateOtherFees")
+    public ResponseEntity<?> updateOtherFees(
+            @RequestParam("otherFeesId") Long otherFeesId,
+            @RequestParam("establishmentId") Long establishmentId,
+            @RequestParam("feesType") String feesType,
+            @RequestParam("fees") Double fees) {
+        System.out.print("Received request to update fees");
 
+        OtherFees otherFees = otherFeesRepo.findById(otherFeesId).orElse(null);
+        if (otherFees == null) {
+            return ResponseEntity.badRequest().body("Fee not found");
+        }
 
-//    @PostMapping("/{id}")
-//    public String updateEstablishment(@PathVariable Long id,
-//                                      @ModelAttribute("establishment") Establishment establishment) {
-//        Establishment existingEstablishment = establishmentService.getEstablishmentById(id);
-//        existingEstablishment.setName(establishment.getName());
-//        // Remove setting type here since it's not part of the Establishment entity
-//
-//        establishmentService.updateEstablishment(existingEstablishment);
-//        System.out.printf("update1");
-//        return "redirect:/establishments";
-//    }
+        Establishment establishment = establishmentRepo.findById(establishmentId).orElse(null);
+        if (!otherFees.getEstablishment().equals(establishment)) {
+            return ResponseEntity.badRequest().body("Invalid establishment");
+        }
 
+        otherFees.setFeesType(feesType);
+        otherFees.setFees(fees);
+        otherFeesRepo.save(otherFees);
 
+        return ResponseEntity.ok("Update Successful");
+    }
 
     @GetMapping("/delete/{id}")
     public String deleteEstablishment(@PathVariable Long id) {
-        System.out.printf("delete establishment`1");
         establishmentService.deleteEstablishmentById(id);
-        System.out.printf("delete establishment2");
         return "redirect:/establishments";
     }
-    @GetMapping("/export/{format}")
-    public ResponseEntity<String> exportReport(@PathVariable String format) throws JRException, FileNotFoundException {
-//        System.out.printf("fromat");
-        return establishmentService.exportReport(format);
+
+    @GetMapping("/deleteOtherFee/{otherFeesId}")
+    public ResponseEntity<?> deleteOtherFee(@PathVariable("otherFeesId") Long otherFeesId) {
+        otherFeesService.deleteOtherFee(otherFeesId);
+        return ResponseEntity.ok("Deleted");
     }
-    @GetMapping("/export/pdf")
-    public ResponseEntity<String> exportPdfReport() throws JRException, FileNotFoundException {
-//        System.out.println("pdf");
-        return establishmentService.exportReport("pdf");
+
+    @GetMapping("/deleteFees/{feesId}")
+    public ResponseEntity<?> deleteFees(@PathVariable("feesId") Long feesId) {
+        feesServiceImpl.deleteFeesById(feesId);
+        return ResponseEntity.ok("Deleted");
     }
+
     @GetMapping("/establishmentDetails/{establishmentId}")
     public String showEstablishmentImageDetails(@PathVariable Long establishmentId, Model model) {
-        // Logic to retrieve establishment details using establishmentId
         Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
         model.addAttribute("establishment", establishment);
-        return "establishmentDetails"; // return the name of the HTML page for establishment details
+        return "establishmentDetails";
     }
 
     @GetMapping("user/{establishmentId}")
@@ -447,14 +368,14 @@ public class EstablishmentController {
         try {
             byte[] imageData = establishmentService.getEstablishmentImageById(establishmentId);
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.IMAGE_JPEG); // Set content type as JPEG image
+            headers.setContentType(MediaType.IMAGE_JPEG);
             return new ResponseEntity<>(imageData, headers, HttpStatus.OK);
         } catch (IOException e) {
-            // Handle the IOException
-            e.printStackTrace(); // Print the stack trace for debugging purposes
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Return an appropriate response
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
     @GetMapping("/checkCombinationExists")
     @ResponseBody
     public Map<String, Boolean> checkCombinationExists(@RequestParam Long nationalityId, @RequestParam Long categoryId) {
@@ -463,9 +384,22 @@ public class EstablishmentController {
         response.put("exists", exists);
         return response;
     }
+
     @DeleteMapping("/fees/{feeId}")
     public void deleteFee(@PathVariable Long feeId) {
         feesRepo.deleteById(feeId);
     }
 
+    @GetMapping("/showDropdown")
+    @ResponseBody
+    public ResponseEntity<?> showDropdown(Model model) {
+        List<Nationality> nationalities = nationalityRepo.findAll();
+        List<Category> categories = categoryRepo.findAll();
+
+        Map<String, Object> dropdownData = new HashMap<>();
+        dropdownData.put("nationalities", nationalities);
+        dropdownData.put("categories", categories);
+
+        return ResponseEntity.ok(dropdownData);
+    }
 }

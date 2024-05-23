@@ -15,6 +15,7 @@ public interface EstablishmentService {
 
    Establishment saveEstablishment(Establishment establishment);
 
+    Establishment findById(Long id);
 
 
     Establishment getEstablishmentById(Long id);

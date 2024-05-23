@@ -61,4 +61,14 @@ public class OtherFees {
     public void setEstablishment(Establishment establishment) {
         this.establishment = establishment;
     }
+
+    @Override
+    public String toString() {
+        return "OtherFees{" +
+                "otherFeesId=" + otherFeesId +
+                ", feesType='" + feesType + '\'' +
+                ", fees=" + fees +
+                ", establishment=" + establishment +
+                '}';
+    }
 }

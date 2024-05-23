@@ -26,6 +26,7 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 @Controller
@@ -182,11 +183,42 @@ public class   UserPageController {
 
         return response;
     }
+    @PostMapping("/updateUserProfile")
+    public String updateUserProfile(@RequestParam("updatedUsername") String updatedUsername,
+                                    @RequestParam("updatedEmail") String updatedEmail,
+                                    @RequestParam("updatedPhoneNumber") Long updatedPhoneNumber,
+                                    Authentication authentication, Model model) {
+        Long allUserId = Long.parseLong(authentication.getName());  // Assuming user ID is stored as the name for simplicity
+        Optional<AllUser> existingUser = allUserRepo.findByPhoneNumberAndAllUserIdNot(updatedPhoneNumber, allUserId);
+
+        if (existingUser.isPresent()) {
+            model.addAttribute("error", "Phone number already in use by another account.");
+            return "userProfile";
+        }
+
+        AllUser user = allUserRepo.findById(allUserId).orElse(null);
+        if (user != null) {
+            user.setUsername(updatedUsername);
+            user.setEmail(updatedEmail);
+            user.setPhoneNumber(updatedPhoneNumber);
+            allUserRepo.save(user);
+            model.addAttribute("message", "Profile updated successfully!");
+        } else {
+            model.addAttribute("error", "User not found!");
+        }
+
+        return "userProfile";
+    }
 
 
 
 
 }
+
+
+
+
+
 
 
 

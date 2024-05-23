@@ -238,8 +238,8 @@ public class TicketController {
     }
 
     @GetMapping("/fetchFee")
-    public ResponseEntity<Map<String, Double>> fetchFee(@RequestParam("nationalityId") Long nationalityId,
-                                                        @RequestParam("categoryId") Long categoryId,
+    public ResponseEntity<Map<String, Double>> fetchFee(@RequestParam(required = false) Long nationalityId,
+                                                        @RequestParam(required = false) Long categoryId,
                                                         @RequestParam("establishmentId") Long establishmentId,
                                                         @RequestParam("numberOfPeople") Long numberOfPeople) {
         // Query the database to retrieve the list of entry fees based on the provided nationality ID, category ID, and establishment ID
