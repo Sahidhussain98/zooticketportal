@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface OtherFeesRepo extends JpaRepository<OtherFees,Long> {
        List<OtherFees> findByEstablishmentEstablishmentId(Long establishmentId);
+
        OtherFees findByFeesTypeAndEstablishment_EstablishmentId(String feesType, Long establishmentId);
 //       List<OtherFees> findByFeesTypeAndEstablishmentEstablishmentId(String feesType, Long establishmentId);
 

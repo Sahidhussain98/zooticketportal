@@ -96,7 +96,7 @@ public class   UserPageController {
     public String changePassword(@RequestParam(name = "currentPassword") String currentPassword,
                                  @RequestParam(name = "password") String newPassword,
                                  Principal principal,
-                                 RedirectAttributes redirectAttributes) {
+                                 Model model) {
 
         // Retrieve authenticated user's username
         String phoneNumberStr = principal.getName();
@@ -121,27 +121,25 @@ public class   UserPageController {
                     allUserRepo.save(user);
                     System.out.println("passwordchanged" + newPassword);
 
-                    // Add a success message to be displayed on the adminProfile page
-                    redirectAttributes.addFlashAttribute("successMessage", "Password changed successfully.");
-
-                    // Redirect back to the adminProfile page
-                    return "redirect:/adminProfile";
+                    // Add a success message to be displayed on the user profile page
+                    model.addAttribute("successMessage", "Password changed successfully.");
                 } else {
                     // New password is the same as the current password
-                    redirectAttributes.addFlashAttribute("errorMessage", "New password cannot be the same as the current password.");
-                    return "redirect:/adminProfile";
+                    model.addAttribute("errorMessage", "New password cannot be the same as the current password.");
                 }
             } else {
-                // Current password does not match, add error message and redirect back to the adminProfile page
-                redirectAttributes.addFlashAttribute("errorMessage", "Current password does not match.");
-                return "redirect:/adminProfile";
+                // Current password does not match, add error message to the model
+                model.addAttribute("errorMessage", "Current password does not match.");
             }
         } else {
             // Handle case when user is not found
-            redirectAttributes.addFlashAttribute("errorMessage", "User not found.");
-            return "redirect:/adminProfile";
+            model.addAttribute("errorMessage", "User not found.");
         }
+
+        // Return back to the same page
+        return "redirect:/adminProfile";
     }
+
     @PostMapping("/saveUserData")
     public String saveUserData(@RequestParam String username, @RequestParam String email,
                                Principal principal, RedirectAttributes redirectAttributes) {
@@ -185,7 +183,6 @@ public class   UserPageController {
     @PostMapping("updateUserProfile")
     public String updateUserProfile(@RequestParam("updatedUsername") String updatedUsername,
                                     @RequestParam("updatedEmail") String updatedEmail,
-                                    @RequestParam("updatedPhoneNumber") Long updatedPhoneNumber,
                                     Authentication authentication, Model model) {
         String phoneNumberStr = authentication.getName(); // The phone number is used as the principal
         Long phoneNumber = Long.parseLong(phoneNumberStr);
@@ -196,7 +193,6 @@ public class   UserPageController {
             // Update user details
             user.setUsername(updatedUsername);
             user.setEmail(updatedEmail);
-            user.setPhoneNumber(updatedPhoneNumber);
             // Save updated user
             allUserRepo.save(user);
             System.out.println("Updated User Profile: " + user);
@@ -210,8 +206,36 @@ public class   UserPageController {
         return "userProfile"; // Redirect or forward to a confirmation page or back to the form
     }
 
+    @PostMapping("updateAdminProfile")
+    public String updateAdminProfile(@RequestParam("updatedUsername") String updatedUsername,
+                                    @RequestParam("updatedEmail") String updatedEmail,
+                                    Authentication authentication, Model model) {
+        String phoneNumberStr = authentication.getName(); // The phone number is used as the principal
+        Long phoneNumber = Long.parseLong(phoneNumberStr);
+        // Retrieve user data based on the authenticated user's phone number
+        AllUser user = allUserRepo.findByPhoneNumber(phoneNumber);
 
+        if (user != null) {
+            // Update user details
+            user.setUsername(updatedUsername);
+            user.setEmail(updatedEmail);
+            // Save updated user
+            allUserRepo.save(user);
+            System.out.println("Updated User Profile: " + user);
+            model.addAttribute("user", user);
+            model.addAttribute("message", "Profile updated successfully!");
+        } else {
+            model.addAttribute("error", "User not found!");
+        }
+
+        // Return the user profile view
+        return "adminProfile"; // Redirect or forward to a confirmation page or back to the form
     }
+
+
+
+
+}
 
 
 

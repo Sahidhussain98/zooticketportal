@@ -8,20 +8,23 @@
 <body>
 <h1>Ticket Download Page</h1>
 <!-- Add a download button -->
-<!--<a th:href="@{/export/pdf(id=${theTicket.id})}" download><button>Download Ticket</button></a>-->
 <a th:href="@{/export/pdf(id=${theTicket.id})}" class="btn btn-success" id="downloadPdf">Download PDF Report</a>
 <script>
-    document.getElementById('downloadPdf').addEventListener('click', function() {
+    document.getElementById('downloadPdf').addEventListener('click', function(event) {
+        event.preventDefault();
         var xhr = new XMLHttpRequest();
         xhr.open('GET', this.href, true);
-        xhr.responseType = 'blob'; // Handle PDF download
+        xhr.responseType = 'blob';
 
         xhr.onload = function() {
             if (xhr.status === 200) {
                 // Check the email sent header
                 var emailSent = xhr.getResponseHeader('X-Email-Sent');
+                var emailError = xhr.getResponseHeader('X-Email-Error');
                 if (emailSent === 'false') {
                     alert('Error sending email.');
+                } else if (emailError) {
+                    alert(emailError);
                 }
 
                 // Handle the PDF download
@@ -32,21 +35,18 @@
                 a.download = "ticket.pdf";
                 document.body.appendChild(a);
                 a.click();
-
-                // Optionally, remove the temporary link
                 a.remove();
             } else if (xhr.status === 500) {
                 alert('Error downloading PDF.');
             }
         };
 
-        xhr.onerror = function () {
+        xhr.onerror = function() {
             alert('Request failed. Please try again.');
         };
 
         xhr.send();
     });
-
 </script>
 </body>
 </html>

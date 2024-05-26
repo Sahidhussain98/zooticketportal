@@ -99,10 +99,9 @@
                                 <td th:text="${fee.getCategory().getCategoryName()}"></td>
                                 <td th:text="${fee.entryFee}" readonly></td>
                                 <td>
-                                    <button type="button" class="btn btn-primary edit-entry-fee">
+                                    <button type="button" class="btn btn-primary edit-entry-fee" data-feesId="${fee.feesId}">
                                         Edit
                                     </button>
-
                                     <a th:href="@{/establishments/deleteFees/{feesId}(feesId=${fee.feesId})}" class="btn btn-danger" onclick="confirmDelete(event, ${fee.feesId})">Delete</a>
                                 </td>
                             </tr>
@@ -163,25 +162,21 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="entryFeeEditForm">
-                    <div class="form-group">
-                        <label for="entryFeeNationality">Nationality</label>
-                        <input type="text" class="form-control" id="entryFeeNationality" name="nationality">
-                    </div>
-                    <div class="form-group">
-                        <label for="entryFeeCategory">Category</label>
-                        <input type="text" class="form-control" id="entryFeeCategory" name="category">
-                    </div>
+                <form id="entryFeeEditForm" method="POST" th:action="@{/establishments/updateEntryFees}">
                     <div class="form-group">
                         <label for="entryFeeValue">Fee</label>
-                        <input type="text" class="form-control" id="entryFeeValue" name="fee">
+                        <input type="text" class="form-control" id="entryFeeValue" name="entryFee" required>
                     </div>
-                    <button type="submit" class="btn btn-primary" onclick="saveEntryFeeChanges()">Save Changes</button>
+                    <input type="hidden" name="feesId" id="feesIdInput">
+                    <input type="hidden" name="establishmentId" th:value="${establishment.establishmentId}">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+
 <!-- Other Fees Edit Modal -->
 <div class="modal fade" id="otherFeeModal" tabindex="-1" role="dialog" aria-labelledby="otherFeeModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -279,24 +274,29 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
-    //Function to show confirm delete alert
-    //Function to show confirm delete alert
+    // Function to show confirm delete alert for entry fees
     function confirmDelete(event, feesId) {
         event.preventDefault();
+        console.log("Deleting entry fee with ID:", feesId);
         if (confirm("Are you sure you want to delete this fee?")) {
             var deleteUrl = `/establishments/deleteFees/${feesId}`;
+            console.log("Redirecting to:", deleteUrl);
             window.location.href = deleteUrl;
         }
     }
-    //Function to show alert for otherFees table confirm delete
+
+    // Function to show confirm delete alert for other fees
     function confirmDelete(event, otherFeesId) {
         event.preventDefault();
+        console.log("Deleting other fee with ID:", otherFeesId);
         if (confirm("Are you sure you want to delete this fee?")) {
             var deleteUrl = `/establishments/deleteOtherFee/${otherFeesId}`;
+            console.log("Redirecting to:", deleteUrl);
             window.location.href = deleteUrl;
         }
     }
-    //Function for going into nonWorking days adding page
+
+    // Function for going into nonWorking days adding page
     function addNonWorkingDates() {
         // Retrieve establishment ID from the input field
         var establishmentId = extractEstablishmentIdFromHTML();
@@ -316,7 +316,7 @@
         return establishmentIdInput ? establishmentIdInput.value : null;
     }
 
-    //For last edit button toogle to shoe save and cance edit button
+    // For last edit button toggle to show save and cancel edit button
     document.getElementById("editButton").addEventListener("click", function() {
         var fieldsToEdit = document.querySelectorAll("input[name='name'], input[name='address'], input[name='openingTime'], input[name='closingTime']");
         var saveButton = document.getElementById("saveButton");
@@ -350,7 +350,7 @@
         });
     });
 
-    //For saving the edited otherfees inn server
+    // For saving the edited other fees on the server
     $(document).ready(function() {
         // Add event listeners to Edit buttons in the other fees table
         $('.edit-other-fee').on('click', function () {
@@ -368,26 +368,108 @@
             $('#otherFeeModal').modal('show');
         });
     });
-
-    //To show the entryfees modal
+    // To show the entry fees modal
     $(document).ready(function() {
         $('.edit-entry-fee').on('click', function() {
             $('#entryFeeModal').modal('show');
         });
     });
-
-    //To show otherfees add button model
+    // To show other fees add button modal
     function showAddOtherFeeModal() {
         $('#addOtherFeeModal').modal('show');
     }
-    // JavaScript function to show the modal for adding entry fees
-    function showAddEntryFeeModal() {
-        // Show the modal
-        $('#addEntryFeeModal').modal('show');
-    }
+    // To update the entry fees
+    $(document).ready(function() {
+        $('.edit-entry-fee').on('click', function() {
+            var row = $(this).closest('tr');
+            var entryFee = row.find('td:eq(2)').text();
+            var feesId = $(this).data('feesId');
 
-    // For showing nationality and category in dropdown
+            // Set the values in the modal inputs
+            $('#entryFeeModal #entryFeeValue').val(entryFee);
+            $('#entryFeeModal #feesIdInput').val(feesId);
 
+            // Show the modal
+            $('#entryFeeModal').modal('show');
+        });
+    });
+
+    // Function to handle the submission of the add entry fee form
+    $('#addEntryFeeForm').on('submit', function(event) {
+        event.preventDefault();
+
+        var formData = $(this).serialize();
+
+        $.post('/establishments/addEntryFees', formData, function(response) {
+            Swal.fire({
+                title: "Success",
+                text: response,
+                icon: "success",
+                confirmButtonText: "Ok"
+            }).then(() => {
+                window.location.reload();
+            });
+        }).fail(function(xhr) {
+            if (xhr.status === 409) { // Conflict status code
+                Swal.fire({
+                    title: "Error",
+                    text: "Selected combination already exists. Please select another combination.",
+                    icon: "error",
+                    confirmButtonText: "Ok"
+                });
+            } else {
+                Swal.fire({
+                    title: "Error",
+                    text: xhr.responseText,
+                    icon: "error",
+                    confirmButtonText: "Ok"
+                });
+            }
+        });
+    });
+
+    // Check combination of nationality and category
+    $(document).ready(function() {
+        $('#nationality, #category').on('change', function () {
+            var nationalityId = $('#nationality').val();
+            var categoryId = $('#category').val();
+            var establishmentId = $('input[name="establishmentId"]').val();
+
+            console.log('Nationality ID:', nationalityId);
+            console.log('Category ID:', categoryId);
+            console.log('Establishment ID:', establishmentId);
+
+            if (nationalityId && categoryId) {
+                checkCombinationExists(establishmentId, nationalityId, categoryId);
+            }
+        });
+
+        function checkCombinationExists(establishmentId, nationalityId, categoryId) {
+            $.ajax({
+                url: '/establishments/checkCombinationExists',
+                type: 'GET',
+                data: {
+                    establishmentId: establishmentId,
+                    nationalityId: nationalityId,
+                    categoryId: categoryId
+                },
+                success: function (response) {
+                    console.log('Check Combination Response:', response);
+                    if (response.exists) {
+                        Swal.fire({
+                            title: "Error",
+                            text: "Selected combination already exists. Please select another combination.",
+                            icon: "error",
+                            confirmButtonText: "Ok"
+                        });
+                    }
+                },
+                error: function (xhr) {
+                    console.error("Error checking combination: " + xhr.responseText);
+                }
+            });
+        }
+    });
 </script>
 </body>
 </html>

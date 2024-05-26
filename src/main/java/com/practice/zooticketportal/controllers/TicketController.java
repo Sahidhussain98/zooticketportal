@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,53 +101,53 @@ public class TicketController {
     }
 
 
+    @PostMapping("/saveTicket/{establishmentId}")
+    public String processForm(
+            @PathVariable Long establishmentId,
+            @RequestParam("dateTime") String dateTime,
+            @RequestParam("name") String name,
+            @RequestParam("email") String email,
+            @RequestParam("phoneNumber") String phoneNumber,
+            Model model) {
 
-    @PostMapping("/processCheckoutForm/{establishmentId}")
-    public String processForm(@PathVariable Long establishmentId, @ModelAttribute("theTicket") Ticket theTicket, Model model) {
         // Retrieve establishment name
         Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
         String establishmentName = establishment.getName();
 
-        System.out.print("print please "+theTicket.toString());
-
-        // Generate random serial number (you can use your preferred method to generate the serial number)
+        // Generate random serial number
         int serialNumber = generateRandomSerialNumber();
 
-        // Generate bookingId using establishment name and serial number
-        theTicket.setBookingId(new Ticket(establishmentName, serialNumber).getBookingId());
+        // Create a new Ticket object and set the fields
+        Ticket theTicket = new Ticket();
+        theTicket.setDateTime(LocalDate.parse(dateTime));
+        theTicket.setName(name);
+        theTicket.setEmail(email);
+        theTicket.setPhoneNumber(Long.valueOf(phoneNumber));
+        theTicket.setBookingId(establishmentName + "-" + serialNumber);
+        theTicket.setEnteredOn(LocalDateTime.now());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserName = authentication.getName();
+        String enteredBy = authentication.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN")) ? "admin" : currentUserName;
+        theTicket.setEnteredBy(enteredBy);
+
+        // Log the ticket details
+        System.out.print("Ticket details: " + theTicket.toString());
 
         // Save the ticket details to the database using the repository
-        ticketRepository.save(theTicket);
+        Ticket savedTicket = ticketRepository.save(theTicket);
 
-        // Add establishment object to the model
+        // Add establishment object and the saved ticket to the model
         model.addAttribute("establishment", establishment);
-
-        // Log the input data
-//        System.out.println("theTicket: " + theTicket.getname() + " " + theTicket.ame());
+        model.addAttribute("theTicket", savedTicket);
 
         return "ticketDownload";
     }
 
-//     Method to generate random serial number (you can implement your own logic)
     private int generateRandomSerialNumber() {
         // Implement your logic to generate a random serial number
         return (int) (Math.random() * 1000); // Example logic: Generate a random number between 0 and 999
     }
-
-//    @PostMapping("/processCheckoutForm/{establishmentId}")
-//    public String processCheckoutForm(@PathVariable("establishmentId") Long establishmentId, @ModelAttribute Map<String, Object> formData, Model model) {
-//        // Process the form data (save to database, perform calculations, etc.)
-//
-//        // Pass the establishment ID to the confirmation page
-//        model.addAttribute("establishmentId", establishmentId);
-//        // Pass the form data to the confirmation page
-//        model.addAttribute("formData", formData);
-//
-//        // Redirect to the confirmation page
-//        return "redirect:/ticketConfirmation";
-//    }
-
-
 
     @GetMapping("/showEditForm/{ticketId}")
     public String showEditForm(@PathVariable Long ticketId, Model model) {
@@ -190,52 +191,50 @@ public class TicketController {
         return "checkoutConfirmation-form";
     }
 
-    //    @GetMapping("/export/pdf")
-//    public ResponseEntity<byte[]> exportPdfReport(@RequestParam("id") Long id ) throws JRException, FileNotFoundException {
-//        Ticket ticket = ticketRepository.findTicketById(id);
-//        if (ticket == null) {
-//            // Handle the case where the ticket with the given ID is not found
-//            return ResponseEntity.badRequest().body(("Ticket not found for ID: " + id).getBytes());
-//        }
-//        // Send confirmation email
-//        sendConfirmationEmail(ticket.getEmail());
-//        return ResponseEntity.ok("Confirmation email sent for ticket ID: " + id);
-//
-////        return ticketService.exportReport("pdf", ticket);
-//    }
     @GetMapping("/export/pdf")
     public ResponseEntity<byte[]> exportPdfReport(@RequestParam("id") Long id) {
         Ticket ticket = ticketRepository.findTicketById(id);
         if (ticket == null) {
-            // Handle the case where the ticket with the given ID is not found
             return ResponseEntity.badRequest().body(("Ticket not found for ID: " + id).getBytes());
         }
 
+        byte[] pdfBytes = null;
+        boolean emailSent = false;
+        String emailErrorMessage = "";
+
         try {
             // Export PDF report
-            ResponseEntity<byte[]> pdfResponse = ticketService.exportReport("pdf", ticket);
-            // If the PDF export is successful, send confirmation email
-//        ticketService.confirmBooking(ticket.getEmail());
-//         If the PDF export is successful, send confirmation email
-            ticketService.confirmBooking(ticket.getEmail(), pdfResponse.getBody());
-            // Return the PDF as an attachment in the response
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_PDF);
-            headers.setContentDispositionFormData("attachment", "ticket.pdf");
-            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-
-            // Add a custom header to indicate that the email has been sent
-            headers.add("X-Email-Sent", "true");
-
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .body(pdfResponse.getBody());
+            pdfBytes = ticketService.exportReport("pdf", ticket).getBody();
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error exporting PDF report or sending confirmation email".getBytes());
+                    .body("Error exporting PDF report".getBytes());
         }
+
+        try {
+            // Send confirmation email
+            ticketService.confirmBooking(ticket.getEmail(), pdfBytes);
+            emailSent = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            emailErrorMessage = "Error sending confirmation email.";
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "ticket.pdf");
+        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+        headers.add("X-Email-Sent", String.valueOf(emailSent));
+
+        if (!emailErrorMessage.isEmpty()) {
+            headers.add("X-Email-Error", emailErrorMessage);
+        }
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfBytes);
     }
+
 
     @GetMapping("/fetchFee")
     public ResponseEntity<Map<String, Double>> fetchFee(@RequestParam(required = false) Long nationalityId,

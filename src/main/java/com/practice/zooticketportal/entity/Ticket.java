@@ -1,14 +1,8 @@
 package com.practice.zooticketportal.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
-
 
 @Entity
 @Table(name = "tickets")
@@ -17,10 +11,11 @@ public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "booking_id", unique = true)
     private String bookingId;
-    private String name;
 
+    private String name;
     private String email;
     private Long phoneNumber;
     private Long numberOfPeople;
@@ -28,32 +23,24 @@ public class Ticket {
     private Long totalItems;
     private String totalAmount;
     private LocalDate dateTime;
-    private LocalDateTime enteredBy;
-    //validated by officer
-    private String enteredOn;
-    // localdatetime, validateON
+    private String enteredBy;
+    private LocalDateTime enteredOn;
+
     @ManyToOne
-    @JoinColumn(name = "user_id")  // Assuming this column exists in the Ticket table
+    @JoinColumn(name = "user_id")
     private AllUser user;
+
     @ManyToOne
-    @JoinColumn(name = "establishment") // Assuming this column exists in the Ticket table
+    @JoinColumn(name = "establishment")
     private Establishment establishment;
+
     @OneToOne(mappedBy = "ticket", cascade = CascadeType.ALL)
     private Payment payment;
 
-    public Ticket() {
-    }
+    public Ticket() {}
 
     public Ticket(String establishmentName, int serialNumber) {
         this.bookingId = establishmentName.replaceAll("\\s+", "") + "-" + serialNumber;
-    }
-
-    public Long getNumberOfPeople() {
-        return numberOfPeople;
-    }
-
-    public void setNoOfPeople(Long numberOfPeople) {
-        this.numberOfPeople = numberOfPeople;
     }
 
     public Long getId() {
@@ -96,6 +83,14 @@ public class Ticket {
         this.phoneNumber = phoneNumber;
     }
 
+    public Long getNumberOfPeople() {
+        return numberOfPeople;
+    }
+
+    public void setNumberOfPeople(Long numberOfPeople) {
+        this.numberOfPeople = numberOfPeople;
+    }
+
     public Long getTotalPersons() {
         return totalPersons;
     }
@@ -128,19 +123,19 @@ public class Ticket {
         this.dateTime = dateTime;
     }
 
-    public LocalDateTime getEnteredBy() {
+    public String getEnteredBy() {
         return enteredBy;
     }
 
-    public void setEnteredBy(LocalDateTime enteredBy) {
+    public void setEnteredBy(String enteredBy) {
         this.enteredBy = enteredBy;
     }
 
-    public String getEnteredOn() {
+    public LocalDateTime getEnteredOn() {
         return enteredOn;
     }
 
-    public void setEnteredOn(String enteredOn) {
+    public void setEnteredOn(LocalDateTime enteredOn) {
         this.enteredOn = enteredOn;
     }
 
@@ -181,8 +176,8 @@ public class Ticket {
                 ", totalItems=" + totalItems +
                 ", totalAmount='" + totalAmount + '\'' +
                 ", dateTime=" + dateTime +
-                ", enteredBy=" + enteredBy +
-                ", enteredOn='" + enteredOn + '\'' +
+                ", enteredBy='" + enteredBy + '\'' +
+                ", enteredOn=" + enteredOn +
                 ", user=" + user +
                 ", establishment=" + establishment +
                 ", payment=" + payment +

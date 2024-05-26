@@ -263,50 +263,8 @@
             }
         });
     });
-    // Function to reset select fields to their default values
-    function resetSelectFields() {
-        $(".form-row select").val(""); // Reset select fields
-    }
-
-    // For checking duplicate combinations before adding new fields
-    $(document).on("change", ".form-row select", function() {
-        var nationalityId = $(this).closest(".form-row").find("select[name='nationalityId']").val();
-        var categoryId = $(this).closest(".form-row").find("select[name='categoryId']").val();
-
-        if (nationalityId && categoryId) {
-            isCombinationExists(nationalityId, categoryId);
-        }
-    });
-
-    // Function to check if the combination already exists
-    function isCombinationExists(nationalityId, categoryId) {
-        var exists = false;
-        $.ajax({
-            type: "GET",
-            url: "/establishments/checkCombinationExists",
-            data: { nationalityId: nationalityId, categoryId: categoryId },
-            async: false, // Ensure synchronous execution
-            success: function(response) {
-                exists = response.exists;
-                if (exists) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'This combination already exists!',
-                    }).then(function() {
-                        resetSelectFields(); // Reset select fields after showing alert
-                    });
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error(xhr.responseText);
-            }
-        });
-        return exists;
-    }
 
 
-    //For OtherFees part
     $(document).ready(function() {
         var counter = 1;
 

@@ -27,11 +27,6 @@ public class  AllUser {
 
     @OneToMany(mappedBy = "user")
     private List<Ticket> tickets = new ArrayList<>();
-    //    @Transient
-//    private Long otp;
-//
-//    @Transient
-//    private Date otpValidity;
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "allUserRoles",

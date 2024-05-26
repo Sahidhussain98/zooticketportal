@@ -28,6 +28,9 @@ public class State {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "state", fetch = FetchType.LAZY)
     @JsonIgnore // Add this annotation to prevent serialization of this field
     private List<District> district;
+    private LocalDateTime enteredOn;
+    private String enteredBy;
+
 
     public Long getStateId() {
         return stateId;
@@ -59,5 +62,20 @@ public class State {
 
     public void setDistrict(List<District> district) {
         this.district = district;
+    }
+    public LocalDateTime getEnteredOn() {
+        return enteredOn;
+    }
+
+    public void setEnteredOn(LocalDateTime enteredOn) {
+        this.enteredOn = enteredOn;
+    }
+
+    public String getEnteredBy() {
+        return enteredBy;
+    }
+
+    public void setEnteredBy(String enteredBy) {
+        this.enteredBy = enteredBy;
     }
 }

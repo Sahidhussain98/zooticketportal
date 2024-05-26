@@ -162,7 +162,11 @@ public class EstablishmentController {
             nonWorkingDay.setNonWorkingDate(parsedDate);
             nonWorkingDay.setReason(reasons.get(i));
             nonWorkingDay.setEnteredOn(LocalDateTime.now());
-            nonWorkingDay.setEnteredBy("YourUsername");
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentUserName = authentication.getName();
+            String enteredBy = authentication.getAuthorities().stream()
+                    .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN")) ? "admin" : currentUserName;
+            nonWorkingDay.setEnteredBy(enteredBy);
             Establishment establishment = establishmentRepo.findById(establishmentId).orElse(null);
             if (establishment != null) {
                 nonWorkingDay.setEstablishment(establishment);
@@ -214,7 +218,9 @@ public class EstablishmentController {
             establishment.setClosingTime(closingTime);
             establishment.updateStatus();
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String enteredBy = authentication.getName();
+            String currentUserName = authentication.getName();
+            String enteredBy = authentication.getAuthorities().stream()
+                    .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN")) ? "admin" : currentUserName;
             establishment.setEnteredBy(enteredBy);
             establishmentService.saveEstablishment(establishment);
 
@@ -244,7 +250,8 @@ public class EstablishmentController {
                 otherFeesEntity.setFeesType(feeType);
                 otherFeesEntity.setFees(fee);
                 otherFeesEntity.setEstablishment(establishment);
-
+                otherFeesEntity.setEnteredOn(LocalDateTime.now());
+                otherFeesEntity.setEnteredBy(enteredBy);
                 otherFeesRepo.save(otherFeesEntity);
             }
 
@@ -305,7 +312,7 @@ public class EstablishmentController {
         existingEstablishment.setClosingTime(establishment.getClosingTime());
 
         establishmentService.updateEstablishment(existingEstablishment);
-        return "redirect:/establishments";
+        return "redirect:/edit-establishments";
     }
 
     @PostMapping("/updateStatus/{id}")
@@ -318,29 +325,90 @@ public class EstablishmentController {
     }
 
     @PostMapping("/updateOtherFees")
-    public ResponseEntity<?> updateOtherFees(
+    public String updateOtherFees(
             @RequestParam("otherFeesId") Long otherFeesId,
             @RequestParam("establishmentId") Long establishmentId,
             @RequestParam("feesType") String feesType,
-            @RequestParam("fees") Double fees) {
+            @RequestParam("fees") Double fees,
+            Model model) {
         System.out.print("Received request to update fees");
 
         OtherFees otherFees = otherFeesRepo.findById(otherFeesId).orElse(null);
         if (otherFees == null) {
-            return ResponseEntity.badRequest().body("Fee not found");
+            model.addAttribute("error", "Fee not found");
+            return "errorPage"; // Return an error page or handle the error accordingly
         }
 
-        Establishment establishment = establishmentRepo.findById(establishmentId).orElse(null);
-        if (!otherFees.getEstablishment().equals(establishment)) {
-            return ResponseEntity.badRequest().body("Invalid establishment");
+        Establishment existingEstablishment = establishmentService.getEstablishmentById(establishmentId);
+        if (!otherFees.getEstablishment().equals(existingEstablishment)) {
+            model.addAttribute("error", "Invalid establishment");
+            return "errorPage"; // Return an error page or handle the error accordingly
         }
 
         otherFees.setFeesType(feesType);
         otherFees.setFees(fees);
         otherFeesRepo.save(otherFees);
 
-        return ResponseEntity.ok("Update Successful");
+        // Fetch necessary data for the view
+        List<OtherFees> otherFeesList = otherFeesService.getOtherFeesByEstablishmentEstablishmentId(establishmentId);
+        List<Nationality> nationalities = nationalityRepo.findAll();
+        List<Category> categories = categoryRepo.findAll();
+
+        // Add attributes to the model
+        model.addAttribute("establishment", existingEstablishment);
+        model.addAttribute("otherFees", otherFeesList);
+        model.addAttribute("nationalities", nationalities);
+        model.addAttribute("categories", categories);
+        model.addAttribute("message", "Update Successful");
+
+        // Return the view name
+        return "edit-establishments";
     }
+
+    @PostMapping("/updateEntryFees")
+    public String updateEntryFees(
+            @RequestParam("establishmentId") Long establishmentId,
+            @RequestParam("feesId") Long feesId,
+            @RequestParam("entryFee") Double entryFee,
+            Model model) {
+
+        try {
+            Fees fees = feesRepo.findById(feesId).orElse(null);
+            if (fees == null) {
+                model.addAttribute("error", "Fees record not found");
+                return "errorPage"; // Return an error page or handle the error accordingly
+            }
+
+            Establishment existingEstablishment = establishmentService.getEstablishmentById(establishmentId);
+            if (!fees.getEstablishment().equals(existingEstablishment)) {
+                model.addAttribute("error", "The fee does not belong to the specified establishment.");
+                return "errorPage"; // Return an error page or handle the error accordingly
+            }
+
+            fees.setEntryFee(entryFee);
+            feesRepo.save(fees);
+
+            // Fetch necessary data for the view
+            List<OtherFees> otherFeesList = otherFeesService.getOtherFeesByEstablishmentEstablishmentId(establishmentId);
+            List<Nationality> nationalities = nationalityRepo.findAll();
+            List<Category> categories = categoryRepo.findAll();
+
+            // Add attributes to the model
+            model.addAttribute("establishment", existingEstablishment);
+            model.addAttribute("otherFees", otherFeesList);
+            model.addAttribute("nationalities", nationalities);
+            model.addAttribute("categories", categories);
+            model.addAttribute("message", "Entry fee updated successfully");
+
+            // Return the view name
+            return "edit-establishments";
+        } catch (Exception e) {
+            model.addAttribute("error", "An error occurred while updating the entry fee: " + e.getMessage());
+            return "errorPage"; // Return an error page or handle the error accordingly
+        }
+    }
+
+
 
     @GetMapping("/delete/{id}")
     public String deleteEstablishment(@PathVariable Long id) {
@@ -405,6 +473,12 @@ public class EstablishmentController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Establishment not found");
             }
 
+            // Check if the combination of nationality and category already exists
+            boolean exists = feesRepo.existsByEstablishmentEstablishmentIdAndNationalityNationalityIdAndCategoryCategoryId(establishmentId, nationalityId, categoryId);
+            if (exists) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Selected combination already exists");
+            }
+
             Fees fees = new Fees();
             fees.setEstablishment(establishment);
             fees.setNationality(nationalityRepo.findById(nationalityId).orElseThrow(() -> new IllegalArgumentException("Invalid nationality ID")));
@@ -425,6 +499,17 @@ public class EstablishmentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while adding the entry fee");
         }
     }
+    @GetMapping("/establishments/checkCombination")
+    public ResponseEntity<Map<String, Boolean>> checkCombination(@RequestParam("establishmentId") Long establishmentId,
+                                                                 @RequestParam("nationality") Long nationalityId,
+                                                                 @RequestParam("category") Long categoryId) {
+        boolean exists = feesRepo.existsByEstablishmentEstablishmentIdAndNationalityNationalityIdAndCategoryCategoryId(establishmentId, nationalityId, categoryId);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("exists", exists);
+        return ResponseEntity.ok(response);
+    }
+
+
 
 
 

@@ -23,9 +23,6 @@
         <fieldDescription><![CDATA[phoneNumber]]></fieldDescription>
     </field>
 
-    <field name="total_cameras" class="java.lang.Long">
-        <fieldDescription><![CDATA[totalCameras]]></fieldDescription>
-    </field>
     <field name="total_persons" class="java.lang.String">
         <fieldDescription><![CDATA[totalPersons]]></fieldDescription>
     </field>
@@ -66,7 +63,7 @@
                 <reportElement x="423" y="0" width="132" height="131" uuid="fa3cc3d9-2b94-4639-b21f-e12634294e80"/>
                 <imageExpression><![CDATA[com.google.zxing.client.j2se.MatrixToImageWriter.toBufferedImage(
 new com.google.zxing.qrcode.QRCodeWriter().encode(
-$F{id}+$F{booking_id}+$F{name}+$F{email}+$F{phone_number}+$F{total_persons}+$F{total_cameras}+$F{total_amount}+$F{date_time}+$F{number_of_people},
+$F{id}+$F{booking_id}+$F{name}+$F{email}+$F{phone_number}+$F{total_persons}+$F{total_amount}+$F{date_time}+$F{number_of_people},
 com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
             </image>
         </band>
@@ -171,20 +168,8 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
                 </textElement>
                 <text><![CDATA[TOTAL PERSONS]]></text>
             </staticText>
-            <textField>
-                <reportElement x="122" y="346" width="183" height="41" uuid="0674d47a-0502-4147-9480-fc7f505c055e"/>
-                <textElement verticalAlignment="Middle">
-                    <font size="14"/>
-                </textElement>
-                <textFieldExpression><![CDATA[$F{total_cameras}]]></textFieldExpression>
-            </textField>
-            <staticText>
-                <reportElement x="0" y="346" width="122" height="41" uuid="0b1ef3a1-eceb-4bed-97aa-2a12627997b7"/>
-                <textElement verticalAlignment="Middle">
-                    <font size="14"/>
-                </textElement>
-                <text><![CDATA[TOTAL CAMERAS]]></text>
-            </staticText>
+
+
             <textField>
                 <reportElement x="122" y="387" width="183" height="51" uuid="b0f40b1c-98df-42b0-8fdc-7531ff5fb7fa"/>
                 <textElement verticalAlignment="Middle">

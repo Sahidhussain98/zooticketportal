@@ -8,15 +8,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-
+@Table(name="roles")
 public class Roles {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long roleId;
     private String roleName;
 
-    @Getter
-    @Setter
     @ManyToMany(mappedBy = "roles")
     private Set<AllUser> AllUsers = new HashSet<>();
 

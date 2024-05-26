@@ -48,7 +48,9 @@
         <li><strong>Phone Number:</strong> <span th:text="${user.phoneNumber}"></span></li>
         <li><strong>Email:</strong> <span th:text="${user.email}"></span></li>
     </ul>
-    <div class="change-password-form">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#updateModal">Update</button>
+
+    <div class="change-password-form mt-4">
         <h2>Change Password</h2>
         <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
             <span th:text="${errorMessage}"></span>
@@ -71,6 +73,41 @@
         </form>
     </div>
 </div>
+
+<!-- Update Modal -->
+<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateModalLabel">Update User Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form th:action="@{/updateAdminProfile}" method="post">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="updatedUsername">Username</label>
+                        <input type="text" class="form-control" id="updatedUsername" name="updatedUsername" th:value="${user.username}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updatedEmail">Email</label>
+                        <input type="email" class="form-control" id="updatedEmail" name="updatedEmail" th:value="${user.email}" required>
+                    </div>
+                    <input type="hidden" name="updatedPhoneNumber" th:value="${user.phoneNumber}">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
     function validatePasswords() {
         // Get password fields
@@ -110,6 +147,14 @@
             timer: 1500
         });
     }
+
+    // Check for success message and show alert if exists
+    window.onload = function() {
+        var successMessage = /*[[${successMessage}]]*/ 'null';
+        if (successMessage !== 'null') {
+            showAlert('success', successMessage);
+        }
+    };
 </script>
 
 </body>

@@ -16,16 +16,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -38,31 +36,28 @@ public class OtherFeesController {
     private EstablishmentRepo establishmentRepo;
     @GetMapping("/fetchOtherFees")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> fetchFee(@RequestParam String feesType, @RequestParam Long establishmentId, @RequestParam(required = false) Long numItems) {
-        OtherFees fees = otherFeesRepo.findByFeesTypeAndEstablishment_EstablishmentId(feesType, establishmentId);
-        if (fees != null) {
-            Map<String, Object> response = new HashMap<>();
-            Double feePerItem = fees.getFees();
-            response.put("feePerItem", feePerItem);
+    public ResponseEntity<List<Map<String, Object>>> fetchOtherFees(@RequestParam Long establishmentId) {
+        List<OtherFees> feesList = otherFeesRepo.findByEstablishmentEstablishmentId(establishmentId);
+        List<Map<String, Object>> responseList = new ArrayList<>();
 
-            if (numItems != null && numItems > 0) {
-                Double totalItemFees = numItems * feePerItem;
-                response.put("totalItemFees", totalItemFees);
-            }
-            return ResponseEntity.ok(response);
-        } else {
-            return ResponseEntity.notFound().build();
+        for (OtherFees fees : feesList) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("feesType", fees.getFeesType());
+            response.put("feePerItem", fees.getFees());
+            responseList.add(response);
         }
 
-        //PostMapping for  saving otherFees from admin part modal
-
+        return ResponseEntity.ok(responseList);
     }
+
     @PostMapping("/addOtherFees")
     public String saveOtherFees(@RequestParam("establishmentId") Long establishmentId,
                                 @RequestParam("feesType") String feesType,
                                 @RequestParam("fees") Double fees,
+                                RedirectAttributes redirectAttributes,
                                 Model model) {
         try {
+            System.out.println("feesType"+feesType);
             // Fetch the existing establishment object from the database
             Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
 
@@ -71,6 +66,13 @@ public class OtherFeesController {
             otherFees.setFeesType(feesType);
             otherFees.setFees(fees);
             otherFees.setEstablishment(establishment);
+            otherFees.setEnteredOn(LocalDateTime.now());
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentUserName = authentication.getName();
+            String enteredBy = authentication.getAuthorities().stream()
+                    .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN")) ? "admin" : currentUserName;
+            otherFees.setEnteredBy(enteredBy);
+
 
             // Save the OtherFees object to the database
             otherFeesRepo.save(otherFees);
@@ -79,8 +81,10 @@ public class OtherFeesController {
             model.addAttribute("error", "Failed to save other fees. Please try again.");
             return "errorPage"; // Return an error page or handle the error accordingly
         }
+        redirectAttributes.addAttribute("id", establishmentId);
 
-        return "redirect:/edit-establishments"; // Redirect to the establishment details page
+        // Redirect to the establishment details page with the establishmentId
+        return "redirect:/establishments/viewEstablishment/{id}";
     }
 
 }

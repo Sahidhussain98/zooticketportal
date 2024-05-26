@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Base64;
 
 
@@ -13,21 +14,23 @@ public class Images {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long imageId;
-
-
-
     private byte[] imageData;
 
     @ManyToOne
     @JoinColumn(name = "establishment",referencedColumnName="establishmentId")
     private Establishment establishment;
+    private LocalDateTime enteredOn;
+    private String enteredBy;
 
     public Images() {
     }
 
-    public Images(byte[] imageData, Establishment establishment) {
+    public Images(Long imageId, byte[] imageData, Establishment establishment, LocalDateTime enteredOn, String enteredBy) {
+        this.imageId = imageId;
         this.imageData = imageData;
         this.establishment = establishment;
+        this.enteredOn = enteredOn;
+        this.enteredBy = enteredBy;
     }
 
     public Long getImageId() {
@@ -52,5 +55,21 @@ public class Images {
 
     public void setEstablishment(Establishment establishment) {
         this.establishment = establishment;
+    }
+
+    public LocalDateTime getEnteredOn() {
+        return enteredOn;
+    }
+
+    public void setEnteredOn(LocalDateTime enteredOn) {
+        this.enteredOn = enteredOn;
+    }
+
+    public String getEnteredBy() {
+        return enteredBy;
+    }
+
+    public void setEnteredBy(String enteredBy) {
+        this.enteredBy = enteredBy;
     }
 }
