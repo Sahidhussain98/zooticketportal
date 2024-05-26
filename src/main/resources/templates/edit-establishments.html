@@ -3,82 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <title>Establishment Profile</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
-          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-          crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <style>
         .profile-container {
             background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
             border-radius: 10px;
-            padding: 30px;
+            padding: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 100%;
-            margin: 0 auto;
-            overflow-x: auto;
+            margin-top: 20px;
         }
         .profile-image {
-            max-width: 200px;
+            width: 150px; /* Adjusted size for consistency */
+            height: auto;
             border-radius: 5px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .profile-details {
-            margin-bottom: 30px;
         }
         .profile-field {
             font-weight: bold;
             margin-bottom: 10px;
         }
-        .edit-button {
-            margin-top: 10px;
+        .table-container {
+            margin-top: 20px; /* Added separation between tables */
         }
-        .save-button {
-            margin-top: 10px;
+        .card {
+            margin-bottom: 20px; /* Ensure spacing between cards */
         }
-        input[readonly] {
-            background-color: #f8f9fa;
+        input[readonly], input:not([readonly]), select {
+            background-color: #fff;
             border: 1px solid #ced4da;
             padding: 5px;
-        }
-        input:not([readonly]) {
-            background-color: #fff;
-            border: 1px solid #007bff;
-            padding: 5px;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-        }
-        .button-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .button-container button {
-            margin-right: 10px;
-            min-width: 100px;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.1);
         }
     </style>
 </head>
 <body>
 <div th:replace="~{fragments/adminNavMenu :: header}"></div>
-<br>
-<div class="">
+<div class="container mt-4">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="profile-container">
-                <h1 class="text-center mb-4">Establishment Profile</h1>
-                <div class="text-center">
-                    <img th:src="@{/establishments/user/{establishmentId}(establishmentId=${establishment.establishmentId})}" alt="Profile Image" class="profile-image">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="text-center">Establishment Profile</h1>
                 </div>
-                <div class="profile-details">
+                <div class="card-body text-center">
+                    <img th:src="@{/establishments/user/{establishmentId}(establishmentId=${establishment.establishmentId})}" alt="Profile Image" class="profile-image img-fluid">
                     <form id="editForm" th:action="@{/establishments/update/{id}(id=${establishment.establishmentId})}" th:object="${establishment}" method="POST">
                         <input type="hidden" name="establishmentId" th:value="${establishment.establishmentId}" />
-                        <p class="profile-field">Entered On: <span th:text="${establishment.enteredOn}"></span></p>
-                        <p class="profile-field">Entered By: <span th:text="${establishment.enteredBy}"></span></p>
-                        <p class="profile-field">Village : <span th:text="${establishment.village.villageName}"></span></p>
-                        <div class="text-right mb-1">
-                            <button type="button" class="btn btn-success mt-2 add-entry-fee" onclick="showAddEntryFeeModal()">Add Entry Fee</button>
+                        <div class="profile-details">
+                            <p class="profile-field">Entered On: <span th:text="${establishment.enteredOn}"></span></p>
+                            <p class="profile-field">Entered By: <span th:text="${establishment.enteredBy}"></span></p>
+                            <p class="profile-field">Village: <span th:text="${establishment.village.villageName}"></span></p>
+                            <p class="profile-field">Status: <span th:text="${establishment.status} ? 'Active' : 'Inactive'"></span></p>
+                            <p class="profile-field">Name: <input type="text" name="name" th:value="${establishment.name}" readonly /></p>
+                            <p class="profile-field">Address: <input type="text" name="address" th:value="${establishment.address}" readonly /></p>
                         </div>
-                        <hr>
+                        <button type="submit" id="saveButton" class="btn btn-primary save-button" style="display: none;">Save</button>
+                        <button type="button" id="editButton" class="btn btn-secondary edit-button">Edit</button>
+                    </form>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Fees Table</h5>
+                </div>
+                <div class="card-body table-container">
+                    <button type="button" class="btn btn-success" onclick="showAddEntryFeeModal()">Add Entry Fee</button>
+                    <div class="table-responsive">
                         <table class="table">
                             <thead>
                             <tr>
@@ -91,7 +81,7 @@
                             <tbody>
                             <th:block th:if="${#lists.isEmpty(establishment.fees)}">
                                 <tr>
-                                    <td colspan="5" class="text-center">No fees added, add at least one to make establishment active</td>
+                                    <td colspan="4" class="text-center">No fees added, add at least one to make establishment active</td>
                                 </tr>
                             </th:block>
                             <tr th:each="fee : ${establishment.fees}">
@@ -100,16 +90,21 @@
                                 <td th:text="${fee.entryFee}" readonly></td>
                                 <td>
                                     <button type="button" class="btn btn-primary edit-entry-fee" onclick="editEntryFee(${fee.feesId})">Edit</button>
-
                                     <a th:href="@{/establishments/deleteFees/{feesId}(feesId=${fee.feesId})}" class="btn btn-danger" onclick="confirmDelete(event, ${fee.feesId})">Delete</a>
                                 </td>
                             </tr>
                             </tbody>
                         </table>
-                        <div class="text-right mb-1">
-                            <button type="button" class="btn btn-success mt-2" onclick="showAddOtherFeeModal()">Add Other Fee</button>
-                        </div>
-                        <hr>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Other Fees Table</h5>
+                </div>
+                <div class="card-body table-container">
+                    <button type="button" class="btn btn-success" onclick="showAddOtherFeeModal()">Add Other Fee</button>
+                    <div class="table-responsive">
                         <table class="table">
                             <thead>
                             <tr>
@@ -135,17 +130,8 @@
                             </tr>
                             </tbody>
                         </table>
-                        <hr>
-                        <p class="profile-field">Status: <span th:text="${establishment.status} ? 'Active' : 'Inactive'"></span></p>
-                        <p class="profile-field">Name: <input type="text" name="name" th:value="${establishment.name}" readonly /></p>
-                        <p class="profile-field">Address: <input type="text" name="address" th:value="${establishment.address}" readonly /></p>
-                        <p class="profile-field">Opening Time: <input type="time" name="openingTime" th:value="${establishment.openingTime}" readonly /></p>
-                        <p class="profile-field">Closing Time: <input type="time" name="closingTime" th:value="${establishment.closingTime}" readonly /></p>
-                        <button type="submit" id="saveButton" class="btn btn-primary save-button" style="display: none;">Save</button>
-                    </form>
-                    <button type="button" id="editButton" class="btn btn-secondary edit-button">Edit</button>
+                    </div>
                 </div>
-                <button type="button" class="btn btn-info mt-3" onclick="addNonWorkingDates()">Add NonWorking Dates</button>
             </div>
         </div>
     </div>
