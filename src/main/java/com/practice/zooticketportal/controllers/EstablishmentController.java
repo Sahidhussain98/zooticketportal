@@ -8,6 +8,7 @@ import com.practice.zooticketportal.service.StorageService;
 import com.practice.zooticketportal.serviceimpl.FeesServiceImpl;
 import com.practice.zooticketportal.serviceimpl.OtherFeesServiceImpl;
 import net.sf.jasperreports.engine.JRException;
+import org.junit.platform.commons.logging.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.logging.Logger;
 
 @Controller
 @RequestMapping("/establishments")
@@ -470,13 +472,13 @@ public class EstablishmentController {
         try {
             Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
             if (establishment == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Establishment not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Establishment not found.");
             }
 
             // Check if the combination of nationality and category already exists
             boolean exists = feesRepo.existsByEstablishmentEstablishmentIdAndNationalityNationalityIdAndCategoryCategoryId(establishmentId, nationalityId, categoryId);
             if (exists) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Selected combination already exists");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("This fee configuration already exists. Please choose another.");
             }
 
             Fees fees = new Fees();
@@ -491,14 +493,13 @@ public class EstablishmentController {
 
             feesRepo.save(fees);
 
-            return ResponseEntity.status(HttpStatus.OK).body("Entry fee added successfully!");
-
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.OK).body("Entry fee added successfully.");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while adding the entry fee");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unable to process your request at this time.");
         }
     }
+
+
     @GetMapping("/establishments/checkCombination")
     public ResponseEntity<Map<String, Boolean>> checkCombination(@RequestParam("establishmentId") Long establishmentId,
                                                                  @RequestParam("nationality") Long nationalityId,
