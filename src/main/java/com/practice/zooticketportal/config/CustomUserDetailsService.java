@@ -1,4 +1,4 @@
-package com.practice.zooticketportal.loginServices;
+package com.practice.zooticketportal.config;
 
 
 

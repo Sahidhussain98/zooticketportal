@@ -1,5 +1,6 @@
-package com.practice.zooticketportal.loginServices;
+package com.practice.zooticketportal.config;
 
+import com.practice.zooticketportal.loginServices.OtpService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

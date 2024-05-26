@@ -99,9 +99,8 @@
                                 <td th:text="${fee.getCategory().getCategoryName()}"></td>
                                 <td th:text="${fee.entryFee}" readonly></td>
                                 <td>
-                                    <button type="button" class="btn btn-primary edit-entry-fee" data-feesId="${fee.feesId}">
-                                        Edit
-                                    </button>
+                                    <button type="button" class="btn btn-primary edit-entry-fee" onclick="editEntryFee(${fee.feesId})">Edit</button>
+
                                     <a th:href="@{/establishments/deleteFees/{feesId}(feesId=${fee.feesId})}" class="btn btn-danger" onclick="confirmDelete(event, ${fee.feesId})">Delete</a>
                                 </td>
                             </tr>
@@ -169,13 +168,12 @@
                     </div>
                     <input type="hidden" name="feesId" id="feesIdInput">
                     <input type="hidden" name="establishmentId" th:value="${establishment.establishmentId}">
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="submit" class="btn btn-primary" onclick="saveEntryFeeChanges()">Save Changes</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
-
 
 <!-- Other Fees Edit Modal -->
 <div class="modal fade" id="otherFeeModal" tabindex="-1" role="dialog" aria-labelledby="otherFeeModalLabel" aria-hidden="true">
@@ -378,22 +376,22 @@
     function showAddOtherFeeModal() {
         $('#addOtherFeeModal').modal('show');
     }
+    function showAddEntryFeeModal(){
+        $('#addEntryFeeModal').modal('show');
+    }
     // To update the entry fees
     $(document).ready(function() {
         $('.edit-entry-fee').on('click', function() {
             var row = $(this).closest('tr');
+            var feesId = row.data('feesId');
             var entryFee = row.find('td:eq(2)').text();
-            var feesId = $(this).data('feesId');
-
             // Set the values in the modal inputs
             $('#entryFeeModal #entryFeeValue').val(entryFee);
             $('#entryFeeModal #feesIdInput').val(feesId);
-
             // Show the modal
             $('#entryFeeModal').modal('show');
         });
     });
-
     // Function to handle the submission of the add entry fee form
     $('#addEntryFeeForm').on('submit', function(event) {
         event.preventDefault();

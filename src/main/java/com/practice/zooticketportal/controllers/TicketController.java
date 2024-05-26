@@ -6,8 +6,6 @@ import com.practice.zooticketportal.repositories.*;
 import com.practice.zooticketportal.service.AllUserService;
 import com.practice.zooticketportal.service.EstablishmentService;
 import com.practice.zooticketportal.service.TicketService;
-import com.practice.zooticketportal.serviceimpl.NonWorkingDaysService;
-import jakarta.validation.constraints.Email;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,13 +18,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 
 @Controller

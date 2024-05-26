@@ -130,7 +130,7 @@ public class EstablishmentController {
 
         } catch (IOException e) {
             model.addAttribute("error", "Failed to upload image. Please try again.");
-            return "errorPage";
+            return "errorpage/error";
         }
     }
 
@@ -191,7 +191,7 @@ public class EstablishmentController {
             model.addAttribute("nationalities", nationalities1);
             return "createestablishment2";
         } else {
-            return "error";
+            return "errorpage/error";
         }
     }
 
@@ -258,7 +258,7 @@ public class EstablishmentController {
             model.addAttribute("message", "Establishment updated successfully!");
         } catch (IOException e) {
             model.addAttribute("error", "Failed to upload image. Please try again.");
-            return "errorPage";
+            return "errorpage/error";
         }
 
         return "redirect:/establishments";
@@ -336,13 +336,13 @@ public class EstablishmentController {
         OtherFees otherFees = otherFeesRepo.findById(otherFeesId).orElse(null);
         if (otherFees == null) {
             model.addAttribute("error", "Fee not found");
-            return "errorPage"; // Return an error page or handle the error accordingly
+            return "errorpage/error"; // Return an error page or handle the error accordingly
         }
 
         Establishment existingEstablishment = establishmentService.getEstablishmentById(establishmentId);
         if (!otherFees.getEstablishment().equals(existingEstablishment)) {
             model.addAttribute("error", "Invalid establishment");
-            return "errorPage"; // Return an error page or handle the error accordingly
+            return "errorpage/error"; // Return an error page or handle the error accordingly
         }
 
         otherFees.setFeesType(feesType);
@@ -376,13 +376,13 @@ public class EstablishmentController {
             Fees fees = feesRepo.findById(feesId).orElse(null);
             if (fees == null) {
                 model.addAttribute("error", "Fees record not found");
-                return "errorPage"; // Return an error page or handle the error accordingly
+                return "errorpage/error"; // Return an error page or handle the error accordingly
             }
 
             Establishment existingEstablishment = establishmentService.getEstablishmentById(establishmentId);
             if (!fees.getEstablishment().equals(existingEstablishment)) {
                 model.addAttribute("error", "The fee does not belong to the specified establishment.");
-                return "errorPage"; // Return an error page or handle the error accordingly
+                return "errorpage/error"; // Return an error page or handle the error accordingly
             }
 
             fees.setEntryFee(entryFee);
@@ -404,7 +404,7 @@ public class EstablishmentController {
             return "edit-establishments";
         } catch (Exception e) {
             model.addAttribute("error", "An error occurred while updating the entry fee: " + e.getMessage());
-            return "errorPage"; // Return an error page or handle the error accordingly
+            return "errorpage/error"; // Return an error page or handle the error accordingly
         }
     }
 
