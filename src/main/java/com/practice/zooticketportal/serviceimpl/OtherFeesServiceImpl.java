@@ -19,6 +19,7 @@ public class OtherFeesServiceImpl implements OtherFeesService {
 
     @Override
     public void deleteOtherFee(Long otherFeesId) {
+
         otherFeesRepo.deleteById(otherFeesId);
     }
 

@@ -119,7 +119,10 @@ public class EstablishmentController {
 
             establishment.setVillage(villageRepo.findById(villageId).orElse(null));
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String enteredBy = authentication.getName();
+            String currentUserName = authentication.getName();
+            String enteredBy = authentication.getAuthorities().stream()
+                    .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN")) ? "admin" : currentUserName;
+
             establishment.setEnteredBy(enteredBy);
 
             byte[] imageData = imageFile.getBytes();
@@ -140,11 +143,14 @@ public class EstablishmentController {
     public String showAddNonWorkingDatesPage(@RequestParam("id") Long establishmentId, Model model) {
         Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
         model.addAttribute("establishment", establishment);
+        // Fetch data from your repository/service using the establishmentId
+        List<NonWorkingDays> nonWorkingDates = nonWorkingDaysRepo.findByEstablishmentEstablishmentId(establishmentId);
+        model.addAttribute("nonWorkingDates", nonWorkingDates);
         return "nonWorkingDates";
     }
 
     @PostMapping("/nonworkingdates/save")
-    public ResponseEntity<String> saveNonWorkingDates(@RequestBody Map<String, Object> requestData) {
+    public String saveNonWorkingDates(@RequestBody Map<String, Object> requestData, RedirectAttributes redirectAttributes) {
         Long establishmentId = Long.parseLong(requestData.get("establishmentId").toString());
         List<Map<String, String>> nonWorkingDates = (List<Map<String, String>>) requestData.get("nonWorkingDates");
 
@@ -157,6 +163,7 @@ public class EstablishmentController {
         }
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        boolean hasErrors = false;
 
         for (int i = 0; i < dates.size(); i++) {
             NonWorkingDays nonWorkingDay = new NonWorkingDays();
@@ -174,11 +181,18 @@ public class EstablishmentController {
                 nonWorkingDay.setEstablishment(establishment);
                 nonWorkingDaysRepo.save(nonWorkingDay);
             } else {
-                return ResponseEntity.badRequest().body("Error: Establishment not found with ID " + establishmentId);
+                hasErrors = true;
+                redirectAttributes.addFlashAttribute("errorMessage", "Error: Establishment not found with ID " + establishmentId);
+                break;
             }
         }
 
-        return ResponseEntity.ok("Non-working dates saved successfully.");
+        if (hasErrors) {
+            return "redirect:/errorPage"; // Redirect to an error page if needed
+        }
+
+        redirectAttributes.addFlashAttribute("successMessage", "Non-working dates saved successfully.");
+        return "redirect:/establishments/nonworkingdates/" + establishmentId; // Adjust the redirect URL as needed
     }
 
     @GetMapping("/show")
@@ -459,11 +473,6 @@ public class EstablishmentController {
         return response;
     }
 
-    @DeleteMapping("/fees/{feeId}")
-    public void deleteFee(@PathVariable Long feeId) {
-        feesRepo.deleteById(feeId);
-    }
-    //For savinf entryFees from modal in admin side
     @PostMapping("/addEntryFees")
     public ResponseEntity<String> addEntryFee(@RequestParam("establishmentId") Long establishmentId,
                                               @RequestParam("nationality") Long nationalityId,

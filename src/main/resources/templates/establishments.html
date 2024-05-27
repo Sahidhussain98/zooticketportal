@@ -3,34 +3,21 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-<!--    <title>Welcome User</title>-->
-    <!-- Include Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <div th:replace="~{fragments/adminNavMenu :: header}"></div>
-
-
-
-
 <div class="container">
     <div class ="row">
         <h1>List of Establishments</h1>
     </div>
 
-
-    <!-- ADD NEW STUDENT button-->
     <div class = "row">
         <div class = " col-lg-3">
-
             <a th:href ="@{/establishments/new}" class="btn btn-primary btn-sm mb-3">Add Establishments</a>
-
         </div>
 
     </div>
-
-
-
     <table class="table table-striped table-bordered">
         <thead class=" table-dark ">
         <tr>
@@ -60,12 +47,7 @@
         </tr>
         </tbody>
 
-
-
-
     </table>
-    <div class="row">
-</div>
 </div>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>

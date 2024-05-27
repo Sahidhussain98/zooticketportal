@@ -242,7 +242,6 @@
         <input type="submit" value="Proceed" />
         <input type="hidden" th:name="id" th:value="${theTicket.id}" required />
         <!-- Modal -->
-        <!-- Modal -->
         <div class="modal fade" id="ticketModal" tabindex="-1" role="dialog" aria-labelledby="ticketModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
@@ -546,12 +545,14 @@
         });
 
         // Function to calculate other fees and update the total item fees
+        // Function to calculate other fees and update the total item fees
         function calculateOtherFees() {
             var totalItemFees = 0;
+            var totalItemsCount = 0;
 
             $(".number-of-items").each(function() {
                 var feeType = $(this).data("feetype");
-                var numItems = $(this).val();
+                var numItems = parseInt($(this).val()) || 0;
                 var feePerItem = $(this).closest('.feeEntryRow').find(".feePerItem").data("fee-per-item");
 
                 // Calculate total item fees
@@ -562,13 +563,24 @@
                 } else {
                     $(this).closest('.feeEntryRow').find(".totalItemFees").val(''); // Clear total item fees if numItems is empty
                 }
+
+                // Sum the total number of items
+                totalItemsCount += numItems;
             });
 
             // Update the Item Fees field with the total item fees
             $("#itemFees").val(totalItemFees.toFixed(2));
+            // Update the Total Items field with the total number of items
+            $("#totalItems").val(totalItemsCount);
             calculateTotalAmount();
         }
+
+// Ensure total item fees and total items are updated when number of items is changed
+        $(document).on("input", ".number-of-items", function() {
+            calculateOtherFees();
+        });
     });
+
 </script>
 </body>
 </html>

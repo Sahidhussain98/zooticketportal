@@ -5,6 +5,10 @@
     <title>Establishment Profile</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white; /* Light grey background */
+        }
         .profile-container {
             background-color: #f8f9fa;
             border-radius: 10px;
@@ -59,6 +63,9 @@
                         </div>
                         <button type="submit" id="saveButton" class="btn btn-primary save-button" style="display: none;">Save</button>
                         <button type="button" id="editButton" class="btn btn-secondary edit-button">Edit</button>
+                        <div class="text-center mt-3">
+                            <button type="button" class="btn btn-info" onclick="addNonWorkingDates()">Add Non-Working Days</button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -84,13 +91,13 @@
                                     <td colspan="4" class="text-center">No fees added, add at least one to make establishment active</td>
                                 </tr>
                             </th:block>
-                            <tr th:each="fee : ${establishment.fees}">
+                            <tr th:each="fee : ${establishment.fees}" th:data-fees-id="${fee.feesId}">
                                 <td th:text="${fee.getNationality().getNationalityType()}"></td>
                                 <td th:text="${fee.getCategory().getCategoryName()}"></td>
                                 <td th:text="${fee.entryFee}" readonly></td>
                                 <td>
                                     <button type="button" class="btn btn-primary edit-entry-fee" onclick="editEntryFee(${fee.feesId})">Edit</button>
-                                    <a th:href="@{/establishments/deleteFees/{feesId}(feesId=${fee.feesId})}" class="btn btn-danger" onclick="confirmDelete(event, ${fee.feesId})">Delete</a>
+                                    <button type="button" class="btn btn-danger" onclick="confirmDeleteEntryFee(event, ${fee.feesId})">Delete</button>
                                 </td>
                             </tr>
                             </tbody>
@@ -125,7 +132,7 @@
                                 <td>
                                     <button type="button" class="btn btn-primary edit-other-fee" onclick="editOtherFee(${otherFee.otherFeesId})">Edit</button>
 
-                                    <a th:href="@{/establishments/deleteOtherFee/{otherFeesId}(otherFeesId=${otherFee.otherFeesId})}" class="btn btn-danger" onclick="confirmDelete(event, ${otherFee.otherFeesId})">Delete</a>
+                                    <button type="button" class="btn btn-danger" onclick="confirmDeleteOtherFee(event, ${otherFee.otherFeesId})">Delete</button>
                                 </td>
                             </tr>
                             </tbody>
@@ -260,11 +267,10 @@
 <script>
     // Function to show confirm delete alert for entry fees
     function confirmDelete(event, feesId) {
-        event.preventDefault();
-        console.log("Deleting entry fee with ID:", feesId);
-        if (confirm("Are you sure you want to delete this fee?")) {
+        event.preventDefault();  // Prevent the default anchor behavior
+        var confirmDelete = confirm("Are you sure you want to delete this fee?");
+        if (confirmDelete) {
             var deleteUrl = `/establishments/deleteFees/${feesId}`;
-            console.log("Redirecting to:", deleteUrl);
             window.location.href = deleteUrl;
         }
     }
@@ -420,6 +426,78 @@
             });
         }
     });
+    //  Delete for otherfees
+    $(document).ready(function() {
+        // Attach the event listener to the delete buttons within the other fees table
+        $('.table-container').on('click', '.btn-danger', function(event) {
+            event.preventDefault(); // Stop the form from submitting normally
+            var otherFeesId = $(this).closest('tr').data('other-fees-id');
+            confirmDeleteOtherFee(event, otherFeesId);
+        });
+    });
+
+    function confirmDeleteOtherFee(event, otherFeesId) {
+        event.preventDefault();
+        Swal.fire({
+            title: "Are you sure you want to delete this fee?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `/establishments/deleteOtherFee/${otherFeesId}`,
+                    type: 'GET',
+                    success: function(response) {
+                        Swal.fire('Deleted!', 'The fee has been deleted.', 'success');
+                        $(`tr[data-other-fees-id="${otherFeesId}"]`).remove();
+                    },
+                    error: function(xhr, status, error) {
+                        Swal.fire('Error!', 'Failed to delete the fee: ' + error, 'error');
+                    }
+                });
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        // Attach the event listener to the delete buttons within the other fees table
+        $('.table-container').on('click', '.btn-danger', function(event) {
+            event.preventDefault(); // Stop the form from submitting normally
+            var feesId = $(this).closest('tr').data('fees-id');
+            confirmDeleteEntryFee(event, feesId);
+        });
+    });
+    //  DELETE for entryFes i.e 1st table
+    function confirmDeleteEntryFee(event, feesId) {
+        event.preventDefault();
+        Swal.fire({
+            title: "Are you sure you want to delete this fee?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `/establishments/deleteFees/${feesId}`,
+                    type: 'GET',  // Ensure your backend supports GET for deleting, otherwise change to POST or DELETE
+                    success: function(response) {
+                        Swal.fire('Deleted!', 'The fee has been deleted.', 'success');
+                        $(`tr[data-fees-id="${feesId}"]`).remove();
+                    },
+                    error: function(xhr, status, error) {
+                        Swal.fire('Error!', 'Failed to delete the fee: ' + error, 'error');
+                    }
+                });
+            }
+        });
+    }
+
+
 </script>
 </body>
 </html>
