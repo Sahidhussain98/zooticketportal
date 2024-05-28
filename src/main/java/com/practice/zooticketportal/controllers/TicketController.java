@@ -22,6 +22,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.Principal;
 import java.time.LocalDate;
@@ -202,27 +203,41 @@ public class TicketController {
         try {
             // Load JrXML template
             InputStream jrxmlInput = getClass().getResourceAsStream("/static/reports/ZooTicket.jrxml");
+            if (jrxmlInput == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                response.getWriter().write("Template file not found.");
+                return;
+            }
+
             // Compile JrXML template
             JasperDesign jasperDesign = JRXmlLoader.load(jrxmlInput);
             JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
+
             // Fill the report with data
             Map<String, Object> parameters = new HashMap<>();
-            System.out.println(ticketId);
-            parameters.put("id", ticketId);
+            parameters.put("TicketId", ticketId);
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource.getConnection());
+
             // Export report to PDF
             byte[] pdfBytes = JasperExportManager.exportReportToPdf(jasperPrint);
+
             // Set response headers
             response.setContentType("application/pdf");
             response.setContentLength(pdfBytes.length);
             response.setHeader("Content-Disposition", "attachment; filename=\"ticket_report.pdf\"");
+
             // Write PDF content to response
-            System.out.println(pdfBytes);
             response.getOutputStream().write(pdfBytes);
             response.getOutputStream().flush();
         } catch (Exception e) {
             e.printStackTrace();
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            try {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().write("An error occurred while generating the report.");
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+
+            }
         }
     }
 

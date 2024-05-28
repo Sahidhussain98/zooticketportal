@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 9.0.0.final using JasperReports Library version 6.21.0-4f56c4f36cd19e17675219a9ac4692d5f0f13b06  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ZooTicket" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="f8cb3bf8-beb6-4657-8e28-e56de9bd9a9d">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="final_1" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="0bc47ece-ccd0-4b16-943a-66471892895f">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Ticketbooking"/>
-	<parameter name="id" class="java.lang.String"/>
+	<parameter name="TicketId" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[$F{id}]]></defaultValueExpression>
+	</parameter>
 	<queryString language="SQL">
-		<![CDATA[SELECT
-*
-	FROM foresteticketing.tickets
-]]>
+		<![CDATA[select
+ tickets.id , tickets.booking_id , tickets.date_time , tickets.email , tickets.phone_number , tickets.total_amount , tickets.total_persons , tickets.user_name
+from foresteticketing.tickets
+where tickets.id = $P{TicketId}]]>
 	</queryString>
 	<field name="id" class="java.lang.Long">
 		<property name="com.jaspersoft.studio.field.name" value="id"/>
@@ -28,16 +30,6 @@
 	<field name="email" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="email"/>
 		<property name="com.jaspersoft.studio.field.label" value="email"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="tickets"/>
-	</field>
-	<field name="entered_by" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="entered_by"/>
-		<property name="com.jaspersoft.studio.field.label" value="entered_by"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="tickets"/>
-	</field>
-	<field name="entered_on" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="entered_on"/>
-		<property name="com.jaspersoft.studio.field.label" value="entered_on"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="tickets"/>
 	</field>
 	<field name="phone_number" class="java.lang.Long">
@@ -60,112 +52,131 @@
 		<property name="com.jaspersoft.studio.field.label" value="user_name"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="tickets"/>
 	</field>
-	<field name="validate" class="java.lang.Boolean">
-		<property name="com.jaspersoft.studio.field.name" value="validate"/>
-		<property name="com.jaspersoft.studio.field.label" value="validate"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="tickets"/>
-	</field>
-	<field name="establishment" class="java.lang.Long">
-		<property name="com.jaspersoft.studio.field.name" value="establishment"/>
-		<property name="com.jaspersoft.studio.field.label" value="establishment"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="tickets"/>
-	</field>
-	<field name="user_id" class="java.lang.Long">
-		<property name="com.jaspersoft.studio.field.name" value="user_id"/>
-		<property name="com.jaspersoft.studio.field.label" value="user_id"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="tickets"/>
-	</field>
+	<group name="id">
+		<groupExpression><![CDATA[$F{id}]]></groupExpression>
+	</group>
+	<group name="booking_id">
+		<groupExpression><![CDATA[$F{booking_id}]]></groupExpression>
+	</group>
+	<group name="date_time">
+		<groupExpression><![CDATA[$F{date_time}]]></groupExpression>
+	</group>
+	<group name="email">
+		<groupExpression><![CDATA[$F{email}]]></groupExpression>
+	</group>
+	<group name="phone_number">
+		<groupExpression><![CDATA[$F{phone_number}]]></groupExpression>
+	</group>
+	<group name="total_amount">
+		<groupExpression><![CDATA[$F{total_amount}]]></groupExpression>
+	</group>
+	<group name="total_persons">
+		<groupExpression><![CDATA[$F{total_persons}]]></groupExpression>
+	</group>
+	<group name="user_name">
+		<groupExpression><![CDATA[$F{user_name}]]></groupExpression>
+	</group>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="122" splitType="Stretch">
+		<band height="79" splitType="Stretch">
 			<staticText>
-				<reportElement x="12" y="0" width="531" height="64" uuid="2ccc076e-9196-4cc8-bcdb-ec79d517db0f"/>
-				<textElement textAlignment="Center">
-					<font size="26"/>
-				</textElement>
+				<reportElement x="0" y="0" width="550" height="71" uuid="a2183a1d-7992-4245-b285-d342c519fea9">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
 				<text><![CDATA[GOVERNMENT OF MEGHALAYA]]></text>
 			</staticText>
 		</band>
 	</title>
 	<pageHeader>
-		<band height="35" splitType="Stretch">
-			<staticText>
-				<reportElement x="0" y="-2" width="100" height="30" uuid="12462459-ea4e-41b5-884f-3d6f738e4178"/>
-				<text><![CDATA[id]]></text>
-			</staticText>
-			<textField>
-				<reportElement x="110" y="0" width="100" height="30" uuid="a8f0bdf5-97e3-4bd0-aaf1-c0c06f522ea2"/>
-				<textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
-			</textField>
-		</band>
+		<band height="65" splitType="Stretch"/>
 	</pageHeader>
 	<columnHeader>
-		<band height="120" splitType="Stretch">
+		<band height="100" splitType="Stretch">
 			<image>
-				<reportElement x="420" y="-57" width="132" height="131" uuid="280577da-4d53-400a-b694-79ad9f2a987f"/>
+				<reportElement x="470" y="0" width="100" height="100" uuid="00f829c1-0e23-4cd9-9798-d00f8c34c065">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<imageExpression><![CDATA[com.google.zxing.client.j2se.MatrixToImageWriter.toBufferedImage(
 new com.google.zxing.qrcode.QRCodeWriter().encode(
 $F{id}+" "+$F{user_name}+" "+$F{email}+" "+$F{phone_number},
 com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
 			</image>
-			<textField>
-				<reportElement x="110" y="40" width="100" height="30" uuid="ad90cb49-2a7e-4517-a56f-24ccbffb9aae"/>
-				<textFieldExpression><![CDATA[$F{user_name}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="110" y="90" width="100" height="30" uuid="a281eaf8-9e5c-485e-8bdd-b1c3ae9aff35"/>
-				<textFieldExpression><![CDATA[$F{email}]]></textFieldExpression>
-			</textField>
 			<staticText>
-				<reportElement x="0" y="90" width="100" height="30" uuid="808e12f7-8d47-4ebb-b20d-c7c66900d507"/>
-				<text><![CDATA[email]]></text>
+				<reportElement x="0" y="0" width="100" height="30" uuid="6b62ad12-3a9a-4ea2-9ac6-38290f7882b3"/>
+				<text><![CDATA[Ticket id]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="120" y="0" width="100" height="30" uuid="910f54f5-8cd5-485f-bafc-c9a3a6b027a8"/>
+				<textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
+			</textField>
 			<staticText>
-				<reportElement x="2" y="3" width="100" height="30" uuid="50d76cf9-c24d-459e-bc68-fdd1d3545cb3"/>
+				<reportElement x="0" y="50" width="100" height="30" uuid="88dc4a6b-078d-444b-9b73-7b032a2810a8"/>
 				<text><![CDATA[Booking ID]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="0" y="40" width="100" height="30" uuid="1f5c6861-c78e-42df-b0c3-088dddca0bb8"/>
-				<text><![CDATA[username]]></text>
-			</staticText>
 			<textField>
-				<reportElement x="111" y="2" width="100" height="30" uuid="d0a99528-af22-48df-a992-8223ac2acc63"/>
+				<reportElement x="120" y="50" width="100" height="30" uuid="9424505e-c4b6-4d50-93a3-2e79e91636a6"/>
 				<textFieldExpression><![CDATA[$F{booking_id}]]></textFieldExpression>
 			</textField>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="137" splitType="Stretch">
+		<band height="204" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="14" width="100" height="30" uuid="883d3f8a-96f1-413e-934e-a966c37e6434"/>
-				<text><![CDATA[number]]></text>
+				<reportElement x="0" y="-14" width="100" height="30" uuid="d7098b4a-ad74-4180-9ae5-eba6d9611adf"/>
+				<text><![CDATA[USER]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="110" y="10" width="100" height="30" uuid="ad48617f-0a3d-4211-9bb6-7913a14a6f24"/>
+				<reportElement x="120" y="-14" width="100" height="30" uuid="ffc2c359-3838-436b-be5e-66445ad5a6cb"/>
+				<textFieldExpression><![CDATA[$F{user_name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="20" width="100" height="30" uuid="2e1cbe12-52e9-4eda-bae2-606c96a5b467"/>
+				<text><![CDATA[contact number]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="120" y="20" width="100" height="30" uuid="9875564d-5c26-477d-8040-3d4268a7fcfc"/>
 				<textFieldExpression><![CDATA[$F{phone_number}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="57" width="100" height="30" uuid="43f95ff3-9dfa-4e21-a580-cf54fcbb4c1d"/>
-				<text><![CDATA[Total people ]]></text>
+				<reportElement x="0" y="60" width="100" height="30" uuid="0e481cb0-79e3-44ca-a1d5-ba0117b7945b"/>
+				<text><![CDATA[EMAIL]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="115" y="55" width="100" height="30" uuid="8aff5892-6000-4247-a81b-208de8b4859a"/>
-				<textFieldExpression><![CDATA[$F{total_persons}]]></textFieldExpression>
+				<reportElement x="120" y="60" width="100" height="30" uuid="1f68aba6-f47e-4b16-933f-c9a5f6391196"/>
+				<textFieldExpression><![CDATA[$F{email}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="2" y="105" width="100" height="30" uuid="7da34382-5d3c-48be-ad5c-b5eefc57a5de"/>
-				<text><![CDATA[Total amount]]></text>
+				<reportElement x="1" y="144" width="100" height="30" uuid="34d97b9d-f7b2-4075-aa99-ffbce18873a5"/>
+				<text><![CDATA[TOTAL PERSON]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="119" y="107" width="100" height="30" uuid="a8475b3b-4746-41e7-9d4f-4a45852ec7c6"/>
+				<reportElement x="121" y="144" width="100" height="30" uuid="6e6980b3-48dd-499d-a604-138d824ce254"/>
+				<textFieldExpression><![CDATA[$F{total_persons}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="120" y="109" width="100" height="30" uuid="29a5b7e0-4856-41c2-9031-5ed6f3056531"/>
 				<textFieldExpression><![CDATA[$F{total_amount}]]></textFieldExpression>
 			</textField>
+			<staticText>
+				<reportElement x="0" y="109" width="100" height="30" uuid="de97eff4-f01b-4d52-955c-72bab9393b62"/>
+				<text><![CDATA[TOTAL AMOUNT]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="120" y="174" width="100" height="30" uuid="e3bde6cd-bd12-4947-bbf3-2fa7d37434af"/>
+				<textFieldExpression><![CDATA[$F{date_time}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="174" width="100" height="30" uuid="f64eb331-8149-4f4c-a42e-85e621f8dc52"/>
+				<text><![CDATA[BOOKED FOR DATE]]></text>
+			</staticText>
 		</band>
 	</detail>
 	<columnFooter>
-		<band height="45" splitType="Stretch"/>
+		<band height="80" splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
 		<band height="54" splitType="Stretch"/>
