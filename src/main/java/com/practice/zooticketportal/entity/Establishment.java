@@ -32,7 +32,7 @@ public class Establishment {
     private Village village;
     @OneToMany(mappedBy = "establishment")
     private List<AllUser> users;
-    @OneToMany(mappedBy = "establishment")
+    @OneToMany(mappedBy = "establishment",cascade = CascadeType.ALL)
     private List<NonWorkingDays> nonWorkingDays;
     @OneToMany(mappedBy = "establishment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Images> images;
