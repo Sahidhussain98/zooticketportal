@@ -26,9 +26,11 @@ import java.io.InputStream;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Controller
@@ -106,6 +108,7 @@ public class TicketController {
             return "error"; // or whatever error handling you need
         }
     }
+
     @PostMapping("/saveTicket")
     public String saveTicket(@RequestParam("establishmentId") Long establishmentId,
                              @RequestParam("dateTime") LocalDate dateTime,
@@ -115,12 +118,25 @@ public class TicketController {
                              @RequestParam("nationalityId") List<Long> nationalityIds,
                              @RequestParam("categoryId") List<Long> categoryIds,
                              @RequestParam("numberOfPeople") List<Long> numberOfPeople,
+                             @RequestParam("numItems") List<Long> numberOfItems,
                              @RequestParam("feesType") List<String> feesType,
-                             Model model) {
+                             Model model, Principal principal) {
         Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
         String establishmentName = establishment.getName();
         int serialNumber = generateRandomSerialNumber();
+
         try {
+            // Retrieve the authenticated user's phone number
+            String phoneNumberStr = principal.getName();
+            Long authenticatedPhoneNumber = Long.parseLong(phoneNumberStr);
+
+            // Retrieve the authenticated user
+            AllUser authenticatedUser = allUserRepo.findByPhoneNumber(authenticatedPhoneNumber);
+
+            if (authenticatedUser == null) {
+                throw new Exception("Authenticated user not found");
+            }
+
             Ticket theTicket = new Ticket();
             theTicket.setDateTime(dateTime.atStartOfDay());
             theTicket.setUserName(userName);
@@ -128,6 +144,13 @@ public class TicketController {
             theTicket.setPhoneNumber(Long.valueOf(phoneNumber));
             theTicket.setBookingId(establishmentName + "-" + serialNumber);
             theTicket.setEstablishment(establishment);
+            theTicket.setUser(authenticatedUser); // Set the authenticated user
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentUserName = authentication.getName();
+            String enteredBy = authentication.getAuthorities().stream()
+                    .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN")) ? "admin" : currentUserName;
+            theTicket.setEnteredBy(enteredBy);
+            theTicket.setEnteredOn(String.valueOf(LocalDateTime.now()));
 
             ticketRepository.save(theTicket);
 
@@ -141,21 +164,19 @@ public class TicketController {
                 entryFee.setQuantity(numberOfPeople.get(i));
                 categoriesForTicketRepo.save(entryFee);
             }
-//
+
             for (int i = 0; i < feesType.size(); i++) {
                 OtherFeesForTickets otherFee = new OtherFeesForTickets();
                 otherFee.setTicket(theTicket);
+                otherFee.setQuantity(numberOfItems.get(i));
 
                 String otherfeess = feesType.get(i);
-                System.out.println(otherfeess);
                 OtherFees otherFees = otherFeesRepo.findByFeesTypeAndEstablishmentId(otherfeess, establishmentId);
 
                 if (otherFees != null) {
-                    System.out.println("Found fees type: " + otherFees.getFeesType());
                     otherFee.setOtherFees(otherFees);
                     otherFeesForTicketsRepo.save(otherFee);
                 } else {
-                    System.out.println("Fees type not found: " + otherfeess);
                     throw new Exception("Fees type not found: " + otherfeess);
                 }
             }
@@ -166,15 +187,14 @@ public class TicketController {
         } catch (Exception e) {
             e.printStackTrace(); // This will print the stack trace to the server logs
             model.addAttribute("error", "Error saving ticket: " + e.getMessage());
-            return  "/errorpage/error";
+            return "/errorpage/error";
         }
     }
+
     private int generateRandomSerialNumber() {
         // Implement your logic to generate a random serial number
         return (int) (Math.random() * 1000); // Example logic: Generate a random number between 0 and 999
     }
-
-
 
 
     @GetMapping("/export/pdf")
@@ -235,5 +255,29 @@ public class TicketController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    @GetMapping("/getBookings")
+    public String getUserBookings(Model model, Principal principal) {
+        try {
+            String phoneNumberStr = principal.getName(); // Assuming phone number is used as username
+            Long phoneNumber = Long.parseLong(phoneNumberStr);
+            AllUser user = allUserRepo.findByPhoneNumber(phoneNumber);
+
+            if (user != null) {
+                List<Ticket> tickets = ticketRepository.findByUser_AllUserId(user.getAllUserId());
+                model.addAttribute("tickets", tickets);
+            } else {
+                model.addAttribute("tickets", Collections.emptyList());
+            }
+            return "bookings";
+
+        } catch (Exception e) {
+            e.printStackTrace(); // This will print the stack trace to the server logs
+            return "/errorpage/error";
+        }
+
+    }
+
+
+
 
 }

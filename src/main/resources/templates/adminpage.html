@@ -39,11 +39,11 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="userForm" th:action="@{/saveUserData}" th:method="post">
+            <form id="userForm" th:action="@{/saveAdminData}" th:method="post">
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="usernameInput" class="dark-label">Username<span class="text-danger">*</span></label>
-                        <input id="usernameInput" class="form-control dark-grey-text" name="username" placeholder="Enter Your Username" required pattern="[A-Za-z]+" title="Please enter a valid username. It should contain only alphabetic characters">
+                        <input id="usernameInput" class="form-control dark-grey-text" name="username" placeholder="Enter Your Username" required pattern="[A-Za-z ]+" title="Please enter a valid username. It should contain only alphabetic characters and spaces">
                     </div>
                     <div class="form-group">
                         <label for="emailInput" class="dark-label">Email<span class="text-danger">*</span></label>

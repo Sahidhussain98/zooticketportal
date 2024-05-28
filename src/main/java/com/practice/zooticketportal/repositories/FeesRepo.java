@@ -6,6 +6,7 @@ import com.practice.zooticketportal.entity.Fees;
 import com.practice.zooticketportal.entity.Nationality;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,8 @@ public interface FeesRepo extends JpaRepository<Fees,Long> {
     @Query("SELECT DISTINCT f.category FROM Fees f WHERE f.establishment.establishmentId = ?1")
     List<Category> findCategoriesWithFees(Long establishmentId);
     boolean existsByEstablishmentEstablishmentIdAndNationalityNationalityIdAndCategoryCategoryId(Long establishmentId, Long nationalityId, Long categoryId);
+    @Query("SELECT COUNT(f) FROM Fees f WHERE f.establishment.establishmentId = :establishmentId")
+    long countByEstablishmentId(@Param("establishmentId") Long establishmentId);
 
 
 

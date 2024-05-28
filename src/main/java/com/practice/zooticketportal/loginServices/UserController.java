@@ -37,19 +37,16 @@ public class UserController {
                             @RequestParam(name = "mobile_number") Long phoneNumber,
                             HttpServletRequest req) {
         if (otp.equals(otpService.generateOtp())) {
-            System.out.println("Received phone number: " + phoneNumber);
             Authentication authentication = new UsernamePasswordAuthenticationToken(phoneNumber.toString(), null, null);
             // Set the authentication object in the SecurityContext
             SecurityContext sc = SecurityContextHolder.getContext();
             sc.setAuthentication(authentication);
             HttpSession session = req.getSession(true);
             session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, sc);
-            System.out.println("OTP Verified");
             userService.registerUserWithCitizenRole(phoneNumber);
 
             return "redirect:/userpage";
         } else {
-            System.out.println("test");
             return null;
 
         }

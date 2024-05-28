@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>User Bookings</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .card-title {
+            white-space: nowrap; /* Prevent text from wrapping */
+            overflow: hidden; /* Hide overflow */
+            text-overflow: ellipsis; /* Add ellipsis if text overflows */
+        }
+
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/userNaveMenu :: header}"></div>
+<div class="container">
+    <h1 class="my-4">Bookings</h1>
+    <div class="row">
+        <div th:each="ticket : ${tickets}" class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Establishment Name: <span th:text="${ticket.establishment.name}"></span> </h5>
+                    <p class="card-text">Booking ID:<span th:text="${ticket.bookingId}"></span></p>
+                    <p class="card-text">Visitor Name:<span th:text="${ticket.userName}"></span></p>
+                    <p class="card-text">Date: <span th:text="${#temporals.format(ticket.dateTime, 'yyyy-MM-dd')}"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

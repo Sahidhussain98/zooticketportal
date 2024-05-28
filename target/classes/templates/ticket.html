@@ -146,7 +146,7 @@
 </head>
 <body>
 
-<div th:replace="fragments/userNaveMenu :: header"></div>
+<div th:replace="~{fragments/userNaveMenu :: header}"></div>
 
 <div class="container-form">
     <h3 class="text-center">Welcome to <span th:text="${establishment.name}"></span></h3>
@@ -278,6 +278,11 @@
 <script src="/static/bootstrap/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
+    $(document).ready(function() {
+        var today = new Date().toISOString().split('T')[0];
+        $('#dateTime').attr('min', today);
+    });
+
     // Function to calculate fees and update the pricePerPerson field
     $(document).ready(function() {
         // Function to calculate fees and update the pricePerPerson field
@@ -505,7 +510,7 @@
                     </div>
                     <div class="col-lg-3" style="flex-basis: 100%;">
                         <label for="numItems_${index}">Number of Items:</label>
-                        <input type="number" id="numItems_${index}" class="number-of-items number-of-items-input" min="1" data-feetype="${fee.feesType}" />
+                        <input name="numItems" type="number" id="numItems_${index}" class="number-of-items number-of-items-input" min="1" data-feetype="${fee.feesType}" />
                     </div>
                     <div class="col-lg-3" style="flex-basis: 100%;">
                         <label>Total Item Fees:</label>
