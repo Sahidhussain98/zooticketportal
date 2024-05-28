@@ -11,10 +11,22 @@
 ]]>
     </queryString>
     <field name="id" class="java.lang.Long">
+<<<<<<< HEAD
         <property name="com.jaspersoft.studio.field.name" value="id"/>
         <property name="com.jaspersoft.studio.field.label" value="id"/>
         <property name="com.jaspersoft.studio.field.tree.path" value="tickets"/>
     </field>
+=======
+        <fieldDescription><![CDATA[id]]></fieldDescription>
+    </field>
+
+
+    <field name="phone_number" class="java.lang.Long">
+        <fieldDescription><![CDATA[phoneNumber]]></fieldDescription>
+    </field>
+
+
+>>>>>>> d8715be4b340d6cac9b5174bb97473a6f4351699
     <field name="booking_id" class="java.lang.String">
         <property name="com.jaspersoft.studio.field.name" value="booking_id"/>
         <property name="com.jaspersoft.studio.field.label" value="booking_id"/>
@@ -45,6 +57,7 @@
         <property name="com.jaspersoft.studio.field.label" value="phone_number"/>
         <property name="com.jaspersoft.studio.field.tree.path" value="tickets"/>
     </field>
+<<<<<<< HEAD
     <field name="total_amount" class="java.lang.String">
         <property name="com.jaspersoft.studio.field.name" value="total_amount"/>
         <property name="com.jaspersoft.studio.field.label" value="total_amount"/>
@@ -75,6 +88,8 @@
         <property name="com.jaspersoft.studio.field.label" value="user_id"/>
         <property name="com.jaspersoft.studio.field.tree.path" value="tickets"/>
     </field>
+=======
+>>>>>>> d8715be4b340d6cac9b5174bb97473a6f4351699
     <background>
         <band splitType="Stretch"/>
     </background>
@@ -90,11 +105,29 @@
         </band>
     </title>
     <pageHeader>
+<<<<<<< HEAD
         <band height="35" splitType="Stretch">
             <staticText>
                 <reportElement x="0" y="-2" width="100" height="30" uuid="12462459-ea4e-41b5-884f-3d6f738e4178"/>
                 <text><![CDATA[id]]></text>
             </staticText>
+=======
+        <band height="30" splitType="Stretch"/>
+    </pageHeader>
+    <columnHeader>
+        <band height="131" splitType="Stretch">
+            <image>
+                <reportElement x="423" y="0" width="132" height="131" uuid="fa3cc3d9-2b94-4639-b21f-e12634294e80"/>
+                <imageExpression><![CDATA[com.google.zxing.client.j2se.MatrixToImageWriter.toBufferedImage(
+new com.google.zxing.qrcode.QRCodeWriter().encode(
+$F{id}+$F{booking_id}+$F{name}+$F{email}+$F{phone_number}+$F{date_time},
+com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
+            </image>
+        </band>
+    </columnHeader>
+    <detail>
+        <band height="466" splitType="Stretch">
+>>>>>>> d8715be4b340d6cac9b5174bb97473a6f4351699
             <textField>
                 <reportElement x="110" y="0" width="100" height="30" uuid="a8f0bdf5-97e3-4bd0-aaf1-c0c06f522ea2"/>
                 <textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
@@ -143,7 +176,29 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
                 <text><![CDATA[number]]></text>
             </staticText>
             <textField>
+<<<<<<< HEAD
                 <reportElement x="110" y="10" width="100" height="30" uuid="ad48617f-0a3d-4211-9bb6-7913a14a6f24"/>
+=======
+                <reportElement x="123" y="80" width="183" height="41" uuid="7d15c74a-8746-4635-bc49-a18c6040725d"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="14"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{date_time}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="1" y="80" width="122" height="41" uuid="e6374366-195a-4c84-ba3c-6d07b441cf51"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="14"/>
+                </textElement>
+                <text><![CDATA[VISITING DATE]]></text>
+            </staticText>
+
+            <textField>
+                <reportElement x="122" y="205" width="183" height="40" uuid="c0775a98-ad8f-4d87-8e99-7651b69c1bb7"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="14"/>
+                </textElement>
+>>>>>>> d8715be4b340d6cac9b5174bb97473a6f4351699
                 <textFieldExpression><![CDATA[$F{phone_number}]]></textFieldExpression>
             </textField>
             <staticText>

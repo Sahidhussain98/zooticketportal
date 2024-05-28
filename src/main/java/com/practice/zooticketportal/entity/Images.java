@@ -21,9 +21,6 @@ public class Images {
     @JsonBackReference
     @JoinColumn(name = "establishment",referencedColumnName="establishmentId")
     private Establishment establishment;
-    private LocalDateTime enteredOn;
-    private String enteredBy;
-
     public Images() {
     }
 
@@ -31,8 +28,6 @@ public class Images {
         this.imageId = imageId;
         this.imageData = imageData;
         this.establishment = establishment;
-        this.enteredOn = enteredOn;
-        this.enteredBy = enteredBy;
     }
 
     public Long getImageId() {
@@ -59,19 +54,4 @@ public class Images {
         this.establishment = establishment;
     }
 
-    public LocalDateTime getEnteredOn() {
-        return enteredOn;
-    }
-
-    public void setEnteredOn(LocalDateTime enteredOn) {
-        this.enteredOn = enteredOn;
-    }
-
-    public String getEnteredBy() {
-        return enteredBy;
-    }
-
-    public void setEnteredBy(String enteredBy) {
-        this.enteredBy = enteredBy;
-    }
 }

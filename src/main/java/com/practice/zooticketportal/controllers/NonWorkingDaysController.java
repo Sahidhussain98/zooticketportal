@@ -26,8 +26,6 @@ public class NonWorkingDaysController {
 @GetMapping("/fetchNonWorkingDays/{establishmentId}")
 @ResponseBody
 public List<Map<String, String>> getNonWorkingDaysByEstablishmentId(@PathVariable Long establishmentId) {
-    System.out.println("Fetching non-working days for establishment ID: " + establishmentId);
-
     // Fetch non-working days from the repository
     List<NonWorkingDays> nonWorkingDaysList = nonWorkingDaysRepo.findByEstablishmentEstablishmentId(establishmentId);
 
@@ -42,8 +40,6 @@ public List<Map<String, String>> getNonWorkingDaysByEstablishmentId(@PathVariabl
         entry.put("reason", nonWorkingDay.getReason());
         response.add(entry);
     }
-
-    System.out.println("Non-working days fetched: " + response);
     return response;
 }
 

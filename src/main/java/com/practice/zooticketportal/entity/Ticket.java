@@ -21,8 +21,15 @@ public class Ticket {
     private String email;
     private Long phoneNumber;
     private Long totalPersons;
+<<<<<<< HEAD
     private String totalAmount;
     private LocalDateTime dateTime;
+=======
+    private Double totalOtherFees;
+    private Double totalEntryFees;
+    private Double totalAmount;
+    private LocalDate dateTime;
+>>>>>>> d8715be4b340d6cac9b5174bb97473a6f4351699
     private String enteredBy;
     private String enteredOn;
     private boolean validate = false;
@@ -55,6 +62,11 @@ public class Ticket {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.totalPersons = totalPersons;
+<<<<<<< HEAD
+=======
+        this.totalOtherFees = totalOtherFees;
+        this.totalEntryFees = totalEntryFees;
+>>>>>>> d8715be4b340d6cac9b5174bb97473a6f4351699
         this.totalAmount = totalAmount;
         this.dateTime = dateTime;
         this.enteredBy = enteredBy;
@@ -161,6 +173,40 @@ public class Ticket {
         this.totalPersons = totalPersons;
     }
 
+<<<<<<< HEAD
+=======
+       public Double getTotalOtherFees() {
+        return totalOtherFees;
+    }
+
+    public void setTotalOtherFees(Double totalOtherFees) {
+        this.totalOtherFees = totalOtherFees;
+    }
+
+    public Double getTotalEntryFees() {
+        return totalEntryFees;
+    }
+
+    public void setTotalEntryFees(Double totalEntryFees) {
+        this.totalEntryFees = totalEntryFees;
+    }
+
+    public Double getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(Double totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public LocalDate getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(LocalDate dateTime) {
+        this.dateTime = dateTime;
+    }
+>>>>>>> d8715be4b340d6cac9b5174bb97473a6f4351699
 
     public String getEnteredBy() {
         return enteredBy;

@@ -349,7 +349,6 @@ public class EstablishmentController {
             @RequestParam("feesType") String feesType,
             @RequestParam("fees") Double fees,
             Model model) {
-        System.out.print("Received request to update fees");
 
         OtherFees otherFees = otherFeesRepo.findById(otherFeesId).orElse(null);
         if (otherFees == null) {

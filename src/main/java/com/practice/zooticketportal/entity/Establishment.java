@@ -37,9 +37,13 @@ public class Establishment {
     @OneToMany(mappedBy = "establishment")
     @JsonManagedReference
     private List<AllUser> users;
+<<<<<<< HEAD
 
     @OneToMany(mappedBy = "establishment")
     @JsonManagedReference
+=======
+    @OneToMany(mappedBy = "establishment",cascade = CascadeType.ALL)
+>>>>>>> d8715be4b340d6cac9b5174bb97473a6f4351699
     private List<NonWorkingDays> nonWorkingDays;
 
     @OneToMany(mappedBy = "establishment", cascade = CascadeType.ALL, orphanRemoval = true)

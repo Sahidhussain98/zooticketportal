@@ -198,7 +198,7 @@
                 </div>
                 <div class="form-group1">
                     <label for="numberOfPeople">No. of People:<span class="text-danger">*</span></label>
-                    <input type="number" id="numberOfPeople" class="number-of-people no-of-people-input" required min="1" step="1" oninput="validateNumberOfPeople()" onchange="calculateFees()" />
+                    <input type="number" id="numberOfPeople" name="numberOfPeople" class="number-of-people no-of-people-input" required min="1" step="1" oninput="validateNumberOfPeople()" onchange="calculateFees()" />
                 </div>
                 <div class="form-group1">
                     <label>Price per Person:</label>
@@ -497,6 +497,10 @@
                     <div class="col-lg-3">
                         <label>Fee Type:</label>
                         <span>${fee.feesType}</span>
+<<<<<<< HEAD
+=======
+                        <input type="hidden" name="feesType" value="${fee.feesType}"/>
+>>>>>>> d8715be4b340d6cac9b5174bb97473a6f4351699
                     </div>
                     <div class="col-lg-3">
                         <label>Fee per Item:</label>
@@ -504,7 +508,11 @@
                     </div>
                     <div class="col-lg-3" style="flex-basis: 100%;">
                         <label for="numItems_${index}">Number of Items:</label>
+<<<<<<< HEAD
                         <input type="number" id="numItems_${index}" class="numItems number-of-items-input" min="1" data-feetype="${fee.feesType}" />
+=======
+                        <input type="number" id="numItems_${index}" class="number-of-items number-of-items-input" min="1" data-feetype="${fee.feesType}" />
+>>>>>>> d8715be4b340d6cac9b5174bb97473a6f4351699
                     </div>
                     <div class="col-lg-3" style="flex-basis: 100%;">
                         <label>Total Item Fees:</label>

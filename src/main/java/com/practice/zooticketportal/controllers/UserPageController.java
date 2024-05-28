@@ -40,7 +40,6 @@ public class   UserPageController {
     @GetMapping("/userpage")
     public String displayUserPage(Model model) {
         List<Establishment> userEstablishments = establishmentService.getAllEstablishmentsByStatus(true);
-        System.out.println("Number of establishments: " + userEstablishments.size()); // Add this line for debugging
         model.addAttribute("establishmentList", userEstablishments);
         return "userpage";
     }
@@ -50,9 +49,7 @@ public class   UserPageController {
                                   Principal principal) {
         // Retrieve authenticated user's username
         String phoneNumberStr = principal.getName(); // The phone number is used as the principal
-        System.out.println("phoneNumber"+phoneNumberStr);
         Long phoneNumber = Long.parseLong(phoneNumberStr);
-        System.out.println("Authenticated username: " + phoneNumber);
         // Retrieve user data from the UserService
         AllUser user = allUserRepo.findByPhoneNumber(phoneNumber);
         System.out.println("Username object: " + user); // Print user object
@@ -69,11 +66,9 @@ public class   UserPageController {
     public String showUserProfile(Model model, Principal principal) {
         if (principal != null) {
             String phoneNumberStr = principal.getName(); // The phone number is used as the principal
-            System.out.println("phoneNumber "+phoneNumberStr);
             Long phoneNumber = Long.parseLong(phoneNumberStr);
             // Retrieve user data based on the authenticated user's phone number
             AllUser user = allUserRepo.findByPhoneNumber(phoneNumber);
-            System.out.println("User object: " + user); // Print user object
             // Add user details to the model
             model.addAttribute("user", user);
             // Return the user profile view
@@ -113,7 +108,6 @@ public class   UserPageController {
 
                     // Save the updated user with the new password
                     allUserRepo.save(user);
-                    System.out.println("passwordchanged" + newPassword);
 
                     // Add a success message to be displayed on the user profile page
                     model.addAttribute("successMessage", "Password changed successfully.");
@@ -150,7 +144,7 @@ public class   UserPageController {
             redirectAttributes.addFlashAttribute("error", "Failed to save user data.");
         }
 
-        return "redirect:/userpage"; // Redirect to a relevant page
+        return "redirect:/adminProfile"; // Redirect to a relevant page
     }
     @GetMapping("/checkUserSavedData")
     @ResponseBody
@@ -161,15 +155,11 @@ public class   UserPageController {
         AllUser user = allUserRepo.findByPhoneNumber(phoneNumber);
         Map<String, Object> response = new HashMap<>();
 
-        System.out.println("checking username and email");
-
         // Check if user or user data is not present
         if (user == null || user.getUsername() == null || user.getEmail() == null) {
             response.put("saved", false);
-            System.out.println("showing");
         } else {
             response.put("saved", true);
-            System.out.println("not showing");
         }
 
         return response;
@@ -189,7 +179,6 @@ public class   UserPageController {
             user.setEmail(updatedEmail);
             // Save updated user
             allUserRepo.save(user);
-            System.out.println("Updated User Profile: " + user);
             model.addAttribute("user", user);
             model.addAttribute("message", "Profile updated successfully!");
         } else {
@@ -215,7 +204,6 @@ public class   UserPageController {
             user.setEmail(updatedEmail);
             // Save updated user
             allUserRepo.save(user);
-            System.out.println("Updated User Profile: " + user);
             model.addAttribute("user", user);
             model.addAttribute("message", "Profile updated successfully!");
         } else {
