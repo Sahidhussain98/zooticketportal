@@ -135,7 +135,7 @@ public class EstablishmentController {
 
         } catch (IOException e) {
             model.addAttribute("error", "Failed to upload image. Please try again.");
-            return "errorpage/error";
+            return "/errorpage/error";
         }
     }
 
@@ -188,7 +188,7 @@ public class EstablishmentController {
         }
 
         if (hasErrors) {
-            return "redirect:/errorPage"; // Redirect to an error page if needed
+            return "/errorpage/error"; // Redirect to an error page if needed
         }
 
         redirectAttributes.addFlashAttribute("successMessage", "Non-working dates saved successfully.");
@@ -207,7 +207,7 @@ public class EstablishmentController {
             model.addAttribute("nationalities", nationalities1);
             return "createestablishment2";
         } else {
-            return "errorpage/error";
+            return "/errorpage/error";
         }
     }
 
@@ -320,7 +320,7 @@ public class EstablishmentController {
 
     @PostMapping("/update/{id}")
     public String updateEstablishment(@PathVariable Long id,
-                                       Establishment establishment,
+                                      Establishment establishment,
                                       Model model) {
         Establishment existingEstablishment = establishmentService.getEstablishmentById(id);
         existingEstablishment.setName(establishment.getName());
@@ -353,13 +353,13 @@ public class EstablishmentController {
         OtherFees otherFees = otherFeesRepo.findById(otherFeesId).orElse(null);
         if (otherFees == null) {
             model.addAttribute("error", "Fee not found");
-            return "errorpage/error"; // Return an error page or handle the error accordingly
+            return "/errorpage/error"; // Return an error page or handle the error accordingly
         }
 
         Establishment existingEstablishment = establishmentService.getEstablishmentById(establishmentId);
         if (!otherFees.getEstablishment().equals(existingEstablishment)) {
             model.addAttribute("error", "Invalid establishment");
-            return "errorpage/error"; // Return an error page or handle the error accordingly
+            return "/errorpage/error"; // Return an error page or handle the error accordingly
         }
 
         otherFees.setFeesType(feesType);
@@ -393,13 +393,13 @@ public class EstablishmentController {
             Fees fees = feesRepo.findById(feesId).orElse(null);
             if (fees == null) {
                 model.addAttribute("error", "Fees record not found");
-                return "errorpage/error"; // Return an error page or handle the error accordingly
+                return "/errorpage/error"; // Return an error page or handle the error accordingly
             }
 
             Establishment existingEstablishment = establishmentService.getEstablishmentById(establishmentId);
             if (!fees.getEstablishment().equals(existingEstablishment)) {
                 model.addAttribute("error", "The fee does not belong to the specified establishment.");
-                return "errorpage/error"; // Return an error page or handle the error accordingly
+                return "/errorpage/error"; // Return an error page or handle the error accordingly
             }
 
             fees.setEntryFee(entryFee);
@@ -421,7 +421,7 @@ public class EstablishmentController {
             return "edit-establishments";
         } catch (Exception e) {
             model.addAttribute("error", "An error occurred while updating the entry fee: " + e.getMessage());
-            return "errorpage/error"; // Return an error page or handle the error accordingly
+            return "/errorpage/error"; // Return an error page or handle the error accordingly
         }
     }
 
@@ -439,11 +439,33 @@ public class EstablishmentController {
         return ResponseEntity.ok("Deleted");
     }
 
-    @GetMapping("/deleteFees/{feesId}")
-    public ResponseEntity<?> deleteFees(@PathVariable("feesId") Long feesId) {
-        feesServiceImpl.deleteFeesById(feesId);
-        return ResponseEntity.ok("Deleted");
+//    @GetMapping("/deleteFees/{feesId}")
+//    public ResponseEntity<?> deleteFees(@PathVariable("feesId") Long feesId) {
+//        feesServiceImpl.deleteFeesById(feesId);
+//        return ResponseEntity.ok("Deleted");
+//    }
+@GetMapping("/deleteFees/{feesId}")
+public String deleteEntryFee(@PathVariable Long feesId, RedirectAttributes redirectAttributes) {
+    try {
+        Fees fee = feesRepo.findById(feesId).orElseThrow(() -> new IllegalArgumentException("Invalid fees ID"));
+        Long establishmentId = fee.getEstablishment().getEstablishmentId();
+        feesRepo.deleteById(feesId);
+
+        // Check if there are no entry fees left for the establishment
+        if (feesRepo.countByEstablishmentId(establishmentId) == 0) {
+            Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
+            establishment.setStatus(false);
+            establishmentService.updateEstablishment(establishment);
+        }
+
+        redirectAttributes.addFlashAttribute("successMessage", "Entry fee deleted successfully.");
+        redirectAttributes.addAttribute("id", establishmentId);
+        return "redirect:/establishments/viewEstablishment/{id}";
+    } catch (Exception e) {
+        redirectAttributes.addFlashAttribute("errorMessage", "Unable to delete entry fee at this time.");
+        return "errorPage/error";
     }
+}
 
     @GetMapping("/establishmentDetails/{establishmentId}")
     public String showEstablishmentImageDetails(@PathVariable Long establishmentId, Model model) {
@@ -476,7 +498,7 @@ public class EstablishmentController {
             Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
             if (establishment == null) {
                 redirectAttributes.addFlashAttribute("errorMessage", "Establishment not found.");
-                return "redirect:/errorPage/error.html";
+                return "redirect:/errorPage/error";
             }
 
             // Check if the combination of nationality and category already exists
@@ -497,12 +519,18 @@ public class EstablishmentController {
 
             feesRepo.save(fees);
 
-            redirectAttributes.addFlashAttribute("successMessage", "Entry fee added successfully.");
+            // Activate the establishment if not already active
+            if (!establishment.getStatus()) {
+                establishment.setStatus(true);
+                establishmentService.updateEstablishment(establishment);
+            }
+
+            redirectAttributes.addFlashAttribute("successMessage", "Entry fee added successfully and establishment activated.");
             redirectAttributes.addAttribute("id", establishmentId);
             return "redirect:/establishments/viewEstablishment/{id}";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Unable to process your request at this time.");
-            return "errorPage/error";
+            return "/errorPage/error";
         }
     }
 

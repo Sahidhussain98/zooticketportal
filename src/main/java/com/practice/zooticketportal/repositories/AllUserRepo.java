@@ -13,6 +13,7 @@ public interface AllUserRepo extends JpaRepository<AllUser, Long> {
 
     AllUser findByPhoneNumber(Long phoneNumber);
     Optional<AllUser> findByPhoneNumberAndAllUserIdNot(Long phoneNumber, Long allUserId);
+    Optional<AllUser> findById(Long allUserId);
 
 
 

@@ -58,8 +58,8 @@
                             <p class="profile-field">Entered By: <span th:text="${establishment.enteredBy}"></span></p>
                             <p class="profile-field">Village: <span th:text="${establishment.village.villageName}"></span></p>
                             <p class="profile-field">Status: <span th:text="${establishment.status} ? 'Active' : 'Inactive'"></span></p>
-                            <p class="profile-field">Name: <input type="text" name="name" th:value="${establishment.name}" readonly /></p>
-                            <p class="profile-field">Address: <input type="text" name="address" th:value="${establishment.address}" readonly /></p>
+                            <p class="profile-field">Name: <input type="text" name="name" th:value="${establishment.name}" readonly pattern="[A-Za-z\s]+" title="Please enter letters only." /></p>
+                            <p class="profile-field">Address: <input type="text" name="address" th:value="${establishment.address}" readonly pattern="[A-Za-z\s]+" title="Please enter letters only." /></p>
                         </div>
                         <button type="submit" id="saveButton" class="btn btn-primary save-button" style="display: none;">Save</button>
                         <button type="button" id="editButton" class="btn btn-secondary edit-button">Edit</button>
@@ -210,11 +210,11 @@
                 <form id="addOtherFeeForm" th:action="@{/addOtherFees}" method="POST">
                     <div class="form-group">
                         <label for="newFeesType">Fees Type</label>
-                        <input type="text" class="form-control" id="newFeesType" name="feesType" pattern="[A-Za-z\s]+" title="Please enter letters only.">
+                        <input type="text" class="form-control" id="newFeesType" name="feesType" placeholder="Enter Fees Type"  pattern="[A-Za-z\s]+" title="Please enter letters only.">
                     </div>
                     <div class="form-group">
                         <label for="newFees">Fees</label>
-                        <input type="number" class="form-control" id="newFees" name="fees" min="1" required>
+                        <input type="number" class="form-control" id="newFees" name="fees" min="1" placeholder="Enter  Fees" required>
                     </div>
                     <input type="hidden" name="establishmentId" th:value="${establishment.establishmentId}">
                     <button type="submit" class="btn btn-primary">Add Fee</button>
@@ -252,7 +252,7 @@
                     </div>
                     <div class="form-group">
                         <label for="entryFeeValue">Entry Fee</label>
-                        <input type="number" class="form-control" id="entryFee" name="entryFee" min="1" required>
+                        <input type="number" class="form-control" id="entryFee" name="entryFee" min="1" placeholder="Enter Entry Fees" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Add Entry Fee</button>
                 </form>
@@ -412,6 +412,12 @@
                             text: "Selected combination already exists. Please select another combination.",
                             icon: "error",
                             confirmButtonText: "Ok"
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Reset the fields to select new options
+                                $('#nationality').val('');
+                                $('#category').val('');
+                            }
                         });
                     }
                 },
@@ -421,6 +427,7 @@
             });
         }
     });
+
 
     //  Delete for otherfees
     $(document).ready(function() {
@@ -459,39 +466,72 @@
     }
 
     $(document).ready(function() {
-        // Attach the event listener to the delete buttons within the other fees table
+        // Handle delete entry fee
+        function confirmDeleteEntryFee(event, feesId) {
+            event.preventDefault();
+            Swal.fire({
+                title: "Are you sure you want to delete this fee?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/establishments/deleteFees/${feesId}`,
+                        type: 'GET',
+                        success: function(response) {
+                            Swal.fire('Deleted!', 'The fee has been deleted and establishment status updated.', 'success')
+                                .then((result) => {
+                                    if (result.isConfirmed) {
+                                        location.reload(); // Reload the page to reflect changes
+                                    }
+                                });
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire('Error!', 'Failed to delete the fee: ' + error, 'error');
+                        }
+                    });
+                }
+            });
+        }
+
+        // Attach the delete event listener
         $('.table-container').on('click', '.btn-danger', function(event) {
-            event.preventDefault(); // Stop the form from submitting normally
             var feesId = $(this).closest('tr').data('fees-id');
             confirmDeleteEntryFee(event, feesId);
         });
     });
-    //  DELETE for entryFes i.e 1st table
-    function confirmDeleteEntryFee(event, feesId) {
-        event.preventDefault();
-        Swal.fire({
-            title: "Are you sure you want to delete this fee?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "Yes, delete it!"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: `/establishments/deleteFees/${feesId}`,
-                    type: 'GET',  // Ensure your backend supports GET for deleting, otherwise change to POST or DELETE
-                    success: function(response) {
-                        Swal.fire('Deleted!', 'The fee has been deleted.', 'success');
-                        $(`tr[data-fees-id="${feesId}"]`).remove();
-                    },
-                    error: function(xhr, status, error) {
-                        Swal.fire('Error!', 'Failed to delete the fee: ' + error, 'error');
-                    }
-                });
+
+    //For name and address field not to enter numbers
+    document.addEventListener("DOMContentLoaded", function() {
+        var nameInput = document.querySelector("input[name='name']");
+        var addressInput = document.querySelector("input[name='address']");
+
+        // Function to restrict characters
+        function restrictCharacters(event) {
+            var keyCode = event.which || event.keyCode;
+            // Allow control keys and space (space keyCode is 32)
+            if (keyCode === 32 || keyCode === 8 || keyCode === 9 || keyCode === 46 || (keyCode >= 37 && keyCode <= 40)) {
+                return; // Allow space, backspace, tab, delete, and arrow keys
             }
-        });
-    }
+
+            var character = String.fromCharCode(keyCode);
+            // Regex to test if character is not a letter or space
+            if (!/^[A-Za-z\s]+$/.test(character)) {
+                event.preventDefault(); // Stop the character from being input
+            }
+        }
+
+        // Apply the event listeners
+        if (nameInput) {
+            nameInput.addEventListener('keypress', restrictCharacters);
+        }
+        if (addressInput) {
+            addressInput.addEventListener('keypress', restrictCharacters);
+        }
+    });
 
 
 </script>

@@ -59,7 +59,7 @@ public class   UserPageController {
             return "adminProfile";
         } else {
             // Handle case when no user is found
-            return "error"; // or whatever error handling you need
+            return "/errorpage/error"; // or whatever error handling you need
         }
     }
     @GetMapping("/userDetails")
@@ -75,7 +75,7 @@ public class   UserPageController {
             return "userProfile";
         } else {
             // Handle case when principal is null
-            return "error"; // or whatever error handling you need
+            return "/errorpage/error"; // or whatever error handling you need
         }
     }
 
@@ -125,7 +125,7 @@ public class   UserPageController {
         }
 
         // Return back to the same page
-        return "redirect:/adminProfile";
+        return "adminProfile";
     }
 
     @PostMapping("/saveUserData")
@@ -144,7 +144,29 @@ public class   UserPageController {
             redirectAttributes.addFlashAttribute("error", "Failed to save user data.");
         }
 
-        return "redirect:/adminProfile"; // Redirect to a relevant page
+        // Redirect to userpage endpoint to ensure establishments are loaded
+        return "redirect:/userpage";
+    }
+
+
+
+    @PostMapping("/saveAdminData")
+    public String saveAdminData(@RequestParam String username, @RequestParam String email,
+                               Principal principal, RedirectAttributes redirectAttributes) {
+
+        // Get the phone number from the principal
+        String phoneNumberStr = principal.getName();
+        Long phoneNumber = Long.parseLong(phoneNumberStr);
+
+        boolean success = allUserServiceImpl.saveUserData(phoneNumber, username, email);
+
+        if (success) {
+            redirectAttributes.addFlashAttribute("message", "User data saved successfully!");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Failed to save user data.");
+        }
+
+        return "adminpage";
     }
     @GetMapping("/checkUserSavedData")
     @ResponseBody
