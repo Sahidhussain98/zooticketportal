@@ -9,6 +9,7 @@
 <h1>Ticket Download Page</h1>
 <!-- Add a download button -->
 <a th:href="@{/export/pdf(id=${theTicket.id})}" class="btn btn-success" id="downloadPdf">Download PDF Report</a>
+
 <script>
     document.getElementById('downloadPdf').addEventListener('click', function(event) {
         event.preventDefault();

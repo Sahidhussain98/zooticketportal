@@ -21,21 +21,11 @@ public class Nationality {
     @OneToMany(mappedBy = "nationality", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Fees> fees;
-<<<<<<< HEAD
-
     @OneToMany(mappedBy = "nationality", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<categoriesForTicket> categoriesForTickets;
     private LocalDateTime enteredOn;
     private String enteredBy;
-
-    public List<categoriesForTicket> getCategoriesForTickets() {
-        return categoriesForTickets;
-    }
-
-    public void setCategoriesForTickets(List<categoriesForTicket> categoriesForTickets) {
-        this.categoriesForTickets = categoriesForTickets;
-    }
 
     public LocalDateTime getEnteredOn() {
         return enteredOn;
@@ -53,10 +43,16 @@ public class Nationality {
         this.enteredBy = enteredBy;
     }
 
-=======
->>>>>>> d8715be4b340d6cac9b5174bb97473a6f4351699
     public Long getNationalityId() {
         return nationalityId;
+    }
+
+    public List<categoriesForTicket> getCategoriesForTickets() {
+        return categoriesForTickets;
+    }
+
+    public void setCategoriesForTickets(List<categoriesForTicket> categoriesForTickets) {
+        this.categoriesForTickets = categoriesForTickets;
     }
 
     public void setNationalityId(Long nationalityId) {

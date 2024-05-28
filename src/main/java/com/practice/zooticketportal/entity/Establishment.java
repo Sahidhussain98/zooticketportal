@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@ToString
 @Table(name="Establishment")
 public class Establishment {
     @Id
@@ -23,7 +22,7 @@ public class Establishment {
     private Date enteredOn;
     private String enteredBy;
     private Boolean status = false;
-    private byte[] profileImage;
+
 
     @ManyToOne
     @JoinColumn(name = "masterEstablishment",referencedColumnName="id")
@@ -37,13 +36,9 @@ public class Establishment {
     @OneToMany(mappedBy = "establishment")
     @JsonManagedReference
     private List<AllUser> users;
-<<<<<<< HEAD
 
     @OneToMany(mappedBy = "establishment")
     @JsonManagedReference
-=======
-    @OneToMany(mappedBy = "establishment",cascade = CascadeType.ALL)
->>>>>>> d8715be4b340d6cac9b5174bb97473a6f4351699
     private List<NonWorkingDays> nonWorkingDays;
 
     @OneToMany(mappedBy = "establishment", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -52,7 +47,7 @@ public class Establishment {
 
     @OneToMany(mappedBy = "establishment")
     @JsonManagedReference
-    @JsonIgnoreProperties({"user","categoriesForTicket", "otherFeesForTickets"})
+    @JsonIgnoreProperties({"user","categoriesForTicket", "otherFeesForTickets","establishment"})
     private List<Ticket> tickets;
 
     @OneToMany(mappedBy = "establishment", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -60,8 +55,10 @@ public class Establishment {
     private List<Fees> fees;
     @OneToMany(mappedBy = "establishment", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
+    @JsonIgnoreProperties("otherFeessForTickets")
     private List<OtherFees> otherFees;
 
+    private byte[] profileImage;
 
     @PrePersist
     public void enteredOn() {
@@ -88,6 +85,46 @@ public class Establishment {
     }
 
 
+    public List<OtherFees> getOtherFees() {
+        return otherFees;
+    }
+
+    public void setOtherFees(List<OtherFees> otherFees) {
+        this.otherFees = otherFees;
+    }
+
+    public List<Fees> getFees() {
+        return fees;
+    }
+
+    public void setFees(List<Fees> fees) {
+        this.fees = fees;
+    }
+
+    public LocalTime getOpeningTime() {
+        return openingTime;
+    }
+
+    public void setOpeningTime(LocalTime openingTime) {
+        this.openingTime = openingTime;
+    }
+
+    public LocalTime getClosingTime() {
+        return closingTime;
+    }
+
+    public void setClosingTime(LocalTime closingTime) {
+        this.closingTime = closingTime;
+    }
+
+    public byte[] getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(byte[] profileImage) {
+        this.profileImage = profileImage;
+    }
+
     public Long getEstablishmentId() {
         return establishmentId;
     }
@@ -112,21 +149,6 @@ public class Establishment {
         this.address = address;
     }
 
-    public LocalTime getOpeningTime() {
-        return openingTime;
-    }
-
-    public void setOpeningTime(LocalTime openingTime) {
-        this.openingTime = openingTime;
-    }
-
-    public LocalTime getClosingTime() {
-        return closingTime;
-    }
-
-    public void setClosingTime(LocalTime closingTime) {
-        this.closingTime = closingTime;
-    }
 
     public Date getEnteredOn() {
         return enteredOn;
@@ -150,14 +172,6 @@ public class Establishment {
 
     public void setStatus(Boolean status) {
         this.status = status;
-    }
-
-    public byte[] getProfileImage() {
-        return profileImage;
-    }
-
-    public void setProfileImage(byte[] profileImage) {
-        this.profileImage = profileImage;
     }
 
     public MasterEstablishment getMasterEstablishment() {
@@ -206,21 +220,5 @@ public class Establishment {
 
     public void setTickets(List<Ticket> tickets) {
         this.tickets = tickets;
-    }
-
-    public List<Fees> getFees() {
-        return fees;
-    }
-
-    public void setFees(List<Fees> fees) {
-        this.fees = fees;
-    }
-
-    public List<OtherFees> getOtherFees() {
-        return otherFees;
-    }
-
-    public void setOtherFees(List<OtherFees> otherFees) {
-        this.otherFees = otherFees;
     }
 }

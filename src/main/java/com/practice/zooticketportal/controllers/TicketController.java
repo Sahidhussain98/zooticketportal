@@ -2,7 +2,6 @@ package com.practice.zooticketportal.controllers;
 
 
 import com.practice.zooticketportal.entity.*;
-import com.practice.zooticketportal.entity.Ticket;
 import com.practice.zooticketportal.repositories.*;
 import com.practice.zooticketportal.service.AllUserService;
 import com.practice.zooticketportal.service.EstablishmentService;
@@ -51,7 +50,10 @@ public class TicketController {
     private OtherFeesRepo otherFeesRepo;
     @Autowired
     private AllUserRepo allUserRepo;
-
+    @Autowired
+    private categoriesForTicketRepo categoriesForTicketRepo;
+    @Autowired
+    private OtherFeesForTicketsRepo otherFeesForTicketsRepo;
 
     @GetMapping("/showCheckoutForm/{establishmentId}")
     public String showCheckoutForm(@PathVariable Long establishmentId,
@@ -98,20 +100,9 @@ public class TicketController {
         }
     }
     @PostMapping("/saveTicket")
-<<<<<<< HEAD
-    public String processForm(
-            @RequestParam("establishmentId") Long establishmentId,
-            @RequestParam("dateTime") String dateTime,
-            @RequestParam("userName") String userName,
-            @RequestParam("email") String email,
-            @RequestParam("phoneNumber") String phoneNumber,
-            Model model) {
-
-        // Retrieve establishment name
-=======
     public String saveTicket(@RequestParam("establishmentId") Long establishmentId,
                              @RequestParam("dateTime") LocalDate dateTime,
-                             @RequestParam("name") String name,
+                             @RequestParam("userName") String userName,
                              @RequestParam("email") String email,
                              @RequestParam("phoneNumber") String phoneNumber,
                              @RequestParam("nationalityId") List<Long> nationalityIds,
@@ -119,62 +110,56 @@ public class TicketController {
                              @RequestParam("numberOfPeople") List<Long> numberOfPeople,
                              @RequestParam("feesType") List<String> feesType,
                              Model model) {
->>>>>>> d8715be4b340d6cac9b5174bb97473a6f4351699
         Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
         String establishmentName = establishment.getName();
         int serialNumber = generateRandomSerialNumber();
         try {
             Ticket theTicket = new Ticket();
-            theTicket.setDateTime(dateTime);
-            theTicket.setName(name);
+            theTicket.setDateTime(dateTime.atStartOfDay());
+            theTicket.setUserName(userName);
             theTicket.setEmail(email);
             theTicket.setPhoneNumber(Long.valueOf(phoneNumber));
             theTicket.setBookingId(establishmentName + "-" + serialNumber);
             theTicket.setEstablishment(establishment);
 
-<<<<<<< HEAD
-        // Create a new Ticket object and set the fields
-        Ticket theTicket = new Ticket();
-        theTicket.setDateTime(LocalDate.parse(dateTime).atStartOfDay());
-        theTicket.setUserName(userName);
-        theTicket.setEmail(email);
-        theTicket.setPhoneNumber(Long.valueOf(phoneNumber));
-        theTicket.setBookingId(establishmentName + "-" + serialNumber);
-        theTicket.setEstablishment(establishment);
-        theTicket.setEnteredOn(String.valueOf(LocalDateTime.now()));
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUserName = authentication.getName();
-        String enteredBy = authentication.getAuthorities().stream()
-                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN")) ? "admin" : currentUserName;
-        theTicket.setEnteredBy(enteredBy);
-=======
             ticketRepository.save(theTicket);
->>>>>>> d8715be4b340d6cac9b5174bb97473a6f4351699
 
             for (int i = 0; i < nationalityIds.size(); i++) {
                 Long nationalityId = nationalityIds.get(i);
                 Long categoryId = categoryIds.get(i);
-                TicketEntryFees entryFee = new TicketEntryFees();
+                categoriesForTicket entryFee = new categoriesForTicket();
                 entryFee.setTicket(theTicket);
                 entryFee.setNationality(nationalityRepo.findById(nationalityId).orElse(null));
                 entryFee.setCategory(categoryRepo.findById(categoryId).orElse(null));
-                entryFee.setNumberOfPeople(numberOfPeople.get(i));
-                ticketEntryFeesRepo.save(entryFee);
+                entryFee.setQuantity(numberOfPeople.get(i));
+                categoriesForTicketRepo.save(entryFee);
             }
-
+//
             for (int i = 0; i < feesType.size(); i++) {
-                TicketOtherFees otherFee = new TicketOtherFees();
+                OtherFeesForTickets otherFee = new OtherFeesForTickets();
                 otherFee.setTicket(theTicket);
-                otherFee.setFeesType(feesType.get(i));
-                ticketOtherFeesRepo.save(otherFee);
+
+                String otherfeess = feesType.get(i);
+                System.out.println(otherfeess);
+                OtherFees otherFees = otherFeesRepo.findByFeesTypeAndEstablishmentId(otherfeess, establishmentId);
+
+                if (otherFees != null) {
+                    System.out.println("Found fees type: " + otherFees.getFeesType());
+                    otherFee.setOtherFees(otherFees);
+                    otherFeesForTicketsRepo.save(otherFee);
+                } else {
+                    System.out.println("Fees type not found: " + otherfeess);
+                    throw new Exception("Fees type not found: " + otherfeess);
+                }
             }
 
             model.addAttribute("theTicket", theTicket);
             model.addAttribute("message", "Ticket saved successfully!");
             return "ticketDownload";
         } catch (Exception e) {
+            e.printStackTrace(); // This will print the stack trace to the server logs
             model.addAttribute("error", "Error saving ticket: " + e.getMessage());
-            return "error";
+            return  "/errorpage/error";
         }
     }
     private int generateRandomSerialNumber() {
@@ -260,22 +245,3 @@ public class TicketController {
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
