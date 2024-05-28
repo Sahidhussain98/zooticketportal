@@ -20,7 +20,6 @@ public class Ticket {
     private String email;
     private Long phoneNumber;
     private Long totalPersons;
-    private Long totalItems;
     private Double totalOtherFees;
     private Double totalEntryFees;
     private Double totalAmount;
@@ -53,7 +52,6 @@ public class Ticket {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.totalPersons = totalPersons;
-        this.totalItems = totalItems;
         this.totalOtherFees = totalOtherFees;
         this.totalEntryFees = totalEntryFees;
         this.totalAmount = totalAmount;
@@ -115,15 +113,7 @@ public class Ticket {
         this.totalPersons = totalPersons;
     }
 
-    public Long getTotalItems() {
-        return totalItems;
-    }
-
-    public void setTotalItems(Long totalItems) {
-        this.totalItems = totalItems;
-    }
-
-    public Double getTotalOtherFees() {
+       public Double getTotalOtherFees() {
         return totalOtherFees;
     }
 

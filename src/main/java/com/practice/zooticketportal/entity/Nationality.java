@@ -19,25 +19,6 @@ public class Nationality {
     private String nationalityType;
     @OneToMany(mappedBy = "nationality", cascade = CascadeType.ALL)
     private List<Fees> fees;
-    private LocalDateTime enteredOn;
-    private String enteredBy;
-
-    public LocalDateTime getEnteredOn() {
-        return enteredOn;
-    }
-
-    public void setEnteredOn(LocalDateTime enteredOn) {
-        this.enteredOn = enteredOn;
-    }
-
-    public String getEnteredBy() {
-        return enteredBy;
-    }
-
-    public void setEnteredBy(String enteredBy) {
-        this.enteredBy = enteredBy;
-    }
-
     public Long getNationalityId() {
         return nationalityId;
     }

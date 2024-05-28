@@ -9,7 +9,6 @@ public class TicketOtherFees {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private Long feesType;
-    private Long feesPerItem;
     private Long numberOfItem;
     private Long totalOtherFees;
     @ManyToOne
@@ -22,7 +21,6 @@ public class TicketOtherFees {
     public TicketOtherFees(Long id, Long feesType, Long feesPerItem, Long numberOfItem, Long totalOtherFees, Ticket ticket) {
         this.id = id;
         this.feesType = feesType;
-        this.feesPerItem = feesPerItem;
         this.numberOfItem = numberOfItem;
         this.totalOtherFees = totalOtherFees;
         this.ticket = ticket;
@@ -42,14 +40,6 @@ public class TicketOtherFees {
 
     public void setFeesType(Long feesType) {
         this.feesType = feesType;
-    }
-
-    public Long getFeesPerItem() {
-        return feesPerItem;
-    }
-
-    public void setFeesPerItem(Long feesPerItem) {
-        this.feesPerItem = feesPerItem;
     }
 
     public Long getNumberOfItem() {
@@ -81,7 +71,6 @@ public class TicketOtherFees {
         return "TicketOtherFees{" +
                 "id=" + id +
                 ", feesType=" + feesType +
-                ", feesPerItem=" + feesPerItem +
                 ", numberOfItem=" + numberOfItem +
                 ", totalOtherFees=" + totalOtherFees +
                 ", ticket=" + ticket +

@@ -15,7 +15,6 @@ public class TicketEntryFees {
     @JoinColumn(name = "category")
     private Category category;
     private Long numberOfPeople;
-    private Long pricePerPerson;
     private Long entryPrice;
     @ManyToOne
     @JoinColumn(name = "ticket_id")
@@ -56,13 +55,8 @@ public class TicketEntryFees {
         this.numberOfPeople = numberOfPeople;
     }
 
-    public Long getPricePerPerson() {
-        return pricePerPerson;
-    }
 
-    public void setPricePerPerson(Long pricePerPerson) {
-        this.pricePerPerson = pricePerPerson;
-    }
+
 
     public Long getEntryPrice() {
         return entryPrice;
@@ -87,7 +81,6 @@ public class TicketEntryFees {
                 ", nationality=" + nationality +
                 ", category=" + category +
                 ", numberOfPeople=" + numberOfPeople +
-                ", pricePerPerson=" + pricePerPerson +
                 ", entryPrice=" + entryPrice +
                 ", ticket=" + ticket +
                 '}';
