@@ -8,7 +8,7 @@ public class TicketOtherFees {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private Long feesType;
+    private String feesType;
     private Long numberOfItem;
     private Long totalOtherFees;
     @ManyToOne
@@ -18,7 +18,7 @@ public class TicketOtherFees {
     public TicketOtherFees() {
     }
 
-    public TicketOtherFees(Long id, Long feesType, Long feesPerItem, Long numberOfItem, Long totalOtherFees, Ticket ticket) {
+    public TicketOtherFees(Long id, String feesType, Long feesPerItem, Long numberOfItem, Long totalOtherFees, Ticket ticket) {
         this.id = id;
         this.feesType = feesType;
         this.numberOfItem = numberOfItem;
@@ -34,11 +34,11 @@ public class TicketOtherFees {
         this.id = id;
     }
 
-    public Long getFeesType() {
+    public String getFeesType() {
         return feesType;
     }
 
-    public void setFeesType(Long feesType) {
+    public void setFeesType(String feesType) {
         this.feesType = feesType;
     }
 

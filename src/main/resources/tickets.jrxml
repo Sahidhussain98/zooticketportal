@@ -15,17 +15,12 @@
         <fieldDescription><![CDATA[id]]></fieldDescription>
     </field>
 
-    <field name="number_of_people" class="java.lang.Long">
-        <fieldDescription><![CDATA[numberOfPeople]]></fieldDescription>
-    </field>
 
     <field name="phone_number" class="java.lang.Long">
         <fieldDescription><![CDATA[phoneNumber]]></fieldDescription>
     </field>
 
-    <field name="total_persons" class="java.lang.String">
-        <fieldDescription><![CDATA[totalPersons]]></fieldDescription>
-    </field>
+
     <field name="booking_id" class="java.lang.String">
         <fieldDescription><![CDATA[bookingId]]></fieldDescription>
     </field>
@@ -35,10 +30,6 @@
 
     <field name="name" class="java.lang.String">
         <fieldDescription><![CDATA[name]]></fieldDescription>
-    </field>
-
-    <field name="total_amount" class="java.lang.String">
-        <fieldDescription><![CDATA[totalAmount]]></fieldDescription>
     </field>
     <background>
         <band splitType="Stretch"/>
@@ -63,7 +54,7 @@
                 <reportElement x="423" y="0" width="132" height="131" uuid="fa3cc3d9-2b94-4639-b21f-e12634294e80"/>
                 <imageExpression><![CDATA[com.google.zxing.client.j2se.MatrixToImageWriter.toBufferedImage(
 new com.google.zxing.qrcode.QRCodeWriter().encode(
-$F{id}+$F{booking_id}+$F{name}+$F{email}+$F{phone_number}+$F{total_persons}+$F{total_amount}+$F{date_time}+$F{number_of_people},
+$F{id}+$F{booking_id}+$F{name}+$F{email}+$F{phone_number}+$F{date_time},
 com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
             </image>
         </band>
@@ -140,50 +131,7 @@ com.google.zxing.BarcodeFormat.QR_CODE, 300, 300))]]></imageExpression>
                 </textElement>
                 <text><![CDATA[VISITING DATE]]></text>
             </staticText>
-            <textField>
-                <reportElement x="123" y="245" width="183" height="50" uuid="120d2495-ad29-420a-93ad-9ea020736107"/>
-                <textElement verticalAlignment="Middle">
-                    <font size="14"/>
-                </textElement>
-                <textFieldExpression><![CDATA[$F{number_of_people}]]></textFieldExpression>
-            </textField>
-            <staticText>
-                <reportElement x="0" y="245" width="123" height="50" uuid="600c4170-17f2-4730-86ed-d82dd279d5b1"/>
-                <textElement verticalAlignment="Middle">
-                    <font size="14"/>
-                </textElement>
-                <text><![CDATA[NUMBER OF PEOPLE]]></text>
-            </staticText>
-            <textField>
-                <reportElement x="123" y="295" width="183" height="51" uuid="cd231f3c-68ed-4617-8400-435b149f4654"/>
-                <textElement verticalAlignment="Middle">
-                    <font size="14"/>
-                </textElement>
-                <textFieldExpression><![CDATA[$F{total_persons}]]></textFieldExpression>
-            </textField>
-            <staticText>
-                <reportElement x="1" y="295" width="122" height="51" uuid="5b099568-ec8d-4c83-bc22-6007b3346589"/>
-                <textElement verticalAlignment="Middle">
-                    <font size="14"/>
-                </textElement>
-                <text><![CDATA[TOTAL PERSONS]]></text>
-            </staticText>
 
-
-            <textField>
-                <reportElement x="122" y="387" width="183" height="51" uuid="b0f40b1c-98df-42b0-8fdc-7531ff5fb7fa"/>
-                <textElement verticalAlignment="Middle">
-                    <font size="14"/>
-                </textElement>
-                <textFieldExpression><![CDATA[$F{total_amount}]]></textFieldExpression>
-            </textField>
-            <staticText>
-                <reportElement x="0" y="387" width="122" height="51" uuid="13cc05e0-222d-49cd-8ac7-0b28b5434f62"/>
-                <textElement verticalAlignment="Middle">
-                    <font size="14"/>
-                </textElement>
-                <text><![CDATA[TOTAL AMOUNT]]></text>
-            </staticText>
             <textField>
                 <reportElement x="122" y="205" width="183" height="40" uuid="c0775a98-ad8f-4d87-8e99-7651b69c1bb7"/>
                 <textElement verticalAlignment="Middle">

@@ -99,98 +99,64 @@ public class TicketController {
             return "error"; // or whatever error handling you need
         }
     }
-
-
     @PostMapping("/saveTicket")
-    public String processForm(
-            @RequestParam("establishmentId") Long establishmentId,
-            @RequestParam("dateTime") String dateTime,
-            @RequestParam("name") String name,
-            @RequestParam("email") String email,
-            @RequestParam("phoneNumber") String phoneNumber,
-            Model model) {
-
-        // Retrieve establishment name
+    public String saveTicket(@RequestParam("establishmentId") Long establishmentId,
+                             @RequestParam("dateTime") LocalDate dateTime,
+                             @RequestParam("name") String name,
+                             @RequestParam("email") String email,
+                             @RequestParam("phoneNumber") String phoneNumber,
+                             @RequestParam("nationalityId") List<Long> nationalityIds,
+                             @RequestParam("categoryId") List<Long> categoryIds,
+                             @RequestParam("numberOfPeople") List<Long> numberOfPeople,
+                             @RequestParam("feesType") List<String> feesType,
+                             Model model) {
         Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
         String establishmentName = establishment.getName();
-
-        // Generate random serial number
         int serialNumber = generateRandomSerialNumber();
+        try {
+            Ticket theTicket = new Ticket();
+            theTicket.setDateTime(dateTime);
+            theTicket.setName(name);
+            theTicket.setEmail(email);
+            theTicket.setPhoneNumber(Long.valueOf(phoneNumber));
+            theTicket.setBookingId(establishmentName + "-" + serialNumber);
+            theTicket.setEstablishment(establishment);
 
-        // Create a new Ticket object and set the fields
-        Ticket theTicket = new Ticket();
-        theTicket.setDateTime(LocalDate.parse(dateTime));
-        theTicket.setName(name);
-        theTicket.setEmail(email);
-        theTicket.setPhoneNumber(Long.valueOf(phoneNumber));
-        theTicket.setBookingId(establishmentName + "-" + serialNumber);
-        theTicket.setEstablishment(establishment);
-        theTicket.setEnteredOn(LocalDateTime.now());
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUserName = authentication.getName();
-        String enteredBy = authentication.getAuthorities().stream()
-                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN")) ? "admin" : currentUserName;
-        theTicket.setEnteredBy(enteredBy);
+            ticketRepository.save(theTicket);
 
-        // Log the ticket details
-        System.out.print("Ticket details: " + theTicket.toString());
+            for (int i = 0; i < nationalityIds.size(); i++) {
+                Long nationalityId = nationalityIds.get(i);
+                Long categoryId = categoryIds.get(i);
+                TicketEntryFees entryFee = new TicketEntryFees();
+                entryFee.setTicket(theTicket);
+                entryFee.setNationality(nationalityRepo.findById(nationalityId).orElse(null));
+                entryFee.setCategory(categoryRepo.findById(categoryId).orElse(null));
+                entryFee.setNumberOfPeople(numberOfPeople.get(i));
+                ticketEntryFeesRepo.save(entryFee);
+            }
 
-        // Save the ticket details to the database using the repository
-        Ticket savedTicket = ticketRepository.save(theTicket);
+            for (int i = 0; i < feesType.size(); i++) {
+                TicketOtherFees otherFee = new TicketOtherFees();
+                otherFee.setTicket(theTicket);
+                otherFee.setFeesType(feesType.get(i));
+                ticketOtherFeesRepo.save(otherFee);
+            }
 
-        // Add establishment object and the saved ticket to the model
-        model.addAttribute("establishment", establishment);
-        model.addAttribute("theTicket", savedTicket);
-
-        return "ticketDownload";
+            model.addAttribute("theTicket", theTicket);
+            model.addAttribute("message", "Ticket saved successfully!");
+            return "ticketDownload";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error saving ticket: " + e.getMessage());
+            return "error";
+        }
     }
-
     private int generateRandomSerialNumber() {
         // Implement your logic to generate a random serial number
         return (int) (Math.random() * 1000); // Example logic: Generate a random number between 0 and 999
     }
 
-    @GetMapping("/showEditForm/{ticketId}")
-    public String showEditForm(@PathVariable Long ticketId, Model model) {
-        // Retrieve ticket details by ID
-        Ticket theTicket = ticketRepository.findById(ticketId).orElseThrow(() -> new RuntimeException("Ticket not found"));
-        // Retrieve the establishment associated with the ticket
-        Establishment establishment = theTicket.getEstablishment();
-
-        // Retrieve the fees associated with the establishment
-
-        // Retrieve the nationality and category associated with the ticket
-
-        // Add ticket object to the model
-        model.addAttribute("theTicket", theTicket);
-        List<Category> categories = categoryRepo.findAll();
-        List<Nationality> nationalities1 = nationalityRepo.findAll();
-        model.addAttribute("categories", categories);
-        model.addAttribute("nationalities", nationalities1);
 
 
-        return "ticket";
-    }
-
-
-    @PostMapping("/processEditForm")
-    public String processEditForm(@ModelAttribute("theTicket") Ticket updatedTicket) {
-        // Retrieve the existing ticket from the database
-        Ticket existingTicket = ticketRepository.findById(updatedTicket.getId()).orElseThrow(() -> new RuntimeException("Ticket not found"));
-
-        // Update the existing ticket with new details
-//        existingTicket.setName(updatedTicket.getname());
-//        existingTicket.setLastName(updatedTicket.getLastName());
-//        existingTicket.setCategory(updatedTicket.getCategory());
-//        existingTicket.setCountry(updatedTicket.getCountry());
-        existingTicket.setDateTime(updatedTicket.getDateTime());
-
-
-        // Save the updated ticket to the database
-        ticketRepository.save(existingTicket);
-
-        return "checkoutConfirmation-form";
-    }
 
     @GetMapping("/export/pdf")
     public ResponseEntity<byte[]> exportPdfReport(@RequestParam("id") Long id) {
