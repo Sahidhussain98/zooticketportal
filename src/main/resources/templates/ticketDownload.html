@@ -7,6 +7,9 @@
 </head>
 <body>
 <h1>Ticket Download Page</h1>
+
+<p>Ticket ID: <span th:text="${theTicket.id}">Ticket ID will be displayed here</span></p>
+
 <!-- Add a download button -->
 <a th:href="@{/export/pdf(id=${theTicket.id})}" class="btn btn-success" id="downloadPdf">Download PDF Report</a>
 

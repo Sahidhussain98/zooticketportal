@@ -6,6 +6,10 @@ import com.practice.zooticketportal.repositories.*;
 import com.practice.zooticketportal.service.AllUserService;
 import com.practice.zooticketportal.service.EstablishmentService;
 import com.practice.zooticketportal.service.TicketService;
+import jakarta.servlet.http.HttpServletResponse;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,6 +21,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.sql.DataSource;
+import java.io.InputStream;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,7 +33,8 @@ import java.util.Map;
 
 @Controller
 public class TicketController {
-
+    @Autowired
+    private DataSource dataSource;
     @Autowired
     private TicketRepository ticketRepository;
     @Autowired
@@ -171,47 +178,32 @@ public class TicketController {
 
 
     @GetMapping("/export/pdf")
-    public ResponseEntity<byte[]> exportPdfReport(@RequestParam("id") Long id) {
-        Ticket ticket = ticketRepository.findTicketById(id);
-        if (ticket == null) {
-            return ResponseEntity.badRequest().body(("Ticket not found for ID: " + id).getBytes());
-        }
-
-        byte[] pdfBytes = null;
-        boolean emailSent = false;
-        String emailErrorMessage = "";
-
+    public void generateTicketReport(@RequestParam("id") Long ticketId, HttpServletResponse response) {
         try {
-            // Export PDF report
-            pdfBytes = ticketService.exportReport("pdf", ticket).getBody();
+            // Load JrXML template
+            InputStream jrxmlInput = getClass().getResourceAsStream("/static/reports/ZooTicket.jrxml");
+            // Compile JrXML template
+            JasperDesign jasperDesign = JRXmlLoader.load(jrxmlInput);
+            JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
+            // Fill the report with data
+            Map<String, Object> parameters = new HashMap<>();
+            System.out.println(ticketId);
+            parameters.put("id", ticketId);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource.getConnection());
+            // Export report to PDF
+            byte[] pdfBytes = JasperExportManager.exportReportToPdf(jasperPrint);
+            // Set response headers
+            response.setContentType("application/pdf");
+            response.setContentLength(pdfBytes.length);
+            response.setHeader("Content-Disposition", "attachment; filename=\"ticket_report.pdf\"");
+            // Write PDF content to response
+            System.out.println(pdfBytes);
+            response.getOutputStream().write(pdfBytes);
+            response.getOutputStream().flush();
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error exporting PDF report".getBytes());
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-
-        try {
-            // Send confirmation email
-            ticketService.confirmBooking(ticket.getEmail(), pdfBytes);
-            emailSent = true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            emailErrorMessage = "Error sending confirmation email.";
-        }
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("attachment", "ticket.pdf");
-        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-        headers.add("X-Email-Sent", String.valueOf(emailSent));
-
-        if (!emailErrorMessage.isEmpty()) {
-            headers.add("X-Email-Error", emailErrorMessage);
-        }
-
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(pdfBytes);
     }
 
 

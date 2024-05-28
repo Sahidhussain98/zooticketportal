@@ -47,7 +47,7 @@ public class Ticket {
     public Ticket() {
     }
 
-    public Ticket(Long id,String bookingId, String email, Long phoneNumber, Long totalPersons, Long totalItems, String totalAmount, LocalDateTime dateTime, String enteredBy, String enteredOn, AllUser user, Establishment establishment, Payment payment, categoriesForTicket categoriesForTicket) {
+    public Ticket(Long id,String bookingId,String userName, String email, Long phoneNumber, Long totalPersons, Long totalItems, String totalAmount, LocalDateTime dateTime, String enteredBy, String enteredOn, AllUser user, Establishment establishment, Payment payment, categoriesForTicket categoriesForTicket) {
         this.id = id;
         this.bookingId = bookingId;
         this.userName = userName;
@@ -63,37 +63,20 @@ public class Ticket {
         this.payment = payment;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getBookingId() {
         return bookingId;
     }
 
     public void setBookingId(String bookingId) {
         this.bookingId = bookingId;
-    }
-
-    public List<OtherFeesForTickets> getOtherFeesForTickets() {
-        return otherFeesForTickets;
-    }
-
-    public void setOtherFeesForTickets(List<OtherFeesForTickets> otherFeesForTickets) {
-        this.otherFeesForTickets = otherFeesForTickets;
-    }
-
-    public boolean isValidate() {
-        return validate;
-    }
-
-    public void setValidate(boolean validate) {
-        this.validate = validate;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getUserName() {
@@ -103,7 +86,6 @@ public class Ticket {
     public void setUserName(String userName) {
         this.userName = userName;
     }
-
 
     public String getEmail() {
         return email;
@@ -161,6 +143,14 @@ public class Ticket {
         this.enteredOn = enteredOn;
     }
 
+    public boolean isValidate() {
+        return validate;
+    }
+
+    public void setValidate(boolean validate) {
+        this.validate = validate;
+    }
+
     public AllUser getUser() {
         return user;
     }
@@ -191,5 +181,13 @@ public class Ticket {
 
     public void setCategoriesForTicket(List<com.practice.zooticketportal.entity.categoriesForTicket> categoriesForTicket) {
         this.categoriesForTicket = categoriesForTicket;
+    }
+
+    public List<OtherFeesForTickets> getOtherFeesForTickets() {
+        return otherFeesForTickets;
+    }
+
+    public void setOtherFeesForTickets(List<OtherFeesForTickets> otherFeesForTickets) {
+        this.otherFeesForTickets = otherFeesForTickets;
     }
 }
