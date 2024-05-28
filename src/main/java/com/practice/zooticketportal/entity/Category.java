@@ -1,5 +1,6 @@
 package com.practice.zooticketportal.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -11,14 +12,17 @@ import java.util.List;
 public class Category {
     //primary key generation
     @Id
-    //Auto generation of primary key
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="category_id")
     private Long categoryId;
     @Column(name="category_name")
     private String categoryName;
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Fees> fees;
+    @OneToMany(mappedBy = "Category", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<categoriesForTicket> categoriesForTickets;
     @Column(name="entered_on")
     private String enteredOn;
     @Column(name="entered_by")
@@ -74,6 +78,15 @@ public class Category {
     public void setEnteredBy(String enteredBy) {
         this.enteredBy = enteredBy;
     }
+
+    public List<categoriesForTicket> getCategoriesForTickets() {
+        return categoriesForTickets;
+    }
+
+    public void setCategoriesForTickets(List<categoriesForTicket> categoriesForTickets) {
+        this.categoriesForTickets = categoriesForTickets;
+    }
+
     public boolean hasEntryFee() {
         return fees != null && !fees.isEmpty();
     }

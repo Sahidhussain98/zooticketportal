@@ -2,6 +2,7 @@ package com.practice.zooticketportal.controllers;
 
 
 import com.practice.zooticketportal.entity.*;
+import com.practice.zooticketportal.entity.Ticket;
 import com.practice.zooticketportal.repositories.*;
 import com.practice.zooticketportal.service.AllUserService;
 import com.practice.zooticketportal.service.EstablishmentService;
@@ -50,10 +51,7 @@ public class TicketController {
     private OtherFeesRepo otherFeesRepo;
     @Autowired
     private AllUserRepo allUserRepo;
-    @Autowired
-    private TicketEntryFeesRepo ticketEntryFeesRepo;
-    @Autowired
-    private TicketOtherFeesRepo ticketOtherFeesRepo;
+
 
     @GetMapping("/showCheckoutForm/{establishmentId}")
     public String showCheckoutForm(@PathVariable Long establishmentId,
@@ -105,7 +103,7 @@ public class TicketController {
     public String processForm(
             @RequestParam("establishmentId") Long establishmentId,
             @RequestParam("dateTime") String dateTime,
-            @RequestParam("name") String name,
+            @RequestParam("userName") String userName,
             @RequestParam("email") String email,
             @RequestParam("phoneNumber") String phoneNumber,
             Model model) {
@@ -119,13 +117,13 @@ public class TicketController {
 
         // Create a new Ticket object and set the fields
         Ticket theTicket = new Ticket();
-        theTicket.setDateTime(LocalDate.parse(dateTime));
-        theTicket.setName(name);
+        theTicket.setDateTime(LocalDate.parse(dateTime).atStartOfDay());
+        theTicket.setUserName(userName);
         theTicket.setEmail(email);
         theTicket.setPhoneNumber(Long.valueOf(phoneNumber));
         theTicket.setBookingId(establishmentName + "-" + serialNumber);
         theTicket.setEstablishment(establishment);
-        theTicket.setEnteredOn(LocalDateTime.now());
+        theTicket.setEnteredOn(String.valueOf(LocalDateTime.now()));
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserName = authentication.getName();
         String enteredBy = authentication.getAuthorities().stream()

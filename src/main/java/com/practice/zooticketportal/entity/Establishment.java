@@ -1,5 +1,6 @@
 package com.practice.zooticketportal.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.ToString;
@@ -26,19 +27,32 @@ public class Establishment {
 
     @ManyToOne
     @JoinColumn(name = "masterEstablishment",referencedColumnName="id")
+    @JsonManagedReference
     private MasterEstablishment masterEstablishment;
     @ManyToOne
     @JoinColumn(name = "village", referencedColumnName="villageCode")
+    @JsonManagedReference
     private Village village;
+
     @OneToMany(mappedBy = "establishment")
+    @JsonManagedReference
     private List<AllUser> users;
+
     @OneToMany(mappedBy = "establishment")
+    @JsonManagedReference
     private List<NonWorkingDays> nonWorkingDays;
+
     @OneToMany(mappedBy = "establishment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Images> images;
+
     @OneToMany(mappedBy = "establishment")
+    @JsonManagedReference
+    @JsonIgnoreProperties({"user","categoriesForTicket", "otherFeesForTickets"})
     private List<Ticket> tickets;
+
     @OneToMany(mappedBy = "establishment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Fees> fees;
     @OneToMany(mappedBy = "establishment", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
@@ -70,41 +84,8 @@ public class Establishment {
     }
 
 
-
-    public LocalTime getOpeningTime() {
-        return openingTime;
-    }
-
-    public void setOpeningTime(LocalTime openingTime) {
-        this.openingTime = openingTime;
-    }
-
-    public LocalTime getClosingTime() {
-        return closingTime;
-    }
-
-    public void setClosingTime(LocalTime closingTime) {
-        this.closingTime = closingTime;
-    }
-
-    public byte[] getProfileImage() {
-        return profileImage;
-    }
-
-    public void setProfileImage(byte[] profileImage) {
-        this.profileImage = profileImage;
-    }
-
     public Long getEstablishmentId() {
         return establishmentId;
-    }
-
-    public List<Fees> getFees() {
-        return fees;
-    }
-
-    public void setFees(List<com.practice.zooticketportal.entity.Fees> fees) {
-        fees = fees;
     }
 
     public void setEstablishmentId(Long establishmentId) {
@@ -127,6 +108,21 @@ public class Establishment {
         this.address = address;
     }
 
+    public LocalTime getOpeningTime() {
+        return openingTime;
+    }
+
+    public void setOpeningTime(LocalTime openingTime) {
+        this.openingTime = openingTime;
+    }
+
+    public LocalTime getClosingTime() {
+        return closingTime;
+    }
+
+    public void setClosingTime(LocalTime closingTime) {
+        this.closingTime = closingTime;
+    }
 
     public Date getEnteredOn() {
         return enteredOn;
@@ -150,6 +146,14 @@ public class Establishment {
 
     public void setStatus(Boolean status) {
         this.status = status;
+    }
+
+    public byte[] getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(byte[] profileImage) {
+        this.profileImage = profileImage;
     }
 
     public MasterEstablishment getMasterEstablishment() {
@@ -198,6 +202,14 @@ public class Establishment {
 
     public void setTickets(List<Ticket> tickets) {
         this.tickets = tickets;
+    }
+
+    public List<Fees> getFees() {
+        return fees;
+    }
+
+    public void setFees(List<Fees> fees) {
+        this.fees = fees;
     }
 
     public List<OtherFees> getOtherFees() {

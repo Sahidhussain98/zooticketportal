@@ -1,5 +1,6 @@
 package com.practice.zooticketportal.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -22,7 +23,6 @@ public class Fees {
     @Column(name="entered_by")
     private String enteredBy;
     //Constructor
-
     @ManyToOne
     @JoinColumn(name = "nationality_id")
     private Nationality nationality;
@@ -30,7 +30,8 @@ public class Fees {
     @JoinColumn(name = "category_id")
     private Category category;
     @ManyToOne
-    @JoinColumn(name = "establishmentId") // Assuming the name of the column in Fees table referring to Establishment
+    @JoinColumn(name = "establishmentId")
+    @JsonBackReference// Assuming the name of the column in Fees table referring to Establishment
     private Establishment establishment;
 
     public Long getFeesId() {

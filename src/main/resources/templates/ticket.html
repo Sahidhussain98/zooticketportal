@@ -142,8 +142,6 @@
             margin: 0 auto; /* Centering the input within its column */
         }
 
-
-
     </style>
 </head>
 <body>
@@ -165,8 +163,8 @@
                     <input type="date" id="dateTime" th:field="*{dateTime}" required />
                 </div>
                 <div class="form-group">
-                    <label for="name">Name:<span class="text-danger">*</span></label>
-                    <input type="text" id="name" th:field="*{name}" required />
+                    <label for="userName">Name:<span class="text-danger">*</span></label>
+                    <input type="text" id="userName" th:field="*{userName}" required />
                 </div>
                 <div class="form-group">
                     <label for="email">Email:<span class="text-danger">*</span></label>
@@ -235,7 +233,7 @@
                 </div>
                 <div class="form-group-quarter">
                     <label for="totalItems">Total Items:</label>
-                    <span id="totalItems" th:field="*{totalItems}"></span>
+                    <span id="totalItems" ></span>
                 </div>
                 <div class="form-group-quarter">
                     <label for="fees">Fees:</label>
@@ -277,9 +275,8 @@
     </form>
 </div>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="/static/bootstrap/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
 <script>
     // Function to calculate fees and update the pricePerPerson field
     $(document).ready(function() {
@@ -324,6 +321,7 @@
                 });
             });
         }
+
         // Function to calculate other fees and update the total item fees
         function calculateOtherFees() {
             var totalItemFees = 0;
@@ -347,12 +345,10 @@
             calculateTotalAmount();
         }
 
-        // Function to calculate the total amount
-        // Calculate total amount
         function calculateTotalAmount() {
-            var fees = parseFloat($("#fees").text()) || 0;
-            var itemFees = parseFloat($("#itemFees").text()) || 0;
-            var totalAmount = fees + itemFees;
+            var totalFees = parseFloat($("#fees").text()) || 0;
+            var totalItemFees = parseFloat($("#itemFees").text()) || 0;
+            var totalAmount = totalFees + totalItemFees;
 
             $("#totalAmount").text(totalAmount.toFixed(2));
         }
@@ -388,7 +384,7 @@
             deleteButtonContainer.insertAfter(newFields);
         });
 
-// Event to handle the deletion of fields
+        // Event to handle the deletion of fields
         $(document).on("click", ".removeFields", function() {
             $(this).parent('.delete-button-container').prev('.form-row').remove(); // Remove the fields row
             $(this).parent('.delete-button-container').remove(); // Remove the delete button's container
@@ -396,81 +392,60 @@
             calculateTotalPersons();
         });
 
-
-            // Check for existing combinations when selecting nationality and category
-            $(document).on("change", ".form-group1 select", function() {
-                calculateFees();
-            });
-
-            // Function to remove fields dynamically
-            $(document).on("click", ".removeFields", function() {
-                $(this).closest('.form-row').remove(); // Remove the closest form-row
-                counter--;
-
-                // Recalculate total persons when removing a row
-                calculateTotalPersons();
-            });
-
-            // Check for existing combinations when selecting nationality and category
-            $(document).on("change", ".form-group1 select", function() {
-                var nationalityId = $(this).closest(".form-row").find("#nationalities").val();
-                var categoryId = $(this).closest(".form-row").find("#categories").val();
-                var existingCombination = false;
-
-                // Only check for duplicate if both nationality and category are selected
-                if (nationalityId && categoryId) {
-                    // Check if the combination already exists with the same category
-                    $("#selections .form-row").not($(this).closest(".form-row")).each(function() {
-                        if ($(this).find("#nationalities").val() == nationalityId &&
-                            $(this).find("#categories").val() == categoryId) {
-                            existingCombination = true;
-                            return false; // Break the loop
-                        }
-                    });
-                }
-
-                if (existingCombination) {
-                    alert("The selected combination already exists with the same category.");
-                    $(this).val(""); // Reset the select value
-                }
-
-                // Recalculate total persons when changing a selection
-                calculateTotalPersons();
-            });
-
-            // Calculate total persons
-            function calculateTotalPersons() {
-                var totalPersons = 0;
-
-                // Sum up the number of people in each row
-                $(".number-of-people").each(function() {
-                    var numberOfPeople = parseInt($(this).val());
-                    if (!isNaN(numberOfPeople)) {
-                        totalPersons += numberOfPeople;
-                    }
-                });
-
-                // Update the total persons field
-                $("#totalPersons").text(totalPersons); // Use text() instead of val()
-            }
-
-// Ensure total persons are updated when number of people input is changed
-            $(document).on("input", ".number-of-people", function() {
-                calculateTotalPersons();
-            });
-
+        // Function to remove fields dynamically
+        $(document).on("click", ".removeFields", function() {
+            $(this).closest('.form-row').remove(); // Remove the closest form-row
+            // Recalculate total persons when removing a row
+            calculateTotalPersons();
         });
 
-        function validateNumberOfPeople() {
-            var numberOfPeople = document.getElementById('numberOfPeople').value;
+        // Check for existing combinations when selecting nationality and category
+        $(document).on("change", ".form-group1 select", function() {
+            var nationalityId = $(this).closest(".form-row").find("#nationalities").val();
+            var categoryId = $(this).closest(".form-row").find("#categories").val();
+            var existingCombination = false;
 
-            // Check if the number of people is not empty and not equal to 0
-            if (numberOfPeople !== "" && numberOfPeople !== "0") {
-                calculateTotalPersons(); // Calculate total persons if a valid value is entered
-            } else {
-                document.getElementById('totalPersons').value = ""; // Clear total persons if the number of people is empty or 0
+            // Only check for duplicate if both nationality and category are selected
+            if (nationalityId && categoryId) {
+                // Check if the combination already exists with the same category
+                $("#selections .form-row").not($(this).closest(".form-row")).each(function() {
+                    if ($(this).find("#nationalities").val() == nationalityId &&
+                        $(this).find("#categories").val() == categoryId) {
+                        existingCombination = true;
+                        return false; // Break the loop
+                    }
+                });
             }
+
+            if (existingCombination) {
+                alert("The selected combination already exists with the same category.");
+                $(this).val(""); // Reset the select value
+            }
+
+            // Recalculate total persons when changing a selection
+            calculateTotalPersons();
+        });
+
+        // Calculate total persons
+        function calculateTotalPersons() {
+            var totalPersons = 0;
+
+            // Sum up the number of people in each row
+            $(".number-of-people").each(function() {
+                var numberOfPeople = parseInt($(this).val());
+                if (!isNaN(numberOfPeople)) {
+                    totalPersons += numberOfPeople;
+                }
+            });
+
+            // Update the total persons field
+            $("#totalPersons").text(totalPersons); // Use text() instead of val()
         }
+
+        // Ensure total persons are updated when number of people input is changed
+        $(document).on("input", ".number-of-people", function() {
+            calculateTotalPersons();
+        });
 
         /// NonWorkingDays
         $(document).ready(function() {
@@ -516,81 +491,78 @@
                         var feesList = $("#feesList");
                         feesList.empty(); // Clear existing rows
 
-                        response.forEach(function(fee) {
+                        response.forEach(function(fee, index) {  // Add an index to create unique IDs
                             var feeEntryRow = `
-                            <div class="row full-width">
-                                <div class="col-lg-3">
-                                    <label>Fee Type:</label>
-                                    <span>${fee.feesType}</span>
-                                </div>
-                                <div class="col-lg-3">
-                                    <label>Fee per Item:</label>
-                                    <span class="feePerItem" data-fee-per-item="${fee.feePerItem}">${fee.feePerItem}</span>
-                                </div>
-                                <div class="col-lg-3" style="flex-basis: 100%;">
-                                    <label for="numItems_${fee.feesType}">Number of Items:</label>
-                                    <input type="number" id="numItems_${fee.feesType}" class="number-of-items number-of-items-input" min="1" data-feetype="${fee.feesType}" />
-                                </div>
-                                <div class="col-lg-3" style="flex-basis: 100%;">
-                                    <label>Total Item Fees:</label>
-                                    <span id="totalItemFees_${fee.feesType}" class="totalItemFees"></span>
-                                </div>
-                            </div>`;
-
+                <div class="row full-width feeEntryRow">
+                    <div class="col-lg-3">
+                        <label>Fee Type:</label>
+                        <span>${fee.feesType}</span>
+                    </div>
+                    <div class="col-lg-3">
+                        <label>Fee per Item:</label>
+                        <span class="feePerItem" data-fee-per-item="${fee.feePerItem}">${fee.feePerItem}</span>
+                    </div>
+                    <div class="col-lg-3" style="flex-basis: 100%;">
+                        <label for="numItems_${index}">Number of Items:</label>
+                        <input type="number" id="numItems_${index}" class="numItems number-of-items-input" min="1" data-feetype="${fee.feesType}" />
+                    </div>
+                    <div class="col-lg-3" style="flex-basis: 100%;">
+                        <label>Total Item Fees:</label>
+                        <span id="totalItemFees_${index}" class="totalItemFees"></span>
+                    </div>
+                </div>`;
                             feesList.append(feeEntryRow);
                         });
 
-                        // Bind event listener to number of items input
-                        $(document).on("input", ".number-of-items", function() {
-                            calculateOtherFees();
-                        });
-
-                        // Ensure total item fees are updated when number of items is changed
-                        $(document).on("input", ".number-of-items", function() {
-                            calculateOtherFees();
-                        });
+                        bindItemInputEvents();
                     },
                     error: function(xhr, status, error) {
                         console.error('Error fetching other fees:', error);
                     }
                 });
             }
+
+            function bindItemInputEvents() {
+                // Bind event listener to number of items input
+                $(document).on("input", ".number-of-items", function() {
+                    var currentRow = $(this).closest('.feeEntryRow');
+                    var numItems = parseInt($(this).val()) || 0;
+                    var feePerItem = parseFloat(currentRow.find(".feePerItem").data("fee-per-item")) || 0;
+
+                    var totalItemFees = numItems * feePerItem;
+                    currentRow.find(".totalItemFees").text(totalItemFees.toFixed(2));
+                });
+            }
         });
-        // Function to calculate other fees and update the total item fees
-        function calculateOtherFees() {
-            var totalItemFees = 0;
-            var totalItemsCount = 0;
-
-            $(".number-of-items").each(function() {
-                var feeType = $(this).data("feetype");
-                var numItems = parseInt($(this).val()) || 0;
-                var feePerItem = $(this).closest('.feeEntryRow').find(".feePerItem").data("fee-per-item");
-
-                // Calculate total item fees
-                if (numItems && feePerItem) {
-                    var itemFees = numItems * feePerItem;
-                    $(this).closest('.feeEntryRow').find(".totalItemFees").text(itemFees.toFixed(2));
-                    totalItemFees += parseFloat(itemFees);
-                } else {
-                    $(this).closest('.feeEntryRow').find(".totalItemFees").text(''); // Clear total item fees if numItems is empty
-                }
-
-                // Sum the total number of items
-                totalItemsCount += numItems;
-            });
-
-            // Update the Item Fees field with the total item fees
-            $("#itemFees").text(totalItemFees.toFixed(2));
-            // Update the Total Items field with the total number of items
-            $("#totalItems").text(totalItemsCount);
-            calculateTotalAmount();
-        }
-
-// Ensure total item fees and total items are updated when number of items is changed
-        $(document).on("input", ".number-of-items", function() {
-            calculateOtherFees();
-
     });
+    function calculateOtherFees() {
+        var totalItemFees = 0;
+        var totalItemsCount = 0;
+
+        // Iterate over each fee entry row to calculate the total fees and count of items.
+        $(".feeEntryRow").each(function() {
+            var numItems = parseInt($(this).find(".number-of-items").val()) || 0;
+            var feePerItem = parseFloat($(this).find(".feePerItem").data("fee-per-item")) || 0;
+
+            // Calculate the total fees for this row and add to the running total.
+            var itemFees = numItems * feePerItem;
+            $(this).find(".totalItemFees").text(itemFees.toFixed(2)); // Display the calculated total for this row.
+            totalItemFees += itemFees; // Add to the total item fees.
+
+            // Sum the number of items for this row and add to the running total.
+            totalItemsCount += numItems;
+        });
+
+        // Update the total number of items and total item fees in the corresponding fields.
+        $("#totalItems").text(totalItemsCount); // Update total items count.
+        $("#itemFees").text(totalItemFees.toFixed(2)); // Update total item fees.
+    }
+
+    // Ensure this function is called whenever an input value changes.
+    $(document).on("input", ".number-of-items", function() {
+        calculateOtherFees();
+    });
+
 
 </script>
 </body>

@@ -16,10 +16,13 @@ public class OtherFees {
     private String feesType;
     @Column(name="fees")
     private Double fees;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "establishmentId") // Assuming the name of the column in Fees table referring to Establishment
     @JsonBackReference
     private Establishment establishment;
+
+    @OneToMany(mappedBy = "otherFees", cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<OtherFeesForTickets> otherFeessForTickets;
     @Column(name="entered_on")
     private LocalDateTime enteredOn;
     @Column(name="entered_by")

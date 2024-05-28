@@ -1,5 +1,6 @@
 package com.practice.zooticketportal.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +18,7 @@ public class Images {
     private byte[] imageData;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "establishment",referencedColumnName="establishmentId")
     private Establishment establishment;
     private LocalDateTime enteredOn;

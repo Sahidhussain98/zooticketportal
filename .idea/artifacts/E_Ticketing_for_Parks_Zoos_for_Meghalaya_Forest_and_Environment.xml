@@ -1,0 +1,6 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="E-Ticketing for Parks/Zoos for Meghalaya Forest and Environment">
+    <output-path>$PROJECT_DIR$/out/artifacts/E_Ticketing_for_Parks_Zoos_for_Meghalaya_Forest_and_Environment</output-path>
+    <root id="archive" name="E-Ticketing for Parks_Zoos for Meghalaya Forest and Environment.war" />
+  </artifact>
+</component>

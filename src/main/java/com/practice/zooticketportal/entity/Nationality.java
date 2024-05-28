@@ -1,5 +1,6 @@
 package com.practice.zooticketportal.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -18,9 +19,22 @@ public class Nationality {
     @Column(name="nationalityType")
     private String nationalityType;
     @OneToMany(mappedBy = "nationality", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Fees> fees;
+
+    @OneToMany(mappedBy = "nationality", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<categoriesForTicket> categoriesForTickets;
     private LocalDateTime enteredOn;
     private String enteredBy;
+
+    public List<categoriesForTicket> getCategoriesForTickets() {
+        return categoriesForTickets;
+    }
+
+    public void setCategoriesForTickets(List<categoriesForTicket> categoriesForTickets) {
+        this.categoriesForTickets = categoriesForTickets;
+    }
 
     public LocalDateTime getEnteredOn() {
         return enteredOn;

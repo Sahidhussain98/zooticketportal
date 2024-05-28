@@ -9,7 +9,7 @@ import java.io.FileNotFoundException;
 import java.util.List;
 
 
-public interface TicketService {
+public interface  TicketService {
     List<Ticket> getAllTicket();
 
     Ticket getTicketById(Long id);

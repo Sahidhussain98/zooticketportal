@@ -28,6 +28,7 @@ public class State {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "state", fetch = FetchType.LAZY)
     @JsonIgnore // Add this annotation to prevent serialization of this field
     private List<District> district;
+
     private LocalDateTime enteredOn;
     private String enteredBy;
 
