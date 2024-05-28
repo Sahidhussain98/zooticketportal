@@ -3,6 +3,7 @@ package com.practice.zooticketportal.entity;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "tickets")
@@ -18,10 +19,11 @@ public class Ticket {
     private String name;
     private String email;
     private Long phoneNumber;
-    private Long numberOfPeople;
     private Long totalPersons;
     private Long totalItems;
-    private String totalAmount;
+    private Double totalOtherFees;
+    private Double totalEntryFees;
+    private Double totalAmount;
     private LocalDate dateTime;
     private String enteredBy;
     private LocalDateTime enteredOn;
@@ -31,16 +33,38 @@ public class Ticket {
     private AllUser user;
 
     @ManyToOne
-    @JoinColumn(name = "establishment")
+    @JoinColumn(name = "establishmentId")
     private Establishment establishment;
 
     @OneToOne(mappedBy = "ticket", cascade = CascadeType.ALL)
     private Payment payment;
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
+    private List<TicketEntryFees> ticketEntryFees;
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
+    private List<TicketOtherFees> ticketOtherFees;
 
-    public Ticket() {}
+    public Ticket() {
+    }
 
-    public Ticket(String establishmentName, int serialNumber) {
-        this.bookingId = establishmentName.replaceAll("\\s+", "") + "-" + serialNumber;
+    public Ticket(Long id, String bookingId, String name, String email, Long phoneNumber, Long totalPersons, Long totalItems, Double totalOtherFees, Double totalEntryFees, Double totalAmount, LocalDate dateTime, String enteredBy, LocalDateTime enteredOn, AllUser user, Establishment establishment, Payment payment, List<TicketEntryFees> ticketEntryFees, List<TicketOtherFees> ticketOtherFees) {
+        this.id = id;
+        this.bookingId = bookingId;
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.totalPersons = totalPersons;
+        this.totalItems = totalItems;
+        this.totalOtherFees = totalOtherFees;
+        this.totalEntryFees = totalEntryFees;
+        this.totalAmount = totalAmount;
+        this.dateTime = dateTime;
+        this.enteredBy = enteredBy;
+        this.enteredOn = enteredOn;
+        this.user = user;
+        this.establishment = establishment;
+        this.payment = payment;
+        this.ticketEntryFees = ticketEntryFees;
+        this.ticketOtherFees = ticketOtherFees;
     }
 
     public Long getId() {
@@ -83,14 +107,6 @@ public class Ticket {
         this.phoneNumber = phoneNumber;
     }
 
-    public Long getNumberOfPeople() {
-        return numberOfPeople;
-    }
-
-    public void setNumberOfPeople(Long numberOfPeople) {
-        this.numberOfPeople = numberOfPeople;
-    }
-
     public Long getTotalPersons() {
         return totalPersons;
     }
@@ -107,11 +123,27 @@ public class Ticket {
         this.totalItems = totalItems;
     }
 
-    public String getTotalAmount() {
+    public Double getTotalOtherFees() {
+        return totalOtherFees;
+    }
+
+    public void setTotalOtherFees(Double totalOtherFees) {
+        this.totalOtherFees = totalOtherFees;
+    }
+
+    public Double getTotalEntryFees() {
+        return totalEntryFees;
+    }
+
+    public void setTotalEntryFees(Double totalEntryFees) {
+        this.totalEntryFees = totalEntryFees;
+    }
+
+    public Double getTotalAmount() {
         return totalAmount;
     }
 
-    public void setTotalAmount(String totalAmount) {
+    public void setTotalAmount(Double totalAmount) {
         this.totalAmount = totalAmount;
     }
 
@@ -163,24 +195,19 @@ public class Ticket {
         this.payment = payment;
     }
 
-    @Override
-    public String toString() {
-        return "Ticket{" +
-                "id=" + id +
-                ", bookingId='" + bookingId + '\'' +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", phoneNumber=" + phoneNumber +
-                ", numberOfPeople=" + numberOfPeople +
-                ", totalPersons=" + totalPersons +
-                ", totalItems=" + totalItems +
-                ", totalAmount='" + totalAmount + '\'' +
-                ", dateTime=" + dateTime +
-                ", enteredBy='" + enteredBy + '\'' +
-                ", enteredOn=" + enteredOn +
-                ", user=" + user +
-                ", establishment=" + establishment +
-                ", payment=" + payment +
-                '}';
+    public List<TicketEntryFees> getTicketEntryFees() {
+        return ticketEntryFees;
+    }
+
+    public void setTicketEntryFees(List<TicketEntryFees> ticketEntryFees) {
+        this.ticketEntryFees = ticketEntryFees;
+    }
+
+    public List<TicketOtherFees> getTicketOtherFees() {
+        return ticketOtherFees;
+    }
+
+    public void setTicketOtherFees(List<TicketOtherFees> ticketOtherFees) {
+        this.ticketOtherFees = ticketOtherFees;
     }
 }

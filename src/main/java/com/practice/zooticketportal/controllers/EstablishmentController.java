@@ -320,15 +320,17 @@ public class EstablishmentController {
 
     @PostMapping("/update/{id}")
     public String updateEstablishment(@PathVariable Long id,
-                                      @ModelAttribute("establishment") Establishment establishment) {
+                                       Establishment establishment,
+                                      Model model) {
         Establishment existingEstablishment = establishmentService.getEstablishmentById(id);
         existingEstablishment.setName(establishment.getName());
         existingEstablishment.setAddress(establishment.getAddress());
         existingEstablishment.setOpeningTime(establishment.getOpeningTime());
         existingEstablishment.setClosingTime(establishment.getClosingTime());
+        model.addAttribute("establishment", existingEstablishment);
 
         establishmentService.updateEstablishment(existingEstablishment);
-        return "redirect:/edit-establishments";
+        return "edit-establishments";
     }
 
     @PostMapping("/updateStatus/{id}")
@@ -464,30 +466,24 @@ public class EstablishmentController {
         }
     }
 
-    @GetMapping("/checkCombinationExists")
-    @ResponseBody
-    public Map<String, Boolean> checkCombinationExists(@RequestParam Long nationalityId, @RequestParam Long categoryId) {
-        boolean exists = feesServiceImpl.combinationExists(nationalityId, categoryId);
-        Map<String, Boolean> response = new HashMap<>();
-        response.put("exists", exists);
-        return response;
-    }
 
     @PostMapping("/addEntryFees")
-    public ResponseEntity<String> addEntryFee(@RequestParam("establishmentId") Long establishmentId,
-                                              @RequestParam("nationality") Long nationalityId,
-                                              @RequestParam("category") Long categoryId,
-                                              @RequestParam("entryFee") Double entryFee) {
+    public String addEntryFee(@RequestParam("establishmentId") Long establishmentId,
+                              @RequestParam("nationality") Long nationalityId,
+                              @RequestParam("category") Long categoryId,
+                              @RequestParam("entryFee") Double entryFee,
+                              RedirectAttributes redirectAttributes) {
         try {
             Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
             if (establishment == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Establishment not found.");
+                redirectAttributes.addFlashAttribute("errorMessage", "Establishment not found.");
+                return "redirect:/errorPage/error.html";
             }
 
             // Check if the combination of nationality and category already exists
             boolean exists = feesRepo.existsByEstablishmentEstablishmentIdAndNationalityNationalityIdAndCategoryCategoryId(establishmentId, nationalityId, categoryId);
             if (exists) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("This fee configuration already exists. Please choose another.");
+                redirectAttributes.addFlashAttribute("errorMessage", "This fee configuration already exists. Please choose another.");
             }
 
             Fees fees = new Fees();
@@ -502,22 +498,27 @@ public class EstablishmentController {
 
             feesRepo.save(fees);
 
-            return ResponseEntity.status(HttpStatus.OK).body("Entry fee added successfully.");
+            redirectAttributes.addFlashAttribute("successMessage", "Entry fee added successfully.");
+            redirectAttributes.addAttribute("id", establishmentId);
+            return "redirect:/establishments/viewEstablishment/{id}";
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unable to process your request at this time.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Unable to process your request at this time.");
+            return "errorPage/error";
         }
     }
 
 
-    @GetMapping("/establishments/checkCombination")
-    public ResponseEntity<Map<String, Boolean>> checkCombination(@RequestParam("establishmentId") Long establishmentId,
-                                                                 @RequestParam("nationality") Long nationalityId,
-                                                                 @RequestParam("category") Long categoryId) {
-        boolean exists = feesRepo.existsByEstablishmentEstablishmentIdAndNationalityNationalityIdAndCategoryCategoryId(establishmentId, nationalityId, categoryId);
+    @GetMapping("/checkCombinationExists")
+    @ResponseBody
+    public Map<String, Boolean> checkCombinationExists(@RequestParam("establishmentId") Long establishmentId,
+                                                       @RequestParam Long nationalityId,
+                                                       @RequestParam Long categoryId) {
+        boolean exists = feesServiceImpl.combinationExists(establishmentId,nationalityId, categoryId);
         Map<String, Boolean> response = new HashMap<>();
         response.put("exists", exists);
-        return ResponseEntity.ok(response);
+        return response;
     }
+
 
 
 

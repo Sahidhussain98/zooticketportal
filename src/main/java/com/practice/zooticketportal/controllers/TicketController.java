@@ -50,6 +50,10 @@ public class TicketController {
     private OtherFeesRepo otherFeesRepo;
     @Autowired
     private AllUserRepo allUserRepo;
+    @Autowired
+    private TicketEntryFeesRepo ticketEntryFeesRepo;
+    @Autowired
+    private TicketOtherFeesRepo ticketOtherFeesRepo;
 
     @GetMapping("/showCheckoutForm/{establishmentId}")
     public String showCheckoutForm(@PathVariable Long establishmentId,
@@ -97,9 +101,9 @@ public class TicketController {
     }
 
 
-    @PostMapping("/saveTicket/{establishmentId}")
+    @PostMapping("/saveTicket")
     public String processForm(
-            @PathVariable Long establishmentId,
+            @RequestParam("establishmentId") Long establishmentId,
             @RequestParam("dateTime") String dateTime,
             @RequestParam("name") String name,
             @RequestParam("email") String email,
@@ -120,6 +124,7 @@ public class TicketController {
         theTicket.setEmail(email);
         theTicket.setPhoneNumber(Long.valueOf(phoneNumber));
         theTicket.setBookingId(establishmentName + "-" + serialNumber);
+        theTicket.setEstablishment(establishment);
         theTicket.setEnteredOn(LocalDateTime.now());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserName = authentication.getName();

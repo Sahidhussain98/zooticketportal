@@ -9,8 +9,11 @@ import org.springframework.stereotype.Service;
 public class FeesServiceImpl implements FeesService {
     @Autowired
     private FeesRepo feesRepo;
-    public boolean combinationExists(Long nationalityId, Long categoryId) {
-        return feesRepo.existsByNationalityNationalityIdAndCategoryCategoryId(nationalityId, categoryId);
+
+
+    @Override
+    public boolean combinationExists(Long establishmentId, Long nationalityId, Long categoryId) {
+        return feesRepo.existsByEstablishmentEstablishmentIdAndNationalityNationalityIdAndCategoryCategoryId(establishmentId,nationalityId,categoryId);
     }
 
     @Override

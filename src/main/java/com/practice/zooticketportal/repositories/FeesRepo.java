@@ -20,7 +20,6 @@ public interface FeesRepo extends JpaRepository<Fees,Long> {
     @Query("SELECT DISTINCT f.category FROM Fees f WHERE f.establishment.establishmentId = ?1")
     List<Category> findCategoriesWithFees(Long establishmentId);
     boolean existsByEstablishmentEstablishmentIdAndNationalityNationalityIdAndCategoryCategoryId(Long establishmentId, Long nationalityId, Long categoryId);
-    boolean existsByNationalityNationalityIdAndCategoryCategoryId(Long nationalityId, Long categoryId);
 
 
 

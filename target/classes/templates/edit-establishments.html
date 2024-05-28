@@ -389,11 +389,7 @@
         $('#nationality, #category').on('change', function () {
             var nationalityId = $('#nationality').val();
             var categoryId = $('#category').val();
-            var establishmentId = $('input[name="establishmentId"]').val();
-
-            console.log('Nationality ID:', nationalityId);
-            console.log('Category ID:', categoryId);
-            console.log('Establishment ID:', establishmentId);
+            var establishmentId = $('input[name="establishmentId"]').val();  // Assuming there is an input field in your form with this name
 
             if (nationalityId && categoryId) {
                 checkCombinationExists(establishmentId, nationalityId, categoryId);
@@ -409,8 +405,7 @@
                     nationalityId: nationalityId,
                     categoryId: categoryId
                 },
-                success: function (response) {
-                    console.log('Check Combination Response:', response);
+                success: function(response) {
                     if (response.exists) {
                         Swal.fire({
                             title: "Error",
@@ -420,12 +415,13 @@
                         });
                     }
                 },
-                error: function (xhr) {
-                    console.error("Error checking combination: ");
+                error: function(xhr) {
+                    console.error("Error checking combination: ", xhr.responseText);
                 }
             });
         }
     });
+
     //  Delete for otherfees
     $(document).ready(function() {
         // Attach the event listener to the delete buttons within the other fees table

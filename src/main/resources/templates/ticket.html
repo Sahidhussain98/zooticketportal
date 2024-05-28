@@ -6,131 +6,144 @@
     <title>Welcome User</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Custom Styles */
         body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
             padding: 20px;
+            background-color: #f4f4f4;
         }
 
         .container-form {
-            max-width: 80%;
-            margin: 50px auto 20px; /* Add gap between navbar and form */
-            background: #f0f0f0; /* Change background color */
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.1);
+            max-width: 90%;
+            margin: 20px auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
-        .form-group {
-            margin-bottom: 15px;
-            padding: 5px;
-            width: 50%;
-        }
-
-        .form-group1 {
-            margin-bottom: 15px;
-            padding: 5px;
-            width: calc(20% - 10px);
-        }
-
-        #pricePerPerson {
-            width: 100%;
+        .form-group, .form-group1, .form-group-quarter {
+            margin-bottom: 20px;
             padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-            background-color: #f9f9f9; /* Background color for read-only input */
-            cursor: not-allowed; /* Disable cursor for read-only input */
         }
 
         label {
-            font-weight: bold;
-            display: block;
-            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
         }
 
-        input,
-        select {
+        input, select {
             width: 100%;
-            padding: 10px;
+            padding: 8px;
             border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
+            border-radius: 4px;
+            transition: border-color 0.3s;
         }
 
         input[type="submit"] {
-            background-color: #4caf50;
+            background-color: #0056b3;
             color: white;
             cursor: pointer;
-            width: 20%; /* Adjust the width as needed */
-            margin-left: auto; /* Align to the right */
-            display: block; /* Ensure it is a block-level element */
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            margin-top: 20px;
+            padding: 12px 20px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
         }
 
-        .add-button {
+        input[type="submit"]:hover {
+            background-color: #004494;
+        }
+
+        .add-button, .btn-primary, .btn-danger {
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: none;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
             background-color: #007bff;
             color: white;
-            cursor: pointer;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            margin-bottom: 10px;
         }
 
-        .separator {
-            width: 100%;
-            border-top: 2px solid #ccc;
-            margin: 20px 0;
+        .btn-primary:hover {
+            background-color: #0069d9;
         }
 
-        h3 {
-            text-align: center; /* Center align the header */
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+            display: block; /* Make it a block level element */
+            width: 100%; /* Full width */
+            text-align: center; /* Center the text */
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
         }
 
         .form-row {
             display: flex;
             flex-wrap: wrap;
-            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .form-group1, .form-group-quarter {
+            flex: 1 1 180px;
         }
 
         .form-group-half {
-            width: calc(25% - 10px);
+            flex: 1 1 45%;
         }
 
-        .removeFields {
-            margin-left: 4px;
-            margin-bottom:5px;
-            height: 40px; /* Adjust the height as needed */
-            line-height: 1; /* Align the text vertically */
-            padding: 10px 10px; /* Add padding to the button */
+        .separator {
+            border-top: 1px solid #ccc;
+            margin: 24px 0;
         }
 
-        /* Styles for Other Fees section */
-        .feeEntryRow {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            width: 100%;
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+            }
+        }
+        .delete-button-container {
+            display: flex; /* Use flexbox to center the button */
+            justify-content: left; /* Center the button horizontally */
+            margin-top: 10px; /* Optional: add some margin above the button */
+            margin-bottom: 3px;
+        }
+
+        .btn-danger {
+            width: auto; /* Adjust to content width */
+            padding: 8px 16px; /* Match padding to 'Add More' button */
         }
 
         .feeEntry {
             flex: 1;
             margin-right: 10px;
+            min-width: 150px; /* Ensures that labels and inputs have enough space */
         }
 
         .feeEntry:last-child {
             margin-right: 0;
         }
 
-        /* Align text boxes in Total Details section */
-        .form-group-quarter {
-            width: calc(25% - 10px); /* Adjust width as needed */
+        .full-width {
+            flex-basis: 100%; /* Takes full width of the container */
+            display: flex;
+            flex-direction: column; /* Stacks label and input vertically */
         }
+
+        .number-of-items-input {
+            width: 60%; /* Adjust this as needed */
+            margin-top: 5px; /* Adds a little space above the input */
+        }
+        .no-of-people-input {
+            width: 70%; /* Adjust this width as needed */
+            margin: 0 auto; /* Centering the input within its column */
+        }
+
+
+
     </style>
 </head>
 <body>
@@ -138,9 +151,9 @@
 <div th:replace="fragments/userNaveMenu :: header"></div>
 
 <div class="container-form">
-    <h3>Welcome to <span th:text="${establishment.name}"></span></h3> <!-- Centered header -->
+    <h3 class="text-center">Welcome to <span th:text="${establishment.name}"></span></h3>
 
-    <form th:action="@{'/saveTicket/' + ${establishment.establishmentId}}" th:object="${theTicket}" method="POST" onsubmit="return validateForm()">
+    <form th:action="@{/saveTicket}" th:object="${theTicket}" method="POST" onsubmit="return validateForm()">
         <input type="hidden" id="establishmentId" th:name="establishmentId" th:value="${establishment.establishmentId}" />
         <hr class="separator">
 
@@ -186,16 +199,17 @@
                     </select>
                 </div>
                 <div class="form-group1">
-                    <label for="pricePerPerson">Price per Person:</label>
-                    <input type="text" id="pricePerPerson" readonly />
+                    <label for="numberOfPeople">No. of People:<span class="text-danger">*</span></label>
+                    <input type="number" id="numberOfPeople" class="number-of-people no-of-people-input" required min="1" step="1" oninput="validateNumberOfPeople()" onchange="calculateFees()" />
                 </div>
                 <div class="form-group1">
-                    <label for="numberOfPeople">No. of People:<span class="text-danger">*</span></label>
-                    <input type="number" id="numberOfPeople" class="number-of-people" required min="1" step="1" oninput="validateNumberOfPeople()" onchange="calculateFees()" />
+                    <label>Price per Person:</label>
+                    <span class="pricePerPerson"></span>
                 </div>
+
                 <div class="form-group1">
                     <label for="totalFees">Total:</label>
-                    <input type="text" id="totalFees" readonly onchange="calculateFees()" />
+                    <span  id="totalFees" readonly onchange="calculateFees()"></span>
                 </div>
             </div>
 
@@ -217,25 +231,25 @@
             <div class="form-row">
                 <div class="form-group-quarter">
                     <label for="totalPersons">Total Persons:</label>
-                    <input type="number" id="totalPersons" th:field="*{totalPersons}" required min="1" readonly />
+                    <span id="totalPersons" th:field="*{totalPersons}" readonly></span>
                 </div>
                 <div class="form-group-quarter">
                     <label for="totalItems">Total Items:</label>
-                    <input type="number" id="totalItems" th:field="*{totalItems}" required min="0" readonly />
+                    <span id="totalItems" th:field="*{totalItems}"></span>
                 </div>
                 <div class="form-group-quarter">
                     <label for="fees">Fees:</label>
-                    <input type="text" id="fees" readonly />
+                    <span id="fees"></span>
                 </div>
                 <div class="form-group-quarter">
                     <label for="itemFees">Item Fees:</label>
-                    <input type="text" id="itemFees" class="item-fees" readonly />
+                    <span id="itemFees" class="item-fees"></span>
                 </div>
             </div>
             <div class="form-row" style="margin-top: 15px;">
                 <div class="form-group-quarter">
                     <label for="totalAmount">Total Amount:</label>
-                    <input type="text" id="totalAmount" th:field="*{totalAmount}" required />
+                    <span id="totalAmount" th:field="*{totalAmount}"></span>
                 </div>
             </div>
         </fieldset>
@@ -291,16 +305,16 @@
                     },
                     success: function(response) {
                         // Update the total fees field with the fetched total fees
-                        $(this).find("#totalFees").val(response.totalFees);
+                        $(this).find("#totalFees").text(response.totalFees);
 
                         // Update the price per person field with the fetched entry fee
-                        $(this).find("#pricePerPerson").val(response.entryFee);
+                        $(this).find(".pricePerPerson").text(response.entryFee);
 
                         // Add the fetched total fees to the running total
                         totalFees += parseFloat(response.totalFees);
 
                         // Update the Fees field with the total fees
-                        $("#fees").val(totalFees.toFixed(2));
+                        $("#fees").text(totalFees.toFixed(2));
                         calculateTotalAmount();
 
                     }.bind(this), // Bind the current context to use inside the success callback
@@ -324,7 +338,7 @@
                     $(this).find(".totalItemFees").val(itemFees.toFixed(2));
                     totalItemFees += parseFloat(itemFees);
                 } else {
-                    $(this).find(".totalItemFees").val(''); // Clear the total item fees if numItems is empty
+                    $(this).find(".totalItemFees").text(''); // Clear the total item fees if numItems is empty
                 }
             });
 
@@ -336,11 +350,11 @@
         // Function to calculate the total amount
         // Calculate total amount
         function calculateTotalAmount() {
-            var fees = parseFloat($("#fees").val()) || 0;
-            var itemFees = parseFloat($("#itemFees").val()) || 0;
+            var fees = parseFloat($("#fees").text()) || 0;
+            var itemFees = parseFloat($("#itemFees").text()) || 0;
             var totalAmount = fees + itemFees;
 
-            $("#totalAmount").val(totalAmount.toFixed(2));
+            $("#totalAmount").text(totalAmount.toFixed(2));
         }
 
         // Call calculateFees() whenever there is a change in nationality, category, establishment, or number of people
@@ -349,42 +363,39 @@
         });
 
         // For nationality and category and total person calculation
-        $(document).ready(function() {
-            var counter = 1;
+        $(document).on("click", ".addFields", function() {
+            var newFields = $("#selection1").clone(); // Clone the container for nationality and category
+            newFields.find("select").val(""); // Clear select values
+            newFields.find(".pricePerPerson").text(""); // Clear text for price per person
+            newFields.find("#totalFees").text(""); // Clear text for total fees
 
-            // Function to add fields dynamically
-            $(document).on("click", ".addFields", function() {
-                var newFields = $("#selection1").clone(); // Clone the container for nationality and category
-                newFields.find("select").val(""); // Clear select values
+            // Remove existing "Delete" button before appending
+            newFields.find('.removeFields').parent().remove();
 
-                // Clear the value of the "No. of People" field
-                newFields.find("#numberOfPeople").val("");
-                newFields.find("#pricePerPerson").val("");
-                newFields.find("#totalFees").val("");
+            // Append the new fields
+            newFields.insertAfter("#selections .form-row:last");
 
-                // Remove existing "Delete" button before appending
-                newFields.find('.removeFields').remove();
-
-                // Add delete button
-                var deleteButton = $("<button/>", {
-                    type: "button",
-                    class: "btn btn-danger removeFields",
-                    text: "Delete",
-                });
-                deleteButton.appendTo(newFields);
-
-                newFields.insertBefore($(this).closest(".button-group")); // Insert the new fields before the "Add" button
+            // Create a container for the "Delete" button to manage its width
+            var deleteButtonContainer = $("<div>", {"class": "delete-button-container"});
+            var deleteButton = $("<button>", {
+                "type": "button",
+                "class": "btn btn-danger removeFields",
+                "text": "Delete"
             });
 
-            // Bind event listener to number of people input for the newly added row
-            // Function to remove fields dynamically
-            $(document).on("click", ".removeFields", function() {
-                $(this).closest('.form-row').remove(); // Remove the closest form-row
-                calculateFees();
+            // Append the delete button to its container and then to the DOM
+            deleteButton.appendTo(deleteButtonContainer);
+            deleteButtonContainer.insertAfter(newFields);
+        });
 
-                // Recalculate total persons when removing a row
-                calculateTotalPersons();
-            });
+// Event to handle the deletion of fields
+        $(document).on("click", ".removeFields", function() {
+            $(this).parent('.delete-button-container').prev('.form-row').remove(); // Remove the fields row
+            $(this).parent('.delete-button-container').remove(); // Remove the delete button's container
+            calculateFees();
+            calculateTotalPersons();
+        });
+
 
             // Check for existing combinations when selecting nationality and category
             $(document).on("change", ".form-group1 select", function() {
@@ -440,13 +451,14 @@
                 });
 
                 // Update the total persons field
-                $("#totalPersons").val(totalPersons);
+                $("#totalPersons").text(totalPersons); // Use text() instead of val()
             }
 
-            // Bind event listener to number of people input
+// Ensure total persons are updated when number of people input is changed
             $(document).on("input", ".number-of-people", function() {
                 calculateTotalPersons();
             });
+
         });
 
         function validateNumberOfPeople() {
@@ -506,24 +518,25 @@
 
                         response.forEach(function(fee) {
                             var feeEntryRow = `
-                                <div class="feeEntryRow">
-                                    <div class="feeEntry">
-                                        <label>Fee Type:</label>
-                                        <span>${fee.feesType}</span>
-                                    </div>
-                                    <div class="feeEntry">
-                                        <label>Fee per Item:</label>
-                                        <span class="feePerItem" data-fee-per-item="${fee.feePerItem}">${fee.feePerItem}</span>
-                                    </div>
-                                    <div class="feeEntry">
-                                        <label for="numItems_${fee.feesType}">Number of Items:</label>
-                                        <input type="number" id="numItems_${fee.feesType}" class="number-of-items"  min="1" data-feetype="${fee.feesType}" />
-                                    </div>
-                                    <div class="feeEntry">
-                                        <label for="totalItemFees_${fee.feesType}">Total Item Fees:</label>
-                                        <input type="number" id="totalItemFees_${fee.feesType}" class="totalItemFees" readonly />
-                                    </div>
-                                </div>`;
+                            <div class="row full-width">
+                                <div class="col-lg-3">
+                                    <label>Fee Type:</label>
+                                    <span>${fee.feesType}</span>
+                                </div>
+                                <div class="col-lg-3">
+                                    <label>Fee per Item:</label>
+                                    <span class="feePerItem" data-fee-per-item="${fee.feePerItem}">${fee.feePerItem}</span>
+                                </div>
+                                <div class="col-lg-3" style="flex-basis: 100%;">
+                                    <label for="numItems_${fee.feesType}">Number of Items:</label>
+                                    <input type="number" id="numItems_${fee.feesType}" class="number-of-items number-of-items-input" min="1" data-feetype="${fee.feesType}" />
+                                </div>
+                                <div class="col-lg-3" style="flex-basis: 100%;">
+                                    <label>Total Item Fees:</label>
+                                    <span id="totalItemFees_${fee.feesType}" class="totalItemFees"></span>
+                                </div>
+                            </div>`;
+
                             feesList.append(feeEntryRow);
                         });
 
@@ -543,8 +556,6 @@
                 });
             }
         });
-
-        // Function to calculate other fees and update the total item fees
         // Function to calculate other fees and update the total item fees
         function calculateOtherFees() {
             var totalItemFees = 0;
@@ -558,10 +569,10 @@
                 // Calculate total item fees
                 if (numItems && feePerItem) {
                     var itemFees = numItems * feePerItem;
-                    $(this).closest('.feeEntryRow').find(".totalItemFees").val(itemFees.toFixed(2));
+                    $(this).closest('.feeEntryRow').find(".totalItemFees").text(itemFees.toFixed(2));
                     totalItemFees += parseFloat(itemFees);
                 } else {
-                    $(this).closest('.feeEntryRow').find(".totalItemFees").val(''); // Clear total item fees if numItems is empty
+                    $(this).closest('.feeEntryRow').find(".totalItemFees").text(''); // Clear total item fees if numItems is empty
                 }
 
                 // Sum the total number of items
@@ -569,16 +580,16 @@
             });
 
             // Update the Item Fees field with the total item fees
-            $("#itemFees").val(totalItemFees.toFixed(2));
+            $("#itemFees").text(totalItemFees.toFixed(2));
             // Update the Total Items field with the total number of items
-            $("#totalItems").val(totalItemsCount);
+            $("#totalItems").text(totalItemsCount);
             calculateTotalAmount();
         }
 
 // Ensure total item fees and total items are updated when number of items is changed
         $(document).on("input", ".number-of-items", function() {
             calculateOtherFees();
-        });
+
     });
 
 </script>
