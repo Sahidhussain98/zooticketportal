@@ -363,6 +363,14 @@
             });
             $("#totalPersons").text(totalPersons);
         }
+        function calculateTotalItems() {
+            var totalPersons = 0;
+            $(".number-of-items").each(function() {
+                var numberOfPeople = parseInt($(this).val()) || 0;
+                totalPersons += numberOfPeople;
+            });
+            $("#totalPersons").text(totalPersons);
+        }
 
         $(document).on("input", ".number-of-items", calculateOtherFees);
     });
