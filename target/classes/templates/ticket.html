@@ -31,7 +31,7 @@
             color: #333;
         }
 
-        input, select {
+        input, select, span {
             width: 100%;
             padding: 8px;
             border: 1px solid #ccc;
@@ -275,27 +275,22 @@
     </form>
 </div>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="/static/bootstrap/bootstrap.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
     $(document).ready(function() {
         var today = new Date().toISOString().split('T')[0];
         $('#dateTime').attr('min', today);
-    });
 
-    // Function to calculate fees and update the pricePerPerson field
-    $(document).ready(function() {
-        // Function to calculate fees and update the pricePerPerson field
+        // Calculate fees and update the pricePerPerson and totalFees fields
         function calculateFees() {
             var totalFees = 0;
-
             $("#selections .form-row").each(function() {
                 var establishmentId = $("#establishmentId").val();
                 var nationalityId = $(this).find("#nationalities").val();
                 var categoryId = $(this).find("#categories").val();
                 var numberOfPeople = $(this).find("#numberOfPeople").val() || 0;
 
-                // Send AJAX request to backend controller to fetch total fees
                 $.ajax({
                     url: '/fetchFee',
                     method: 'GET',
@@ -306,20 +301,12 @@
                         numberOfPeople: numberOfPeople
                     },
                     success: function(response) {
-                        // Update the total fees field with the fetched total fees
                         $(this).find("#totalFees").text(response.totalFees);
-
-                        // Update the price per person field with the fetched entry fee
                         $(this).find(".pricePerPerson").text(response.entryFee);
-
-                        // Add the fetched total fees to the running total
                         totalFees += parseFloat(response.totalFees);
-
-                        // Update the Fees field with the total fees
                         $("#fees").text(totalFees.toFixed(2));
                         calculateTotalAmount();
-
-                    }.bind(this), // Bind the current context to use inside the success callback
+                    }.bind(this),
                     error: function(xhr, status, error) {
                         console.error('Error fetching/calculating fees:', error);
                     }
@@ -335,122 +322,76 @@
                 var numItems = $(this).find(".number-of-items").val();
                 var feePerItem = $(this).find(".feePerItem").data("fee-per-item");
 
-                // Calculate total item fees
                 if (numItems && feePerItem) {
                     var itemFees = numItems * feePerItem;
-                    $(this).find(".totalItemFees").val(itemFees.toFixed(2));
+                    $(this).find(".totalItemFees").text(itemFees.toFixed(2));
                     totalItemFees += parseFloat(itemFees);
                 } else {
-                    $(this).find(".totalItemFees").text(''); // Clear the total item fees if numItems is empty
+                    $(this).find(".totalItemFees").text('');
                 }
             });
 
             // Update the Item Fees field with the total item fees
-            $("#itemFees").val(totalItemFees.toFixed(2));
+            $("#itemFees").text(totalItemFees.toFixed(2));
             calculateTotalAmount();
         }
 
+        // Calculate the total amount
         function calculateTotalAmount() {
-            var totalFees = parseFloat($("#fees").text()) || 0;
-            var totalItemFees = parseFloat($("#itemFees").text()) || 0;
-            var totalAmount = totalFees + totalItemFees;
-
+            var fees = parseFloat($("#fees").text()) || 0;
+            var itemFees = parseFloat($("#itemFees").text()) || 0;
+            var totalAmount = fees + itemFees;
             $("#totalAmount").text(totalAmount.toFixed(2));
         }
 
-        // Call calculateFees() whenever there is a change in nationality, category, establishment, or number of people
-        $(document).on("change", "#nationalities, #categories, #numberOfPeople", function() {
-            calculateFees();
-        });
-
-        // For nationality and category and total person calculation
+        // Bind event listeners for changes and clicks
+        $(document).on("change", "#nationalities, #categories, #numberOfPeople", calculateFees);
         $(document).on("click", ".addFields", function() {
-            var newFields = $("#selection1").clone(); // Clone the container for nationality and category
-            newFields.find("select").val(""); // Clear select values
-            newFields.find(".pricePerPerson").text(""); // Clear text for price per person
-            newFields.find("#totalFees").text(""); // Clear text for total fees
-
-            // Remove existing "Delete" button before appending
-            newFields.find('.removeFields').parent().remove();
-
-            // Append the new fields
+            var newFields = $("#selection1").clone();
+            newFields.find("select").val("");
+            newFields.find(".pricePerPerson").text("");
+            newFields.find("#totalFees").text("");
             newFields.insertAfter("#selections .form-row:last");
-
-            // Create a container for the "Delete" button to manage its width
-            var deleteButtonContainer = $("<div>", {"class": "delete-button-container"});
-            var deleteButton = $("<button>", {
-                "type": "button",
-                "class": "btn btn-danger removeFields",
-                "text": "Delete"
-            });
-
-            // Append the delete button to its container and then to the DOM
-            deleteButton.appendTo(deleteButtonContainer);
-            deleteButtonContainer.insertAfter(newFields);
+            var deleteButton = $("<button type='button' class='btn btn-danger removeFields'>Delete</button>");
+            deleteButton.insertAfter(newFields);
         });
 
-        // Event to handle the deletion of fields
         $(document).on("click", ".removeFields", function() {
-            $(this).parent('.delete-button-container').prev('.form-row').remove(); // Remove the fields row
-            $(this).parent('.delete-button-container').remove(); // Remove the delete button's container
+            $(this).prev('.form-row').remove();
+            $(this).remove();
             calculateFees();
             calculateTotalPersons();
+            calculateOtherFees();
         });
 
-        // Function to remove fields dynamically
-        $(document).on("click", ".removeFields", function() {
-            $(this).closest('.form-row').remove(); // Remove the closest form-row
-            // Recalculate total persons when removing a row
-            calculateTotalPersons();
-        });
-
-        // Check for existing combinations when selecting nationality and category
         $(document).on("change", ".form-group1 select", function() {
             var nationalityId = $(this).closest(".form-row").find("#nationalities").val();
             var categoryId = $(this).closest(".form-row").find("#categories").val();
-            var existingCombination = false;
-
-            // Only check for duplicate if both nationality and category are selected
             if (nationalityId && categoryId) {
-                // Check if the combination already exists with the same category
                 $("#selections .form-row").not($(this).closest(".form-row")).each(function() {
                     if ($(this).find("#nationalities").val() == nationalityId &&
                         $(this).find("#categories").val() == categoryId) {
-                        existingCombination = true;
-                        return false; // Break the loop
+                        alert("The selected combination already exists with the same category.");
+                        $(this).val("");
                     }
                 });
             }
-
-            if (existingCombination) {
-                alert("The selected combination already exists with the same category.");
-                $(this).val(""); // Reset the select value
-            }
-
-            // Recalculate total persons when changing a selection
-            calculateTotalPersons();
         });
 
-        // Calculate total persons
+        $(document).on("input", ".number-of-people", calculateTotalPersons);
+
+        // Function to update the count of total persons
         function calculateTotalPersons() {
             var totalPersons = 0;
-
-            // Sum up the number of people in each row
             $(".number-of-people").each(function() {
-                var numberOfPeople = parseInt($(this).val());
-                if (!isNaN(numberOfPeople)) {
-                    totalPersons += numberOfPeople;
-                }
+                var numberOfPeople = parseInt($(this).val()) || 0;
+                totalPersons += numberOfPeople;
             });
-
-            // Update the total persons field
-            $("#totalPersons").text(totalPersons); // Use text() instead of val()
+            $("#totalPersons").text(totalPersons);
         }
 
-        // Ensure total persons are updated when number of people input is changed
-        $(document).on("input", ".number-of-people", function() {
-            calculateTotalPersons();
-        });
+        $(document).on("input", ".number-of-items", calculateOtherFees);
+    });
 
         /// NonWorkingDays
         $(document).ready(function() {
@@ -540,35 +481,6 @@
                 });
             }
         });
-    });
-    function calculateOtherFees() {
-        var totalItemFees = 0;
-        var totalItemsCount = 0;
-
-        // Iterate over each fee entry row to calculate the total fees and count of items.
-        $(".feeEntryRow").each(function() {
-            var numItems = parseInt($(this).find(".number-of-items").val()) || 0;
-            var feePerItem = parseFloat($(this).find(".feePerItem").data("fee-per-item")) || 0;
-
-            // Calculate the total fees for this row and add to the running total.
-            var itemFees = numItems * feePerItem;
-            $(this).find(".totalItemFees").text(itemFees.toFixed(2)); // Display the calculated total for this row.
-            totalItemFees += itemFees; // Add to the total item fees.
-
-            // Sum the number of items for this row and add to the running total.
-            totalItemsCount += numItems;
-        });
-
-        // Update the total number of items and total item fees in the corresponding fields.
-        $("#totalItems").text(totalItemsCount); // Update total items count.
-        $("#itemFees").text(totalItemFees.toFixed(2)); // Update total item fees.
-    }
-
-    // Ensure this function is called whenever an input value changes.
-    $(document).on("input", ".number-of-items", function() {
-        calculateOtherFees();
-    });
-
 
 </script>
 </body>
