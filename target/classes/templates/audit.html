@@ -10,6 +10,7 @@
   <link href="static/bootstrap/bootstrap-icons.css" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="/css/audit.css">
 
 </head>
 <body class="py-4">
@@ -65,12 +66,13 @@
     </div>
   </section>
 </main>
-<footer id="footer" class="footer">
+<footer id="footer" class="footer text-center">
+  <img class="footer-logo" src="/img/nic2.png" alt="NIC Logo">
   <div class="copyright">
     &copy; Copyright <strong><span>NIC</span></strong>. All Rights Reserved
   </div>
   <div class="credits">
-    Designed by <a href="https://bootstrapmade.com/">NIC</a>
+    Designed by <a>NIC</a>
   </div>
 </footer>
 
@@ -82,7 +84,14 @@
 
 <script>
   $(document).ready(function() {
+    // Sidebar toggle functionality
+    $('#sidebarToggle').on('click', function() {
+      $('#sidebar').toggleClass('collapsed');
+      $('#main').toggleClass('collapsed');
+    });
+  $(document).ready(function() {
     $('#auditTable').DataTable();
+  });
   });
 </script>
 </body>

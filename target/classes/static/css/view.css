@@ -31,3 +31,9 @@ input[readonly], input:not([readonly]), select {
 .text-center{
     text-align: center;
 }
+.footer-logo {
+    height: 30px; /* Adjust the height as needed */
+}
+.welcome-text {
+    color: #ff6347; /* Use any color you like. This example uses Tomato. */
+}

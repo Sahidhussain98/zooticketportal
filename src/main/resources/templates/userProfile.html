@@ -82,21 +82,15 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="updateForm" th:action="@{/updateUserProfile}" th:object="${user}" method="post">
+            <form th:action="@{/updateUserProfile}" th:object="${user}" method="post">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="updatedUsername">Username<span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="updatedUsername" name="updatedUsername" required>
-                        <div class="invalid-feedback">
-                            Username should contain only letters.
-                        </div>
+                        <label for="Username">Username</label>
+                        <input type="text" class="form-control" id="updatedUsername" name="updatedUsername" th:value="${user.username}" required>
                     </div>
                     <div class="form-group">
-                        <label for="updatedEmail">Email<span class="text-danger">*</span></label>
-                        <input type="email" class="form-control" id="updatedEmail" name="updatedEmail" required>
-                        <div class="invalid-feedback">
-                            Please enter a valid email address.
-                        </div>
+                        <label for="updatedEmail">Email</label>
+                        <input type="email" class="form-control" id="updatedEmail" name="updatedEmail" th:value="${user.email}" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -107,6 +101,7 @@
         </div>
     </div>
 </div>
+
 <footer class="footer">
     <div class="container">
         <div class="footer-logo">

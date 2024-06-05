@@ -436,11 +436,6 @@ public class EstablishmentController {
         return ResponseEntity.ok("Deleted");
     }
 
-//    @GetMapping("/deleteFees/{feesId}")
-//    public ResponseEntity<?> deleteFees(@PathVariable("feesId") Long feesId) {
-//        feesServiceImpl.deleteFeesById(feesId);
-//        return ResponseEntity.ok("Deleted");
-//    }
 @GetMapping("/deleteFees/{feesId}")
 public String deleteEntryFee(@PathVariable Long feesId, RedirectAttributes redirectAttributes) {
     try {
@@ -460,7 +455,7 @@ public String deleteEntryFee(@PathVariable Long feesId, RedirectAttributes redir
         return "redirect:/establishments/viewEstablishment/{id}";
     } catch (Exception e) {
         redirectAttributes.addFlashAttribute("errorMessage", "Unable to delete entry fee at this time.");
-        return "errorPage/error";
+        return "/errorPage/error";
     }
 }
 

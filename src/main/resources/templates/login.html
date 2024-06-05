@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -15,10 +14,26 @@
     <style>
         body {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             height: 100vh;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background-color: #e0e0e0; /* Grey background color */
+        }
+
+        .header {
+            background: #ffffff;
+            width: 100%;
+            padding: 0.5rem 0; /* Reduced padding */
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .header img {
+            width: 60px; /* Reduced image size */
+            height: auto;
+            margin: 0 10px;
         }
 
         .login-container {
@@ -31,6 +46,7 @@
             align-items: center;
             width: 400px;
             position: relative;
+            margin-top: 2rem; /* Add margin to separate from header */
         }
 
         .login-container img {
@@ -141,12 +157,24 @@
             font-weight: bold;
             margin-bottom: 0.5rem;
         }
+        .footer-logo {
+            height: 30px; /* Adjust the height as needed */
+        }
+        .footer {
+            margin-top: 10rem; /* Add margin-top to the footer */
+        }
     </style>
 </head>
 
 <body>
+<div class="header">
+    <img src="/img/nicgrey.png" alt="Logo 1">
+    <img src="/img/gov.jpg" alt="Logo 2">
+    <img src="/img/forest.jpg" alt="Logo 4">
+    <img src="/img/logo.jpg" alt="Logo 3" height="60">
+</div>
 <div class="login-container">
-    <img src="/img/img-01.png" alt="Login Icon">
+    <img src="/img/forest.jpeg" alt="Login Icon">
     <div class="toggle-button-card">
         <span>User</span>
         <div class="toggle-switch">
@@ -178,7 +206,7 @@
                 </div>
 
                 <div class="form-group">
-                    <button type="button" id="otpButton" class="btn btn-primary btn-block" onclick="getAndCheckOTP()">
+                    <button type="button" id="otpButton" class="btn  btn-block" onclick="getAndCheckOTP()">
                         Get OTP
                     </button>
                 </div>
@@ -191,7 +219,7 @@
 
                 <div class="form-group">
                     <label for="phoneNumber">Phone Number</label>
-                    <input type="text" id="phoneNumber" class="form-control" name="phoneNumber" maxlength="10" required
+                    <input type="tel" id="phoneNumber" class="form-control" name="phoneNumber" maxlength="10" required
                            pattern="[0-9]{10}" title="Please enter a 10-digit phone number" inputmode="numeric">
                     <small class="form-text text-muted">Please enter a 10-digit phone number using only numbers.</small>
                 </div>
@@ -202,7 +230,7 @@
                 </div>
 
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary btn-block" onclick="getLogin()">
+                    <button type="submit" class="btn  btn-block" onclick="getLogin()">
                         Login
                     </button>
                 </div>
@@ -210,6 +238,15 @@
         </section>
     </div>
 </div>
+<footer id="footer" class="footer text-center">
+    <img class="footer-logo" src="/img/nic2.png" alt="NIC Logo">
+    <div class="copyright">
+        &copy; Copyright <strong><span>NIC</span></strong>. All Rights Reserved
+    </div>
+    <div class="credits">
+        Designed by <a>NIC</a>
+    </div>
+</footer>
 
 <!-- Include jQuery -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

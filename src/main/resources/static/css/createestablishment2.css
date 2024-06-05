@@ -1,61 +1,29 @@
-/*body {*/
-/*    background-color: #f8f9fa; !* Set background color *!*/
-/*    padding: 20px;*/
-/*}*/
-
-/*.form-container {*/
-/*    max-width: 1000px;*/
-/*    margin: auto;*/
-/*    background: #fff;*/
-/*    padding: 30px;*/
-/*    border-radius: 10px;*/
-/*    box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.1);*/
-/*}*/
-
-/*.highlight-required {*/
-/*    border-color: red; !* Change the border color to red *!*/
-/*    !* Add any other styling as needed *!*/
-/*}*/
-
-/*.submit-btn {*/
-/*    background-color: #007bff;*/
-/*    color: #fff;*/
-/*    border: none;*/
-/*    padding: 10px 20px;*/
-/*    cursor: pointer;*/
-/*    border-radius: 5px;*/
-/*    margin-top: 20px;*/
-/*}*/
-
-/*.submit-btn:hover {*/
-/*    background-color: #0056b3;*/
-/*}*/
-
-/*!* Customize the delete button *!*/
-/*.removeFields {*/
-/*    border-radius: 5px; !* Adjust border radius to make the button rounder *!*/
-/*    background-color: #dc3545; !* Change background color *!*/
-/*    color: #fff; !* Change text color *!*/
-/*    padding: 8px 16px; !* Adjust padding for better appearance *!*/
-/*    margin-left: 10px; !* Adjust margin as needed *!*/
-/*    border: none; !* Remove default button border *!*/
-/*}*/
-
-/*.removeFields:hover {*/
-/*    background-color: #c82333; !* Change background color on hover *!*/
-/*}*/
-/*.grey-text-field {*/
-/*    background-color:#E8E8E8; !* Grey background color *!*/
-/*    border: 1px solid #ccc; !* Grey border *!*/
-/*    color: #495057; !* Dark grey text color *!*/
-/*}*/
-
-/*.removeFieldsContainer {*/
-/*    display: block;*/
-/*    margin-top: 10px; !* Adjust the margin-top as needed *!*/
-/*}*/
-
-/*.addFields {*/
-/*    margin-top: 10px; !* Adjust margin-right as needed *!*/
-/*}*/
-
+.form-section {
+    margin-bottom: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+.form-section h2 {
+    margin-bottom: 15px;
+    font-size: 18px;
+    font-weight: bold;
+}
+.button-group {
+    margin-top: 15px;
+}
+.submit-btn {
+    margin-top: 20px;
+}
+.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.btn-icon i {
+    margin-right: 5px;
+}
+.footer-logo {
+    height: 30px; /* Adjust the height as needed */
+}

@@ -41,3 +41,6 @@ h1, h2 {
 .welcome-text {
     color: #ff6347; /* Use any color you like. This example uses Tomato. */
 }
+.footer-logo {
+    height: 30px; /* Adjust the height as needed */
+}

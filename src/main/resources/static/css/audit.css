@@ -39,3 +39,6 @@ th {
     background-color: #007bff;
     color: #ffffff;
 }
+.footer-logo {
+    height: 30px; /* Adjust the height as needed */
+}

@@ -33,11 +33,11 @@ public class Establishment {
     @JsonManagedReference
     private Village village;
 
-    @OneToMany(mappedBy = "establishment")
+    @OneToMany(mappedBy = "establishment", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<AllUser> users;
 
-    @OneToMany(mappedBy = "establishment")
+    @OneToMany(mappedBy = "establishment", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<NonWorkingDays> nonWorkingDays;
 
@@ -45,7 +45,7 @@ public class Establishment {
     @JsonManagedReference
     private List<Images> images;
 
-    @OneToMany(mappedBy = "establishment")
+    @OneToMany(mappedBy = "establishment", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     @JsonIgnoreProperties({"user","categoriesForTicket", "otherFeesForTickets","establishment"})
     private List<Ticket> tickets;

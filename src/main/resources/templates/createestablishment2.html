@@ -9,34 +9,6 @@
     <link href="static/bootstrap/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/createestablishment2.css">
-    <style>
-        .form-section {
-            margin-bottom: 20px;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background-color: #f9f9f9;
-        }
-        .form-section h2 {
-            margin-bottom: 15px;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .button-group {
-            margin-top: 15px;
-        }
-        .submit-btn {
-            margin-top: 20px;
-        }
-        .btn-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .btn-icon i {
-            margin-right: 5px;
-        }
-    </style>
 </head>
 <body>
 <!--<div th:replace="fragments/adminNavBar :: adminNavBar"></div>-->
@@ -46,7 +18,7 @@
         <h1>Additional Details</h1>
         <nav>
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a th:href="@{/adminpage}">Home</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/adminpage}">Home</a></li><li class="breadcrumb-item"><a th:href="@{/establishments/new}">Create Establishments</a></li>
                 <li class="breadcrumb-item active">Additional Details</li>
             </ol>
         </nav>
@@ -158,12 +130,13 @@
     </section>
 </main>
 
-<footer id="footer" class="footer">
+<footer id="footer" class="footer text-center">
+    <img class="footer-logo" src="/img/nic2.png" alt="NIC Logo">
     <div class="copyright">
         &copy; Copyright <strong><span>NIC</span></strong>. All Rights Reserved
     </div>
     <div class="credits">
-        Designed by <a href="https://bootstrapmade.com/">NIC</a>
+        Designed by <a>NIC</a>
     </div>
 </footer>
 
@@ -175,100 +148,107 @@
 
 <script th:inline="javascript">
     $(document).ready(function() {
-        var counter = 1;
-        var addedCombinations = []; // Array to store added nationality-category combinations
-
-        // Function to add additional information fields dynamically
-        $("#addFields").click(function() {
-            counter++;
-            var newFields = $("#fieldSet1").clone();
-            newFields.attr("id", "fieldSet" + counter);
-            newFields.find("input, select").val(""); // Clear input values
-            newFields.find("select").prop('selectedIndex', 0); // Reset select fields
-            newFields.find(".removeFields").removeClass('d-none'); // Show delete button
-
-            // Add delete button functionality
-            newFields.find(".removeFields").on("click", function() {
-                $(this).closest(".form-row").remove();
-            });
-
-            newFields.insertBefore("#addFields").removeClass('d-none');
-
-            // Add event listener to check for duplicate combinations
-            newFields.find("select[name='nationalityId'], select[name='categoryId']").on("change", function() {
-                checkForDuplicateCombination();
-            });
+        // Sidebar toggle functionality
+        $('#sidebarToggle').on('click', function () {
+            $('#sidebar').toggleClass('collapsed');
+            $('#main').toggleClass('collapsed');
         });
+        $(document).ready(function () {
+            var counter = 1;
+            var addedCombinations = []; // Array to store added nationality-category combinations
 
-        // Function to add other fees fields dynamically
-        $(".addOtherFees").click(function() {
-            counter++;
-            var newFields = $("#newFeesRow").clone();
-            newFields.attr("id", "newFeesRow" + counter);
-            newFields.find("input").val(""); // Clear input values
-            newFields.find(".removeFields").removeClass('d-none'); // Show delete button
+            // Function to add additional information fields dynamically
+            $("#addFields").click(function () {
+                counter++;
+                var newFields = $("#fieldSet1").clone();
+                newFields.attr("id", "fieldSet" + counter);
+                newFields.find("input, select").val(""); // Clear input values
+                newFields.find("select").prop('selectedIndex', 0); // Reset select fields
+                newFields.find(".removeFields").removeClass('d-none'); // Show delete button
 
-            // Add delete button functionality
-            newFields.find(".removeFields").on("click", function() {
-                $(this).closest('.form-row').remove();
+                // Add delete button functionality
+                newFields.find(".removeFields").on("click", function () {
+                    $(this).closest(".form-row").remove();
+                });
+
+                newFields.insertBefore("#addFields").removeClass('d-none');
+
+                // Add event listener to check for duplicate combinations
+                newFields.find("select[name='nationalityId'], select[name='categoryId']").on("change", function () {
+                    checkForDuplicateCombination();
+                });
             });
 
-            newFields.insertBefore(".addOtherFees"); // Insert before the Add button
-        });
+            // Function to add other fees fields dynamically
+            $(".addOtherFees").click(function () {
+                counter++;
+                var newFields = $("#newFeesRow").clone();
+                newFields.attr("id", "newFeesRow" + counter);
+                newFields.find("input").val(""); // Clear input values
+                newFields.find(".removeFields").removeClass('d-none'); // Show delete button
 
-        // Function to check for duplicate nationality-category combinations
-        function checkForDuplicateCombination() {
-            addedCombinations = [];
-            var isDuplicate = false;
-            $(".form-row").each(function() {
-                var nationalityId = $(this).find("select[name='nationalityId']").val();
-                var categoryId = $(this).find("select[name='categoryId']").val();
+                // Add delete button functionality
+                newFields.find(".removeFields").on("click", function () {
+                    $(this).closest('.form-row').remove();
+                });
 
-                if (nationalityId && categoryId) {
-                    var combination = nationalityId + "-" + categoryId;
-                    if (addedCombinations.includes(combination)) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: 'This combination already exists!',
-                        });
-                        isDuplicate = true;
-                        $(this).find("select[name='nationalityId']").val("");
-                        $(this).find("select[name='categoryId']").val("");
-                        return false;
-                    } else {
-                        addedCombinations.push(combination);
+                newFields.insertBefore(".addOtherFees"); // Insert before the Add button
+            });
+
+            // Function to check for duplicate nationality-category combinations
+            function checkForDuplicateCombination() {
+                addedCombinations = [];
+                var isDuplicate = false;
+                $(".form-row").each(function () {
+                    var nationalityId = $(this).find("select[name='nationalityId']").val();
+                    var categoryId = $(this).find("select[name='categoryId']").val();
+
+                    if (nationalityId && categoryId) {
+                        var combination = nationalityId + "-" + categoryId;
+                        if (addedCombinations.includes(combination)) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: 'This combination already exists!',
+                            });
+                            isDuplicate = true;
+                            $(this).find("select[name='nationalityId']").val("");
+                            $(this).find("select[name='categoryId']").val("");
+                            return false;
+                        } else {
+                            addedCombinations.push(combination);
+                        }
                     }
-                }
-            });
-            return !isDuplicate;
-        }
-
-        // Event listeners for existing fields to check for duplicate combinations
-        $("select[name='nationalityId'], select[name='categoryId']").on("change", function() {
-            checkForDuplicateCombination();
-        });
-
-        // Adjust validateForm() function to include newly added fields
-        function validateForm() {
-            var fieldSets = document.querySelectorAll('.form-row');
-            var isAnyFieldSetFilled = Array.from(fieldSets).some(function(fieldSet) {
-                return Array.from(fieldSet.querySelectorAll('input, select')).some(function(field) {
-                    return field.value.trim();
                 });
-            });
-
-            if (!isAnyFieldSetFilled) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please fill at least one set of nationality, category, and fees fields!',
-                });
-                return false;
+                return !isDuplicate;
             }
 
-            return checkForDuplicateCombination(); // Check for duplicates before submitting
-        }
+            // Event listeners for existing fields to check for duplicate combinations
+            $("select[name='nationalityId'], select[name='categoryId']").on("change", function () {
+                checkForDuplicateCombination();
+            });
+
+            // Adjust validateForm() function to include newly added fields
+            function validateForm() {
+                var fieldSets = document.querySelectorAll('.form-row');
+                var isAnyFieldSetFilled = Array.from(fieldSets).some(function (fieldSet) {
+                    return Array.from(fieldSet.querySelectorAll('input, select')).some(function (field) {
+                        return field.value.trim();
+                    });
+                });
+
+                if (!isAnyFieldSetFilled) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Please fill at least one set of nationality, category, and fees fields!',
+                    });
+                    return false;
+                }
+
+                return checkForDuplicateCombination(); // Check for duplicates before submitting
+            }
+        });
     });
 </script>
 

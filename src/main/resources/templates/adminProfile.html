@@ -95,56 +95,73 @@
         </div>
     </div>
 </div>
+<footer id="footer" class="footer text-center">
+    <img class="footer-logo" src="/img/nic2.png" alt="NIC Logo">
+    <div class="copyright">
+        &copy; Copyright <strong><span>NIC</span></strong>. All Rights Reserved
+    </div>
+    <div class="credits">
+        Designed by <a>NIC</a>
+    </div>
+</footer>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
-    function validatePasswords() {
-        // Get password fields
-        var currentPassword = document.getElementById("currentPassword").value;
-        var newPassword = document.getElementById("password").value;
-        var confirmPassword = document.getElementById("confirmPassword").value;
-
-        // Check if new password matches the confirmed password
-        if (newPassword !== confirmPassword) {
-            // Show alert if passwords don't match
-            showAlert("error", "New passwords do not match with Confirm Password.");
-            return false; // Prevent form submission
-        }
-
-        // This part should be replaced with actual validation logic
-        // Here, we'll assume the current password matches the existing password
-        // Replace this with AJAX request to the server for actual password validation
-        var currentPasswordMatches = true;
-
-        // Check if current password matches the existing password
-        if (!currentPasswordMatches) {
-            // Show alert if current password doesn't match
-            showAlert("error", "Current password is incorrect.");
-            return false; // Prevent form submission
-        }
-
-        // Allow form submission if passwords match and current password is correct
-        return true;
-    }
-
-    // Function to show alert message
-    function showAlert(icon, message) {
-        Swal.fire({
-            icon: icon,
-            title: message,
-            showConfirmButton: false,
-            timer: 1500
+    $(document).ready(function() {
+        // Sidebar toggle functionality
+        $('#sidebarToggle').on('click', function () {
+            $('#sidebar').toggleClass('collapsed');
+            $('#main').toggleClass('collapsed');
         });
-    }
 
-    // Check for success message and show alert if exists
-    window.onload = function() {
-        var successMessage = /*[[${successMessage}]]*/ 'null';
-        if (successMessage !== 'null') {
-            showAlert('success', successMessage);
+        function validatePasswords() {
+            // Get password fields
+            var currentPassword = document.getElementById("currentPassword").value;
+            var newPassword = document.getElementById("password").value;
+            var confirmPassword = document.getElementById("confirmPassword").value;
+
+            // Check if new password matches the confirmed password
+            if (newPassword !== confirmPassword) {
+                // Show alert if passwords don't match
+                showAlert("error", "New passwords do not match with Confirm Password.");
+                return false; // Prevent form submission
+            }
+
+            // This part should be replaced with actual validation logic
+            // Here, we'll assume the current password matches the existing password
+            // Replace this with AJAX request to the server for actual password validation
+            var currentPasswordMatches = true;
+
+            // Check if current password matches the existing password
+            if (!currentPasswordMatches) {
+                // Show alert if current password doesn't match
+                showAlert("error", "Current password is incorrect.");
+                return false; // Prevent form submission
+            }
+
+            // Allow form submission if passwords match and current password is correct
+            return true;
         }
-    };
+
+        // Function to show alert message
+        function showAlert(icon, message) {
+            Swal.fire({
+                icon: icon,
+                title: message,
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+
+        // Check for success message and show alert if exists
+        window.onload = function () {
+            var successMessage = /*[[${successMessage}]]*/ 'null';
+            if (successMessage !== 'null') {
+                showAlert('success', successMessage);
+            }
+        };
+    });
 </script>
 </body>
 </html>

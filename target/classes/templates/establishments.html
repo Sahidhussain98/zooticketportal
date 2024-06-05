@@ -69,14 +69,14 @@
 </main>
 
 <footer id="footer" class="footer text-center">
+    <img class="footer-logo" src="/img/nic2.png" alt="NIC Logo">
     <div class="copyright">
         &copy; Copyright <strong><span>NIC</span></strong>. All Rights Reserved
     </div>
     <div class="credits">
-        Designed by <a href="https://bootstrapmade.com/">NIC</a>
+        Designed by <a>NIC</a>
     </div>
 </footer>
-
 <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -84,29 +84,36 @@
 <script src="https://stackpath.amazonaws.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    $(document).on("click", ".table .text-danger", function(e) {
-        e.preventDefault();
-        var deleteButton = $(this);
-        Swal.fire({
-            title: 'Are you sure?',
-            text: 'You will not be able to recover this establishment!',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = deleteButton.attr('href');
-            }
+    $(document).ready(function() {
+        // Sidebar toggle functionality
+        $('#sidebarToggle').on('click', function () {
+            $('#sidebar').toggleClass('collapsed');
+            $('#main').toggleClass('collapsed');
         });
-    });
+        $(document).on("click", ".table .text-danger", function (e) {
+            e.preventDefault();
+            var deleteButton = $(this);
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You will not be able to recover this establishment!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = deleteButton.attr('href');
+                }
+            });
+        });
 
-    // Filter table rows based on search input
-    $(document).ready(function(){
-        $("#searchInput").on("keyup", function() {
-            var value = $(this).val().toLowerCase();
-            $("#establishmentTable tbody tr").filter(function() {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+        // Filter table rows based on search input
+        $(document).ready(function () {
+            $("#searchInput").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#establishmentTable tbody tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
             });
         });
     });
