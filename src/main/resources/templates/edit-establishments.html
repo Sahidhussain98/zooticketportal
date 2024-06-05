@@ -45,6 +45,8 @@
                                                 <p class="profile-field">Status: <span th:classappend="${establishment.status} ? 'badge badge-success' : 'badge badge-danger'" th:text="${establishment.status} ? 'Active' : 'Inactive'"></span></p>
                                                 <p class="profile-field">Name: <input type="text" name="name" th:value="${establishment.name}" readonly pattern="[A-Za-z\s]+" title="Please enter letters only." /></p>
                                                 <p class="profile-field">Address: <input type="text" name="address" th:value="${establishment.address}" readonly pattern="[A-Za-z\s]+" title="Please enter letters only." /></p>
+                                                <p class="profile-field">Opening Time: <input type="time" name="openingTime" th:value="${establishment.openingTime}" readonly /></p>
+                                                <p class="profile-field">Closing Time: <input type="time" name="closingTime" th:value="${establishment.closingTime}" readonly /></p>
                                             </div>
                                             <button type="submit" id="saveButton" class="btn btn-primary save-button" style="display: none;">Save</button>
                                             <button type="button" id="editButton" class="btn btn-secondary edit-button">Edit</button>
