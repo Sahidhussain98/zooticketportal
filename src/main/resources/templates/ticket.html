@@ -5,137 +5,15 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Welcome User</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Include Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/usersidenavbar.css">
-    <style>
-        body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-
-        .container-form {
-            max-width: 90%;
-            margin: 20px auto;
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        .form-group, .form-group1, .form-group-quarter {
-            margin-bottom: 20px;
-            padding: 10px;
-        }
-
-        label {
-            font-weight: 600;
-            color: #333;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            transition: border-color 0.3s;
-        }
-
-        input[type="submit"] {
-            background-color: #0056b3;
-            color: white;
-            cursor: pointer;
-            padding: 12px 20px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #004494;
-        }
-
-        .add-button, .btn-primary, .btn-danger {
-            cursor: pointer;
-            padding: 8px 16px;
-            border-radius: 4px;
-            border: none;
-            transition: background-color 0.3s;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: #0069d9;
-        }
-
-        .btn-danger {
-            background-color: #dc3545;
-            color: white;
-            display: block; /* Make it a block level element */
-            width: 100%; /* Full width */
-            text-align: center; /* Center the text */
-        }
-
-        .btn-danger:hover {
-            background-color: #c82333;
-        }
-
-        .form-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .form-group1, .form-group-quarter {
-            flex: 1 1 180px;
-        }
-
-        .form-group-half {
-            flex: 1 1 45%;
-        }
-
-        .separator {
-            border-top: 1px solid #ccc;
-            margin: 24px 0;
-        }
-
-        @media (max-width: 768px) {
-            .form-row {
-                flex-direction: column;
-            }
-        }
-        .full-width {
-            flex-basis: 100%; /* Takes full width of the container */
-            display: flex;
-            flex-direction: column; /* Stacks label and input vertically */
-        }
-
-        .number-of-items-input {
-            width: 60%; /* Adjust this as needed */
-            margin-top: 5px; /* Adds a little space above the input */
-        }
-        .footer {
-            background-color: #333;
-            color:  white;
-            padding: 20px 0;
-            text-align: center;
-        }
-        .footer-logo img {
-            max-width: 100px;
-            margin-bottom: 10px;
-        }
-        .footer-text p {
-            margin: 5px 0;
-        }
-
-    </style>
+    <link rel="stylesheet" href="/css/ticket.css">
 
 </head>
 <body>
 
-<div th:replace="~{fragments/userDoubleHeader:: userSideBar}"></div>
+<div th:replace="~{fragments/userDoubleHeader::userSideBar}"></div>
 
 <div class="container-form">
     <h3 class="text-center">Welcome to <span th:text="${establishment.name}"></span></h3>
@@ -147,24 +25,25 @@
         <fieldset>
             <legend>Personal Information</legend>
             <div class="form-row">
-                <div class="form-group">
+                <div class="form-group-quarter">
                     <label for="dateTime">Date:<span class="text-danger">*</span></label>
                     <input type="date" id="dateTime" th:field="*{dateTime}" required />
                 </div>
-                <div class="form-group">
+                <div class="form-group-quarter">
                     <label for="userName">Name:<span class="text-danger">*</span></label>
                     <input type="text" id="userName" th:field="*{userName}" required />
                 </div>
-                <div class="form-group">
+                <div class="form-group-quarter">
                     <label for="email">Email:<span class="text-danger">*</span></label>
                     <input type="email" id="email" th:field="*{email}" />
                 </div>
-                <div class="form-group">
+                <div class="form-group-quarter">
                     <label for="phoneNumber">Phone Number:<span class="text-danger">*</span></label>
-                    <input type="tel" id="phoneNumber" th:field="*{phoneNumber}" />
+                    <input type="tel" id="phoneNumber" th:field="*{phoneNumber}" readonly/>
                 </div>
             </div>
         </fieldset>
+
 
         <hr class="separator">
 
@@ -263,6 +142,7 @@
         </div>
     </form>
 </div>
+<!-- Footer HTML -->
 <footer class="footer">
     <div class="container">
         <div class="footer-logo">
@@ -283,50 +163,58 @@
         $('#dateTime').attr('min', today);
 
         // Calculate fees and update the pricePerPerson and totalFees fields
-            function calculateFees() {
-                var totalFees = 0;
-                $("#selections .form-row").each(function() {
-                    var establishmentId = $("#establishmentId").val();
-                    var nationalityId = $(this).find("#nationalities").val();
-                    var categoryId = $(this).find("#categories").val();
-                    var numberOfPeople = $(this).find("#numberOfPeople").val() || 0;
+        // Update the calculateFees function
+        function calculateFees() {
+            var totalFees = 0;
+            $("#selections .form-row").each(function() {
+                var establishmentId = $("#establishmentId").val();
+                var nationalityId = $(this).find("#nationalities").val();
+                var categoryId = $(this).find("#categories").val();
+                var numberOfPeople = $(this).find("#numberOfPeople").val() || 1;  // Default to 1 for calculation purposes
 
-                    if (numberOfPeople == 0) {
-                        $(this).find("#totalFees").text("");
-                        return; // Skip AJAX call if no people
-                    }
+                // Skip AJAX call if nationality or category is not selected
+                if (!nationalityId || !categoryId) {
+                    $(this).find(".pricePerPerson").text(""); // Clear price per person if selections are incomplete
+                    return;
+                }
 
-                    $.ajax({
-                        url: '/fetchFee',
-                        method: 'GET',
-                        data: {
-                            nationalityId: nationalityId,
-                            categoryId: categoryId,
-                            establishmentId: establishmentId,
-                            numberOfPeople: numberOfPeople
-                        },
-                        success: function(response) {
+                $.ajax({
+                    url: '/fetchFee',
+                    method: 'GET',
+                    data: {
+                        nationalityId: nationalityId,
+                        categoryId: categoryId,
+                        establishmentId: establishmentId,
+                        numberOfPeople: numberOfPeople
+                    },
+                    success: function(response) {
+                        $(this).find(".pricePerPerson").text(response.entryFee);
+                        if (numberOfPeople > 0) {
                             $(this).find("#totalFees").text(response.totalFees);
-                            $(this).find(".pricePerPerson").text(response.entryFee);
                             totalFees += parseFloat(response.totalFees);
                             $("#fees").text(totalFees.toFixed(2));
                             calculateTotalAmount();
-                        }.bind(this),
-                        error: function(xhr, status, error) {
-                            console.error('Error fetching/calculating fees:', error);
                         }
-                    });
+                    }.bind(this),
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching/calculating fees:', error);
+                    }
                 });
-            }
-
-            $(document).on("input", "#numberOfPeople", function() {
-                if ($(this).val() == "" || $(this).val() == "0") {
-                    $(this).closest(".form-row").find("#totalFees").text("");
-                    calculateFees(); // To update other calculations based on fees being zeroed out
-                } else {
-                    calculateFees();
-                }
             });
+        }
+
+// Event listener for nationality and category changes
+        $(document).on("change", "#nationalities, #categories", function() {
+            calculateFees();  // This will now trigger fee calculation whenever these fields change
+        });
+
+// Keep the existing input event on numberOfPeople
+        $(document).on("input", "#numberOfPeople", function() {
+            if ($(this).val() == "" || $(this).val() == "0") {
+                $(this).closest(".form-row").find("#totalFees").text("");
+            }
+            calculateFees();  // Recalculate fees to update based on the number of people
+        });
 
 
 
@@ -368,7 +256,7 @@
             newFields.find(".pricePerPerson").text("");
             newFields.find("#totalFees").text("");
             newFields.insertAfter("#selections .form-row:last");
-            var deleteButton = $("<button type='button' class='btn btn-danger removeFields'>Delete</button>");
+            var deleteButton = $("<button type='button' class='btn btn-danger removeFields'>Delete</button> ");
             deleteButton.insertAfter(newFields);
         });
 
@@ -417,52 +305,52 @@
         $(document).on("input", ".number-of-items", calculateOtherFees);
     });
 
-        /// NonWorkingDays
-        $(document).ready(function() {
-            var establishmentId = $('#establishmentId').val();
-            console.log("Establishment ID:", establishmentId);
+    /// NonWorkingDays
+    $(document).ready(function() {
+        var establishmentId = $('#establishmentId').val();
+        console.log("Establishment ID:", establishmentId);
 
+        $.ajax({
+            url: '/fetchNonWorkingDays/' + establishmentId,
+            method: 'GET',
+            success: function(response) {
+                console.log("Success response:", response);
+                // Extract non-working dates and reasons
+                var nonWorkingDates = [];
+                $.each(response, function(index, item) {
+                    nonWorkingDates.push(item.nonWorkingDate); // Assuming nonWorkingDate is the field containing the date
+                });
+
+                console.log("Non-working dates:", nonWorkingDates);
+
+                // Disable non-working dates
+                $('#dateTime').on('input', function() {
+                    var selectedDate = $(this).val();
+                    if (nonWorkingDates.includes(selectedDate)) {
+                        alert("This date is closed due to: " + response[nonWorkingDates.indexOf(selectedDate)].reason + "Please select another date");
+                        $(this).val(''); // Clear the selected date
+                    }
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching non-working dates:', error);
+            }
+        });
+
+        // Fetch and display other fees
+        fetchOtherFees();
+
+        function fetchOtherFees() {
             $.ajax({
-                url: '/fetchNonWorkingDays/' + establishmentId,
+                url: '/fetchOtherFees',
                 method: 'GET',
+                data: { establishmentId: establishmentId },
                 success: function(response) {
-                    console.log("Success response:", response);
-                    // Extract non-working dates and reasons
-                    var nonWorkingDates = [];
-                    $.each(response, function(index, item) {
-                        nonWorkingDates.push(item.nonWorkingDate); // Assuming nonWorkingDate is the field containing the date
-                    });
+                    var feesList = $("#feesList");
+                    feesList.empty(); // Clear existing rows
 
-                    console.log("Non-working dates:", nonWorkingDates);
-
-                    // Disable non-working dates
-                    $('#dateTime').on('input', function() {
-                        var selectedDate = $(this).val();
-                        if (nonWorkingDates.includes(selectedDate)) {
-                            alert("This date is closed due to: " + response[nonWorkingDates.indexOf(selectedDate)].reason + "Please select another date");
-                            $(this).val(''); // Clear the selected date
-                        }
-                    });
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error fetching non-working dates:', error);
-                }
-            });
-
-            // Fetch and display other fees
-            fetchOtherFees();
-
-            function fetchOtherFees() {
-                $.ajax({
-                    url: '/fetchOtherFees',
-                    method: 'GET',
-                    data: { establishmentId: establishmentId },
-                    success: function(response) {
-                        var feesList = $("#feesList");
-                        feesList.empty(); // Clear existing rows
-
-                        response.forEach(function(fee, index) {  // Add an index to create unique IDs
-                            var feeEntryRow = `
+                    response.forEach(function(fee, index) {  // Add an index to create unique IDs
+                        var feeEntryRow = `
                 <div class="row full-width feeEntryRow">
                     <div class="col-lg-3">
                         <label>Fee Type:</label>
@@ -482,29 +370,29 @@
                         <span id="totalItemFees_${index}" class="totalItemFees"></span>
                     </div>
                 </div>`;
-                            feesList.append(feeEntryRow);
-                        });
+                        feesList.append(feeEntryRow);
+                    });
 
-                        bindItemInputEvents();
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error fetching other fees:', error);
-                    }
-                });
-            }
+                    bindItemInputEvents();
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching other fees:', error);
+                }
+            });
+        }
 
-            function bindItemInputEvents() {
-                // Bind event listener to number of items input
-                $(document).on("input", ".number-of-items", function() {
-                    var currentRow = $(this).closest('.feeEntryRow');
-                    var numItems = parseInt($(this).val()) || 0;
-                    var feePerItem = parseFloat(currentRow.find(".feePerItem").data("fee-per-item")) || 0;
+        function bindItemInputEvents() {
+            // Bind event listener to number of items input
+            $(document).on("input", ".number-of-items", function() {
+                var currentRow = $(this).closest('.feeEntryRow');
+                var numItems = parseInt($(this).val()) || 0;
+                var feePerItem = parseFloat(currentRow.find(".feePerItem").data("fee-per-item")) || 0;
 
-                    var totalItemFees = numItems * feePerItem;
-                    currentRow.find(".totalItemFees").text(totalItemFees.toFixed(2));
-                });
-            }
-        });
+                var totalItemFees = numItems * feePerItem;
+                currentRow.find(".totalItemFees").text(totalItemFees.toFixed(2));
+            });
+        }
+    });
     function calculateTotalItems() {
         var totalItems = 0;
         $(".number-of-items").each(function() {

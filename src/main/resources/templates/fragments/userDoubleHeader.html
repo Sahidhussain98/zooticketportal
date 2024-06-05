@@ -29,6 +29,8 @@
                     <li><a th:href="@{/userpage}">Home</a></li>
                     <li><a th:href="@{/getBookings}">Bookings</a></li>
                     <li><a th:href="@{/userDetails}">Profile</a></li>
+                    <li><button onclick="history.back()" class="btn btn-link">Go Back</button></li>
+
                 </ul>
             </nav>
             <form th:action="@{/logout}" method="post" class="form-inline">

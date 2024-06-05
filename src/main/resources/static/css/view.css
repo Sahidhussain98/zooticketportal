@@ -37,3 +37,7 @@ input[readonly], input:not([readonly]), select {
 .welcome-text {
     color: #ff6347; /* Use any color you like. This example uses Tomato. */
 }
+.uniform-input {
+    width: 250px; /* Set your desired width */
+    height: 38px; /* Set your desired height */
+}
