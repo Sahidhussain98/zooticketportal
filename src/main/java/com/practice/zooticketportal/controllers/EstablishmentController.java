@@ -432,25 +432,13 @@ public class EstablishmentController {
 
 
     @GetMapping("/deleteOtherFees/{otherFeesId}")
-    public String deleteOtherFee(@PathVariable Long otherFeesId, RedirectAttributes redirectAttributes) {
+    @ResponseBody
+    public ResponseEntity<String> deleteOtherFees(@PathVariable Long otherFeesId) {
         try {
-            OtherFees otherFees = otherFeesRepo.findById(otherFeesId).orElseThrow(() -> new IllegalArgumentException("Invalid fees ID"));
-            Long establishmentId = otherFees.getEstablishment().getEstablishmentId();
             otherFeesRepo.deleteById(otherFeesId);
-
-            // Check if there are no entry fees left for the establishment
-            if (otherFeesRepo.countByEstablishmentId(establishmentId) == 0) {
-                Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
-                establishment.setStatus(false);
-                establishmentService.updateEstablishment(establishment);
-            }
-
-            redirectAttributes.addFlashAttribute("successMessage", "Other fee deleted successfully.");
-            redirectAttributes.addAttribute("id", establishmentId);
-            return "redirect:/establishments/viewEstablishment/{id}";
+            return ResponseEntity.ok("Other fee deleted successfully");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Unable to delete other fee at this time.");
-            return "/errorPage/error";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting other fee");
         }
     }
 

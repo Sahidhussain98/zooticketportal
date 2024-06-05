@@ -23,8 +23,6 @@
             </ol>
         </nav>
     </div>
-    <h3 class="text-center welcome-text">Welcome to <span th:text="${establishment.name}"></span></h3>
-
     <section class="section dashboard">
         <div class="row">
             <div class="col-lg-12">
@@ -445,6 +443,7 @@
     });
 
     // Function to handle the deletion of other fees
+    // Function to handle the deletion of other fees
     function confirmDeleteOtherFee(event, otherFeesId) {
         event.preventDefault();
         Swal.fire({
@@ -460,10 +459,11 @@
                     url: `/establishments/deleteOtherFees/${otherFeesId}`,
                     type: 'GET',
                     success: function (response) {
-                        Swal.fire('Deleted!', 'The fee has been deleted and establishment status updated.', 'success')
+                        Swal.fire('Deleted!', 'The fee has been deleted', 'success')
                             .then((result) => {
                                 if (result.isConfirmed) {
-                                    location.reload(); // Reload the page to reflect changes
+                                    // Remove the row from the table
+                                    $('tr[data-other-fees-id="' + otherFeesId + '"]').remove();
                                 }
                             });
                     },
@@ -474,7 +474,6 @@
             }
         });
     }
-
     // Attach the delete event listener for other fees
     $(document).ready(function() {
         $('.other-fees-table-container').on('click', '.btn-danger', function(event) {
