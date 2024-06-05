@@ -7,8 +7,6 @@ import com.practice.zooticketportal.service.OtherFeesService;
 import com.practice.zooticketportal.service.StorageService;
 import com.practice.zooticketportal.serviceimpl.FeesServiceImpl;
 import com.practice.zooticketportal.serviceimpl.OtherFeesServiceImpl;
-import net.sf.jasperreports.engine.JRException;
-import org.junit.platform.commons.logging.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -216,7 +214,7 @@ public class EstablishmentController {
                                      @RequestParam("address") String address,
                                      @RequestParam("openingTime") String openingTimeStr,
                                      @RequestParam("closingTime") String closingTimeStr,
-                                     @RequestParam("image") MultipartFile imageFile,
+                                     @RequestParam("imageFiles") MultipartFile[] imageFiles,
                                      @RequestParam("nationalityId") List<Long> nationalityIds,
                                      @RequestParam("categoryId") List<Long> categoryIds,
                                      @RequestParam("entryFee") List<Double> entryFees,
@@ -240,7 +238,9 @@ public class EstablishmentController {
             establishment.setEnteredBy(enteredBy);
             establishmentService.saveEstablishment(establishment);
 
-            Long imageId = storageService.uploadImage(imageFile, establishmentId);
+            for (MultipartFile imageFile : imageFiles) {
+                storageService.uploadImage(imageFile, establishmentId);
+            }
 
             for (int i = 0; i < nationalityIds.size(); i++) {
                 Long nationalityId = nationalityIds.get(i);
@@ -252,9 +252,7 @@ public class EstablishmentController {
                 fees.setCategory(categoryRepo.findById(categoryId).orElse(null));
                 fees.setEstablishment(establishment);
                 fees.setEnteredOn(LocalDateTime.now());
-                Authentication authentication1 = SecurityContextHolder.getContext().getAuthentication();
-                String enteredBy1 = authentication1.getName();
-                fees.setEnteredBy(enteredBy1);
+                fees.setEnteredBy(currentUserName);
 
                 feesRepo.save(fees);
             }
@@ -274,12 +272,10 @@ public class EstablishmentController {
             model.addAttribute("message", "Establishment updated successfully!");
         } catch (IOException e) {
             model.addAttribute("error", "Failed to upload image. Please try again.");
-            return "errorpage/error";
+            return "/errorpage/error";
         }
-
-        return "redirect:/establishments";
+        return "redirect:/establishments"; // Replace with your actual success page
     }
-
     @GetMapping("/districts/{stateCode}")
     @ResponseBody
     public ResponseEntity<List<District>> getDistrictsByStateCode(@PathVariable Long stateCode) {
@@ -341,6 +337,7 @@ public class EstablishmentController {
         establishmentService.updateEstablishment(existingEstablishment);
         return "redirect:/establishments";
     }
+
 
     @PostMapping("/updateOtherFees")
     public String updateOtherFees(
@@ -546,7 +543,21 @@ public String deleteEntryFee(@PathVariable Long feesId, RedirectAttributes redir
         return response;
     }
 
+    @GetMapping("/fetchCounts")
+    public ResponseEntity<Map<String, Long>> fetchCounts() {
+        Long establishmentsCount = establishmentRepo.countEstablishments();
+        Long visitorsCount = 0L; // Replace this with the actual logic to fetch visitor counts if needed
+        Long activeEstablishmentsCount = establishmentRepo.countActiveEstablishments();
+        Long inactiveEstablishmentsCount = establishmentRepo.countInactiveEstablishments();
 
+        Map<String, Long> counts = new HashMap<>();
+        counts.put("establishments", establishmentsCount);
+        counts.put("visitors", visitorsCount);
+        counts.put("activeEstablishments", activeEstablishmentsCount);
+        counts.put("inactiveEstablishments", inactiveEstablishmentsCount);
+
+        return ResponseEntity.ok(counts);
+    }
 
 
 

@@ -77,7 +77,7 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public void confirmBooking(String toEmail, byte[] attachmentBytes) {
+    public void confirmBooking(String toEmail, byte[] attachmentBytes, String establishmentName) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         try {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
@@ -86,11 +86,10 @@ public class TicketServiceImpl implements TicketService {
             helper.setText("Your booking is confirmed. Thank you for your attention.");
 
             // Add attachment
-            // Change the path as per your file location
             helper.addAttachment("ticket.pdf", new ByteArrayResource(attachmentBytes));
 
             javaMailSender.send(mimeMessage);
-        } catch (MailException | MessagingException e) {
+        } catch (MessagingException e) {
             e.printStackTrace();
         }
     }

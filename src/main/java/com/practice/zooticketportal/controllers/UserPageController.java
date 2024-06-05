@@ -6,7 +6,9 @@ import com.practice.zooticketportal.repositories.AllUserRepo;
 import com.practice.zooticketportal.service.EstablishmentService;
 import com.practice.zooticketportal.serviceimpl.AllUserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -235,7 +237,6 @@ public class   UserPageController {
         // Return the user profile view
         return "adminProfile"; // Redirect or forward to a confirmation page or back to the form
     }
-
 
 
 

@@ -14,7 +14,7 @@ public class categoriesForTicket {
     @ManyToOne
     @JoinColumn(name = "Category")
     private Category Category;
-    private Long quantity;
+    private Long numberOfPeople;
     @ManyToOne
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;
@@ -43,12 +43,12 @@ public class categoriesForTicket {
         this.nationality = nationality;
     }
 
-    public Long getQuantity() {
-        return quantity;
+    public Long getNumberOfPeople() {
+        return numberOfPeople;
     }
 
-    public void setQuantity(Long quantity) {
-        this.quantity = quantity;
+    public void setnNumberOfPeople(Long numberOfPeople) {
+        this.numberOfPeople = numberOfPeople;
     }
 
     public com.practice.zooticketportal.entity.Category getCategory() {

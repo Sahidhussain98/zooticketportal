@@ -1,0 +1,33 @@
+
+.profile-container {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+.profile-image {
+    width: 150px; /* Adjusted size for consistency */
+    height: auto;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+.profile-field {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.table-container {
+    margin-top: 20px; /* Added separation between tables */
+}
+.card {
+    margin-bottom: 20px; /* Ensure spacing between cards */
+}
+input[readonly], input:not([readonly]), select {
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    padding: 5px;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.1);
+}
+.text-center{
+    text-align: center;
+}

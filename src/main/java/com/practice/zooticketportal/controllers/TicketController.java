@@ -19,9 +19,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.sql.DataSource;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.Principal;
@@ -31,7 +33,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 
 @Controller
@@ -162,7 +163,7 @@ public class TicketController {
                 entryFee.setTicket(theTicket);
                 entryFee.setNationality(nationalityRepo.findById(nationalityId).orElse(null));
                 entryFee.setCategory(categoryRepo.findById(categoryId).orElse(null));
-                entryFee.setQuantity(numberOfPeople.get(i));
+                entryFee.setnNumberOfPeople(numberOfPeople.get(i));
                 categoriesForTicketRepo.save(entryFee);
             }
 
@@ -198,48 +199,49 @@ public class TicketController {
     }
 
 
+
     @GetMapping("/export/pdf")
     public void generateTicketReport(@RequestParam("id") Long ticketId, HttpServletResponse response) {
+        byte[] pdfBytes = null;
         try {
-            // Load JrXML template
-            InputStream jrxmlInput = getClass().getResourceAsStream("/static/reports/ZooTicket.jrxml");
-            if (jrxmlInput == null) {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                response.getWriter().write("Template file not found.");
+            Ticket ticket = ticketRepository.findTicketById(ticketId);
+            if (ticket == null) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("Ticket not found for ID: " + ticketId);
                 return;
             }
 
-            // Compile JrXML template
-            JasperDesign jasperDesign = JRXmlLoader.load(jrxmlInput);
+            String establishmentName = ticket.getEstablishment().getName();  // Retrieve the establishment name
+
+            File file = ResourceUtils.getFile("classpath:tickets.jrxml");
+            JasperDesign jasperDesign = JRXmlLoader.load(file);
             JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
 
-            // Fill the report with data
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("TicketId", ticketId);
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource.getConnection());
 
-            // Export report to PDF
-            byte[] pdfBytes = JasperExportManager.exportReportToPdf(jasperPrint);
+            pdfBytes = JasperExportManager.exportReportToPdf(jasperPrint);
 
-            // Set response headers
             response.setContentType("application/pdf");
             response.setContentLength(pdfBytes.length);
             response.setHeader("Content-Disposition", "attachment; filename=\"ticket_report.pdf\"");
 
-            // Write PDF content to response
             response.getOutputStream().write(pdfBytes);
             response.getOutputStream().flush();
+
+            ticketService.confirmBooking(ticket.getEmail(), pdfBytes, establishmentName); // Pass establishment name
         } catch (Exception e) {
             e.printStackTrace();
             try {
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                response.getWriter().write("An error occurred while generating the report.");
+                response.getWriter().write("An error occurred while generating the report or sending the email.");
             } catch (IOException ioException) {
                 ioException.printStackTrace();
-
             }
         }
     }
+
 
 
     @GetMapping("/fetchFee")

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error 2</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .error-container {
+            margin-top: 50px;
+            text-align: center;
+        }
+        .error-code {
+            font-size: 48px;
+            color: #dc3545;
+        }
+        .error-message {
+            font-size: 24px;
+            color: #343a40;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="error-container">
+                <div class="error-code">Error 2</div>
+                <div class="error-message">An unexpected error occurred. Please try again later.</div>
+            </div>
+            <h1>An Error Occurred</h1>
+            <p th:text="${error}">Error details will be shown here.</p>
+            <a href="/home">Go back to home</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

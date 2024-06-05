@@ -1,0 +1,52 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f2f2f2;
+}
+.container-custom {
+    max-width: 90%; /* Utilize 90% of the page width */
+    margin: 0 auto; /* Center the container */
+}
+.card {
+    border-radius: 0;
+    transition: transform 0.3s, box-shadow 0.3s;
+    height: 300px; /* Adjust the height for a more compact card */
+}
+.card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+.card-img-top {
+    height: 60%; /* Adjust the height of the image */
+    object-fit: cover; /* Ensure the image covers the area without stretching */
+}
+.card-body {
+    height: 40%; /* Adjust the height of the card body */
+    padding: 10px; /* Adjust padding for smaller card size */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.card-title {
+    font-size: 1rem; /* Adjust font size for smaller cards */
+    margin-bottom: 10px;
+}
+.button-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* Adjust the space between buttons */
+    width: 100%;
+}
+.footer {
+    background-color: #333;
+    color:  white;
+    padding: 20px 0;
+    text-align: center;
+}
+.footer-logo img {
+    max-width: 100px;
+    margin-bottom: 10px;
+}
+.footer-text p {
+    margin: 5px 0;
+}

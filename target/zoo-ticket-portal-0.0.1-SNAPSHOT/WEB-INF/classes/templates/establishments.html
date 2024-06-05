@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div th:replace="~{fragments/adminNavMenu :: header}"></div>
+<div class="container">
+    <div class ="row">
+        <h1>List of Establishments</h1>
+    </div>
+
+    <div class = "row">
+        <div class = " col-lg-3">
+            <a th:href ="@{/establishments/new}" class="btn btn-primary btn-sm mb-3">Add Establishments</a>
+        </div>
+
+    </div>
+    <table class="table table-striped table-bordered">
+        <thead class=" table-dark ">
+        <tr>
+            <th>Establishment  Name</th>
+            <th>Establishment Type</th>
+            <th>Village</th>
+            <th>Establishment Entered By</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="establishment: ${establishmentList}">
+            <td th:text="${establishment.name}"></td>
+            <td th:text="${establishment.masterEstablishment.establishmentType}"></td>
+            <td th:text="${establishment.village.villageName}"></td>
+            <td th:text="${establishment.enteredBy}"></td>
+
+
+            <td>
+                <a th:href="@{/establishments/viewEstablishment/{id}(id=${establishment.establishmentId})}" class="btn btn-primary"> View </a>
+
+                <a th:href="@{/establishments/delete/{id}(id=${establishment.establishmentId})}"
+                   class="btn btn-danger">Delete</a>
+            </td>
+
+        </tr>
+        </tbody>
+
+    </table>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- Include SweetAlert library -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Add event listener to the delete button
++
+        // Add event listener to the delete button within the table
+        $(document).on("click", ".table .btn-danger", function(e) {
+        e.preventDefault(); // Prevent the default action of the button
+
+        // Reference to the button that was clicked
+        var deleteButton = $(this);
+
+        // Show SweetAlert confirmation dialog
+        Swal.fire({
+        title: 'Are you sure?',
+        text: 'You will not be able to recover this establishment!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+        // If user confirms, proceed with deletion
+        window.location.href = deleteButton.attr('href');
+    }
+    });
+    });
+
+</script>
+
+
+</body>
+</html>

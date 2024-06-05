@@ -1,0 +1,11 @@
+
+.search-box {
+    margin-top: 10px;
+    margin-bottom: 15px;
+    max-width: 300px; /* Decrease the size of the search bar */
+}
+.table-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

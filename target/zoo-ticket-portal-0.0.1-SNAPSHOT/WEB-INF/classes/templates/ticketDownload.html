@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Download Page</title>
+</head>
+<body>
+<h1>Ticket Download Page</h1>
+
+<p>Ticket ID: <span th:text="${theTicket.id}">Ticket ID will be displayed here</span></p>
+
+<!-- Add a download button -->
+<a th:href="@{/export/pdf(id=${theTicket.id})}" class="btn btn-success" id="downloadPdf">Download PDF Report</a>
+
+<script>
+    document.getElementById('downloadPdf').addEventListener('click', function(event) {
+        event.preventDefault();
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', this.href, true);
+        xhr.responseType = 'blob';
+
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                // Check the email sent header
+                var emailSent = xhr.getResponseHeader('X-Email-Sent');
+                var emailError = xhr.getResponseHeader('X-Email-Error');
+                if (emailSent === 'false') {
+                    alert('Error sending email.');
+                } else if (emailError) {
+                    alert(emailError);
+                }
+
+                // Handle the PDF download
+                var blob = new Blob([xhr.response], {type: 'application/pdf'});
+                var downloadUrl = URL.createObjectURL(blob);
+                var a = document.createElement("a");
+                a.href = downloadUrl;
+                a.download = "ticket.pdf";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            } else if (xhr.status === 500) {
+                alert('Error downloading PDF.');
+            }
+        };
+
+        xhr.onerror = function() {
+            alert('Request failed. Please try again.');
+        };
+
+        xhr.send();
+    });
+</script>
+</body>
+</html>

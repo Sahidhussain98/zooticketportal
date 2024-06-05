@@ -6,18 +6,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Base64;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ImageService {
 
     @Autowired
     private ImageRepo imageRepo;
+    public List<Images> getImagesByEstablishmentId(Long establishmentId) {
+        return imageRepo.findByEstablishmentEstablishmentId(establishmentId);
+    }
 
-    public String getImageData(Long establishmentId) {
-        Images image = imageRepo.findFirstByEstablishment_EstablishmentId(establishmentId);
-        if (image != null && image.getImageData() != null) {
-            return Base64.getEncoder().encodeToString(image.getImageData());
+
+    public byte[] getImageDataById(Long imageId) {
+        Images image = imageRepo.findById(imageId).orElse(null);
+        if (image != null) {
+            return image.getImageData();
         }
         return null;
     }
+
 }

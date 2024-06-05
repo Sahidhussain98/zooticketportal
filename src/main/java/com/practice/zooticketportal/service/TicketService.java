@@ -16,5 +16,5 @@ public interface  TicketService {
 
 
     ResponseEntity<byte[]> exportReport(String format, Ticket ticket) throws FileNotFoundException, JRException;
-    void confirmBooking(String toEmail, byte[] attachmentBytes);
+    void confirmBooking(String toEmail, byte[] attachmentBytes,String establishmentName);
 }

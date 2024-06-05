@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public class StorageService {
@@ -15,7 +16,7 @@ public class StorageService {
     @Autowired
     private ImageRepo imageRepo;
 
-    public Long uploadImage(MultipartFile file, Long establishmentId) throws IOException {
+    public void uploadImage(MultipartFile file, Long establishmentId) throws IOException {
         Images image = new Images();
         image.setImageData(file.getBytes());
 
@@ -23,7 +24,11 @@ public class StorageService {
         establishment.setEstablishmentId(establishmentId); // Set the establishment ID
         image.setEstablishment(establishment);
 
-        Images savedImage = imageRepo.save(image);
-        return savedImage.getImageId();
+        imageRepo.save(image);
     }
+
+    public List<Images> getImagesByEstablishmentId(Long establishmentId) {
+        return imageRepo.findByEstablishmentEstablishmentId(establishmentId);
+    }
+
 }

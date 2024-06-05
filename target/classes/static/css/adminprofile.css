@@ -1,0 +1,19 @@
+
+.info-card h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333333;
+}
+.info-card ul {
+    list-style-type: none;
+    padding: 0;
+}
+.info-card ul li {
+    padding: 10px 0;
+    border-bottom: 1px solid #dddddd;
+}
+.info-card ul li span {
+    font-size: 18px;
+    color: #555555;
+}
