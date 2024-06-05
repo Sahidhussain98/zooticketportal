@@ -11,6 +11,7 @@ import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -122,6 +123,8 @@ public class TicketController {
                              @RequestParam("numberOfPeople") List<Long> numberOfPeople,
                              @RequestParam("numItems") List<Long> numberOfItems,
                              @RequestParam("feesType") List<String> feesType,
+                             @RequestParam("totalAmount") Double totalAmount,
+                             @RequestParam("totalPersons") Long totalPersons,
                              Model model, Principal principal) {
         Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
         String establishmentName = establishment.getName();
@@ -147,6 +150,9 @@ public class TicketController {
             theTicket.setBookingId(establishmentName + "-" + serialNumber);
             theTicket.setEstablishment(establishment);
             theTicket.setUser(authenticatedUser); // Set the authenticated user
+            theTicket.setTotalAmount(totalAmount); // Set total amount
+            theTicket.setTotalPersons(totalPersons); // Set total persons
+
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String currentUserName = authentication.getName();
             String enteredBy = authentication.getAuthorities().stream()
@@ -213,7 +219,7 @@ public class TicketController {
 
             String establishmentName = ticket.getEstablishment().getName();  // Retrieve the establishment name
 
-            File file = ResourceUtils.getFile("classpath:tickets.jrxml");
+            File file = new ClassPathResource("tickets.jrxml").getFile();
             JasperDesign jasperDesign = JRXmlLoader.load(file);
             JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
 
@@ -225,11 +231,12 @@ public class TicketController {
 
             response.setContentType("application/pdf");
             response.setContentLength(pdfBytes.length);
-            response.setHeader("Content-Disposition", "attachment; filename=\"ticket_report.pdf\"");
+            response.setHeader("Content-Disposition", "inline; filename=\"ticket_report.pdf\"");
 
             response.getOutputStream().write(pdfBytes);
             response.getOutputStream().flush();
 
+            // Send the email with the PDF attachment
             ticketService.confirmBooking(ticket.getEmail(), pdfBytes, establishmentName); // Pass establishment name
         } catch (Exception e) {
             e.printStackTrace();
@@ -241,6 +248,7 @@ public class TicketController {
             }
         }
     }
+
 
 
 

@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/usersidenavbar.css">
     <link rel="stylesheet" href="/css/ticket.css">
-
 </head>
 <body>
 
@@ -18,7 +17,7 @@
 <div class="container-form">
     <h3 class="text-center">Welcome to <span th:text="${establishment.name}"></span></h3>
 
-    <form th:action="@{/saveTicket}" th:object="${theTicket}" method="POST" onsubmit="return validateForm()">
+    <form id="ticketForm" th:action="@{/saveTicket}" th:object="${theTicket}" method="POST">
         <input type="hidden" id="establishmentId" th:name="establishmentId" th:value="${establishment.establishmentId}" />
         <hr class="separator">
 
@@ -43,7 +42,6 @@
                 </div>
             </div>
         </fieldset>
-
 
         <hr class="separator">
 
@@ -119,8 +117,9 @@
                 </div>
             </div>
         </fieldset>
-        <input type="submit" value="Proceed" />
+        <button type="button" id="proceedButton" class="btn btn-success">Proceed</button>
         <input type="hidden" th:name="id" th:value="${theTicket.id}" required />
+
         <!-- Modal -->
         <div class="modal fade" id="ticketModal" tabindex="-1" role="dialog" aria-labelledby="ticketModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -133,9 +132,13 @@
                     </div>
                     <div class="modal-body">
                         <!-- Ticket details will be displayed here -->
+                        <div id="modalContent">
+                            <!-- Content will be filled by JavaScript -->
+                        </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Confirm</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Confirm</button>
                     </div>
                 </div>
             </div>
@@ -159,11 +162,87 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
     $(document).ready(function() {
+        // Initialize the date input
         var today = new Date().toISOString().split('T')[0];
         $('#dateTime').attr('min', today);
 
+        // Proceed button click event
+        $('#proceedButton').on('click', function() {
+            populateModal();
+            $('#ticketModal').modal('show');
+        });
+
+        // Populate the modal with form values
+        function populateModal() {
+            var modalContent = $('#modalContent');
+            modalContent.empty(); // Clear existing content
+
+            var formData = {
+                'Date': $('#dateTime').val(),
+                'Name': $('#userName').val(),
+                'Email': $('#email').val(),
+                'Phone Number': $('#phoneNumber').val(),
+                'Total Persons': $('#totalPersons').text(),
+                'Total Items': $('#totalItems').text(),
+                'Fees': $('#fees').text(),
+                'Item Fees': $('#itemFees').text(),
+                'Total Amount': $('#totalAmount').text()
+            };
+
+            // Create a table to display the form data in the modal
+            var table = $('<table class="table table-bordered"></table>');
+            $.each(formData, function(key, value) {
+                var row = $('<tr></tr>');
+                row.append('<td>' + key + '</td>');
+                row.append('<td>' + value + '</td>');
+                table.append(row);
+            });
+
+            // Add selections
+            $("#selections .form-row").each(function(index) {
+                var selectionData = {
+                    'Nationality': $(this).find("#nationalities option:selected").text(),
+                    'Category': $(this).find("#categories option:selected").text(),
+                    'Number of People': $(this).find("#numberOfPeople").val(),
+                    'Price per Person': $(this).find(".pricePerPerson").text(),
+                    'Total': $(this).find("#totalFees").text()
+                };
+
+                var selectionHeader = $('<tr><th colspan="2">Selection ' + (index + 1) + '</th></tr>');
+                table.append(selectionHeader);
+
+                $.each(selectionData, function(key, value) {
+                    var row = $('<tr></tr>');
+                    row.append('<td>' + key + '</td>');
+                    row.append('<td>' + value + '</td>');
+                    table.append(row);
+                });
+            });
+
+            // Add other fees
+            $("#feesList .feeEntryRow").each(function(index) {
+                var otherFeeData = {
+                    'Fee Type': $(this).find("[name='feesType']").val(),
+                    'Fee per Item': $(this).find(".feePerItem").text(),
+                    'Number of Items': $(this).find(".number-of-items").val(),
+                    'Total Item Fees': $(this).find(".totalItemFees").text()
+                };
+
+                var otherFeeHeader = $('<tr><th colspan="2">Other Fee ' + (index + 1) + '</th></tr>');
+                table.append(otherFeeHeader);
+
+                $.each(otherFeeData, function(key, value) {
+                    var row = $('<tr></tr>');
+                    row.append('<td>' + key + '</td>');
+                    row.append('<td>' + value + '</td>');
+                    table.append(row);
+                });
+            });
+
+            modalContent.append(table);
+        }
+
         // Calculate fees and update the pricePerPerson and totalFees fields
-        // Update the calculateFees function
         function calculateFees() {
             var totalFees = 0;
             $("#selections .form-row").each(function() {
@@ -203,20 +282,18 @@
             });
         }
 
-// Event listener for nationality and category changes
+        // Event listener for nationality and category changes
         $(document).on("change", "#nationalities, #categories", function() {
             calculateFees();  // This will now trigger fee calculation whenever these fields change
         });
 
-// Keep the existing input event on numberOfPeople
+        // Keep the existing input event on numberOfPeople
         $(document).on("input", "#numberOfPeople", function() {
             if ($(this).val() == "" || $(this).val() == "0") {
                 $(this).closest(".form-row").find("#totalFees").text("");
             }
             calculateFees();  // Recalculate fees to update based on the number of people
         });
-
-
 
         // Function to calculate other fees and update the total item fees
         function calculateOtherFees() {
@@ -303,6 +380,21 @@
         }
 
         $(document).on("input", ".number-of-items", calculateOtherFees);
+
+        // Append hidden fields to form on submit
+        $('form').on('submit', function() {
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'totalAmount',
+                value: $('#totalAmount').text()
+            }).appendTo('form');
+
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'totalPersons',
+                value: $('#totalPersons').text()
+            }).appendTo('form');
+        });
     });
 
     /// NonWorkingDays
@@ -403,7 +495,6 @@
     }
 
     $(document).on("input", ".number-of-items", calculateTotalItems);
-
 
 </script>
 </body>

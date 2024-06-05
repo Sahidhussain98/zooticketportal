@@ -20,7 +20,7 @@ public class Ticket {
     private String email;
     private Long phoneNumber;
     private Long totalPersons;
-    private String totalAmount;
+    private Double totalAmount;
     private LocalDateTime dateTime;
     private String enteredBy;
     private String enteredOn;
@@ -47,7 +47,7 @@ public class Ticket {
     public Ticket() {
     }
 
-    public Ticket(Long id,String bookingId,String userName, String email, Long phoneNumber, Long totalPersons, Long totalItems, String totalAmount, LocalDateTime dateTime, String enteredBy, String enteredOn, AllUser user, Establishment establishment, Payment payment, categoriesForTicket categoriesForTicket) {
+    public Ticket(Long id,String bookingId,String userName, String email, Long phoneNumber, Long totalPersons, Long totalItems, Double totalAmount, LocalDateTime dateTime, String enteredBy, String enteredOn, AllUser user, Establishment establishment, Payment payment, categoriesForTicket categoriesForTicket) {
         this.id = id;
         this.bookingId = bookingId;
         this.userName = userName;
@@ -111,11 +111,11 @@ public class Ticket {
         this.totalPersons = totalPersons;
     }
 
-    public String getTotalAmount() {
+    public Double getTotalAmount() {
         return totalAmount;
     }
 
-    public void setTotalAmount(String totalAmount) {
+    public void setTotalAmount(Double totalAmount) {
         this.totalAmount = totalAmount;
     }
 
