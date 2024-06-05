@@ -60,7 +60,7 @@
                                     <div class="card-header">
                                         <h5 class="mb-0">Fees Table</h5>
                                     </div>
-                                    <div class="card-body table-container">
+                                    <div class="card-body entry-fees-table-container">
                                         <i class="bi bi-plus-circle btn btn-success" onclick="showAddEntryFeeModal()" title="Add Entry Fee"></i>
                                         <div class="table-responsive">
                                             <table class="table">
@@ -96,7 +96,7 @@
                                     <div class="card-header">
                                         <h5 class="mb-0">Other Fees Table</h5>
                                     </div>
-                                    <div class="card-body table-container">
+                                    <div class="card-body other-fees-table-container">
                                         <i class="bi bi-plus-circle btn btn-success" onclick="showAddOtherFeeModal()" title="Add Other Fee"></i>
                                         <div class="table-responsive">
                                             <table class="table">
@@ -274,308 +274,282 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
 
-        // Function to show confirm delete alert for entry fees
-        function confirmDelete(event, feesId) {
-            event.preventDefault();  // Prevent the default anchor behavior
-            var confirmDelete = confirm("Are you sure you want to delete this fee?");
-            if (confirmDelete) {
-                var deleteUrl = `/establishments/deleteFees/${feesId}`;
-                window.location.href = deleteUrl;
-            }
-        }
+    // Function for going into nonWorking days adding page
+    function addNonWorkingDates() {
+        // Retrieve establishment ID from the input field
+        var establishmentId = extractEstablishmentIdFromHTML();
 
-        // Function to show confirm delete alert for other fees
-        function confirmDelete(event, otherFeesId) {
-            event.preventDefault();
-            console.log("Deleting other fee with ID:", otherFeesId);
-            if (confirm("Are you sure you want to delete this fee?")) {
-                var deleteUrl = `/establishments/deleteOtherFee/${otherFeesId}`;
-                console.log("Redirecting to:", deleteUrl);
-                window.location.href = deleteUrl;
-            }
-        }
-
-        // Function for going into nonWorking days adding page
-        function addNonWorkingDates() {
-            // Retrieve establishment ID from the input field
-            var establishmentId = extractEstablishmentIdFromHTML();
-
-            // Show SweetAlert confirmation
-            Swal.fire({
-                title: 'Add Non-Working Days',
-                text: 'Do you want to add non-working dates?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, add dates'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Redirect to the "Add Non-Working Dates" page
-                    window.location.href = '/establishments/nonworkingdates?id=' + establishmentId;
-                } else {
-                    // If the user clicks "No", keep the establishment active
-                    updateEstablishmentStatus(establishmentId, 'Active');
-                }
-            });
-        }
-
-        function updateEstablishmentStatus(establishmentId, status) {
-            $.ajax({
-                url: '/updateStatus/' + establishmentId,
-                type: 'POST',
-                data: {status: status},
-                success: function (response) {
-                    console.log('Status updated successfully:', response);
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error updating status:', xhr.responseText);
-                }
-            });
-        }
-
-        // Extract establishment ID from the hidden input field
-        function extractEstablishmentIdFromHTML() {
-            var establishmentIdInput = document.querySelector('input[name="establishmentId"]');
-            return establishmentIdInput ? establishmentIdInput.value : null;
-        }
-
-        // For last edit button toggle to show save and cancel edit button
-        document.getElementById("editButton").addEventListener("click", function () {
-            var fieldsToEdit = document.querySelectorAll("input[name='name'], input[name='address'], input[name='openingTime'], input[name='closingTime']");
-            var saveButton = document.getElementById("saveButton");
-
-            if (this.textContent === "Edit") {
-                for (var i = 0; i < fieldsToEdit.length; i++) {
-                    fieldsToEdit[i].removeAttribute("readonly");
-                }
-                saveButton.style.display = "inline-block";
-                this.textContent = "Cancel edit";
+        // Show SweetAlert confirmation
+        Swal.fire({
+            title: 'Add Non-Working Days',
+            text: 'Do you want to add non-working dates?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, add dates'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Redirect to the "Add Non-Working Dates" page
+                window.location.href = '/establishments/nonworkingdates?id=' + establishmentId;
             } else {
-                for (var i = 0; i < fieldsToEdit.length; i++) {
-                    fieldsToEdit[i].setAttribute("readonly", true);
-                }
-                saveButton.style.display = "none";
-                this.textContent = "Edit";
+                // If the user clicks "No", keep the establishment active
+                updateEstablishmentStatus(establishmentId, 'Active');
+            }
+        });
+    }
+
+    function updateEstablishmentStatus(establishmentId, status) {
+        $.ajax({
+            url: '/updateStatus/' + establishmentId,
+            type: 'POST',
+            data: {status: status},
+            success: function (response) {
+                console.log('Status updated successfully:', response);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error updating status:', xhr.responseText);
+            }
+        });
+    }
+
+    // Extract establishment ID from the hidden input field
+    function extractEstablishmentIdFromHTML() {
+        var establishmentIdInput = document.querySelector('input[name="establishmentId"]');
+        return establishmentIdInput ? establishmentIdInput.value : null;
+    }
+
+    // For last edit button toggle to show save and cancel edit button
+    document.getElementById("editButton").addEventListener("click", function () {
+        var fieldsToEdit = document.querySelectorAll("input[name='name'], input[name='address'], input[name='openingTime'], input[name='closingTime']");
+        var saveButton = document.getElementById("saveButton");
+
+        if (this.textContent === "Edit") {
+            for (var i = 0; i < fieldsToEdit.length; i++) {
+                fieldsToEdit[i].removeAttribute("readonly");
+            }
+            saveButton.style.display = "inline-block";
+            this.textContent = "Cancel edit";
+        } else {
+            for (var i = 0; i < fieldsToEdit.length; i++) {
+                fieldsToEdit[i].setAttribute("readonly", true);
+            }
+            saveButton.style.display = "none";
+            this.textContent = "Edit";
+        }
+    });
+
+    document.getElementById("saveButton").addEventListener("click", function (event) {
+        event.preventDefault();
+        Swal.fire({
+            title: "Confirm updates?",
+            showCancelButton: true,
+            confirmButtonText: "Confirm",
+            cancelButtonText: "Cancel"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById("editForm").submit();
+            }
+        });
+    });
+
+    // For saving the edited other fees on the server
+    $(document).ready(function () {
+        // Add event listeners to Edit buttons in the other fees table
+        $('.edit-other-fee').on('click', function () {
+            var row = $(this).closest('tr');
+            var otherFeesId = row.data('other-fees-id');
+            var feesType = row.find('td:eq(0)').text();
+            var fees = row.find('td:eq(1)').text();
+
+            // Set the values in the modal inputs
+            $('#otherFeeModal #otherFeeType').val(feesType);
+            $('#otherFeeModal #otherFeeValue').val(fees);
+            $('#otherFeeModal #otherFeesIdInput').val(otherFeesId);
+
+            // Show the modal
+            $('#otherFeeModal').modal('show');
+        });
+    });
+    // To show the entry fees modal
+    $(document).ready(function () {
+        $('.edit-entry-fee').on('click', function () {
+            $('#entryFeeModal').modal('show');
+        });
+    });
+
+    // To show other fees add button modal
+    function showAddOtherFeeModal() {
+        $('#addOtherFeeModal').modal('show');
+    }
+
+    function showAddEntryFeeModal() {
+        $('#addEntryFeeModal').modal('show');
+    }
+
+    // To update the entry fees
+    $(document).ready(function () {
+        $('.edit-entry-fee').on('click', function () {
+            var row = $(this).closest('tr');
+            var feesId = row.data('fees-id');
+            var entryFee = row.find('td:eq(2)').text();
+            // Set the values in the modal inputs
+            $('#entryFeeModal #entryFeeValue').val(entryFee);
+            $('#entryFeeModal #feesIdInput').val(feesId);
+            // Show the modal
+            $('#entryFeeModal').modal('show');
+        });
+    });
+    // Check combination of nationality and category
+    $(document).ready(function () {
+        $('#nationality, #category').on('change', function () {
+            var nationalityId = $('#nationality').val();
+            var categoryId = $('#category').val();
+            var establishmentId = $('input[name="establishmentId"]').val();  // Assuming there is an input field in your form with this name
+
+            if (nationalityId && categoryId) {
+                checkCombinationExists(establishmentId, nationalityId, categoryId);
             }
         });
 
-        document.getElementById("saveButton").addEventListener("click", function (event) {
-            event.preventDefault();
-            Swal.fire({
-                title: "Confirm updates?",
-                showCancelButton: true,
-                confirmButtonText: "Confirm",
-                cancelButtonText: "Cancel"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById("editForm").submit();
-                }
-            });
-        });
-
-        // For saving the edited other fees on the server
-        $(document).ready(function () {
-            // Add event listeners to Edit buttons in the other fees table
-            $('.edit-other-fee').on('click', function () {
-                var row = $(this).closest('tr');
-                var otherFeesId = row.data('otherFeesId');
-                var feesType = row.find('td:eq(0)').text();
-                var fees = row.find('td:eq(1)').text();
-
-                // Set the values in the modal inputs
-                $('#otherFeeModal #otherFeeType').val(feesType);
-                $('#otherFeeModal #otherFeeValue').val(fees);
-                $('#otherFeeModal #otherFeesIdInput').val(otherFeesId);
-
-                // Show the modal
-                $('#otherFeeModal').modal('show');
-            });
-        });
-        // To show the entry fees modal
-        $(document).ready(function () {
-            $('.edit-entry-fee').on('click', function () {
-                $('#entryFeeModal').modal('show');
-            });
-        });
-
-        // To show other fees add button modal
-        function showAddOtherFeeModal() {
-            $('#addOtherFeeModal').modal('show');
-        }
-
-        function showAddEntryFeeModal() {
-            $('#addEntryFeeModal').modal('show');
-        }
-
-        // To update the entry fees
-        $(document).ready(function () {
-            $('.edit-entry-fee').on('click', function () {
-                var row = $(this).closest('tr');
-                var feesId = row.data('feesId');
-                var entryFee = row.find('td:eq(2)').text();
-                // Set the values in the modal inputs
-                $('#entryFeeModal #entryFeeValue').val(entryFee);
-                $('#entryFeeModal #feesIdInput').val(feesId);
-                // Show the modal
-                $('#entryFeeModal').modal('show');
-            });
-        });
-        // Check combination of nationality and category
-        $(document).ready(function () {
-            $('#nationality, #category').on('change', function () {
-                var nationalityId = $('#nationality').val();
-                var categoryId = $('#category').val();
-                var establishmentId = $('input[name="establishmentId"]').val();  // Assuming there is an input field in your form with this name
-
-                if (nationalityId && categoryId) {
-                    checkCombinationExists(establishmentId, nationalityId, categoryId);
-                }
-            });
-
-            function checkCombinationExists(establishmentId, nationalityId, categoryId) {
-                $.ajax({
-                    url: '/establishments/checkCombinationExists',
-                    type: 'GET',
-                    data: {
-                        establishmentId: establishmentId,
-                        nationalityId: nationalityId,
-                        categoryId: categoryId
-                    },
-                    success: function (response) {
-                        if (response.exists) {
-                            Swal.fire({
-                                title: "Error",
-                                text: "Selected combination already exists. Please select another combination.",
-                                icon: "error",
-                                confirmButtonText: "Ok"
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    // Reset the fields to select new options
-                                    $('#nationality').val('');
-                                    $('#category').val('');
-                                }
-                            });
-                        }
-                    },
-                    error: function (xhr) {
-                        console.error("Error checking combination: ", xhr.responseText);
-                    }
-                });
-            }
-        });
-
-
-        //  Delete for otherfees
-        $(document).ready(function () {
-            // Attach the event listener to the delete buttons within the other fees table
-            $('.table-container').on('click', '.btn-danger', function (event) {
-                event.preventDefault(); // Stop the form from submitting normally
-                var otherFeesId = $(this).closest('tr').data('other-fees-id');
-                confirmDeleteOtherFee(event, otherFeesId);
-            });
-        });
-
-        function confirmDeleteOtherFee(event, otherFeesId) {
-            event.preventDefault();
-            Swal.fire({
-                title: "Are you sure you want to delete this fee?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor: "#3085d6",
-                confirmButtonText: "Yes, delete it!"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: `/establishments/deleteOtherFee/${otherFeesId}`,
-                        type: 'GET',
-                        success: function (response) {
-                            Swal.fire('Deleted!', 'The fee has been deleted.', 'success');
-                            $(`tr[data-other-fees-id="${otherFeesId}"]`).remove();
-                        },
-                        error: function (xhr, status, error) {
-                            Swal.fire('Error!', 'Failed to delete the fee: ' + error, 'error');
-                        }
-                    });
-                }
-            });
-        }
-
-        $(document).ready(function () {
-            // Handle delete entry fee
-            function confirmDeleteEntryFee(event, feesId) {
-                event.preventDefault();
-                Swal.fire({
-                    title: "Are you sure you want to delete this fee?",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#d33",
-                    cancelButtonColor: "#3085d6",
-                    confirmButtonText: "Yes, delete it!"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: `/establishments/deleteFees/${feesId}`,
-                            type: 'GET',
-                            success: function (response) {
-                                Swal.fire('Deleted!', 'The fee has been deleted and establishment status updated.', 'success')
-                                    .then((result) => {
-                                        if (result.isConfirmed) {
-                                            location.reload(); // Reload the page to reflect changes
-                                        }
-                                    });
-                            },
-                            error: function (xhr, status, error) {
-                                Swal.fire('Error!', 'Failed to delete the fee: ' + error, 'error');
+        function checkCombinationExists(establishmentId, nationalityId, categoryId) {
+            $.ajax({
+                url: '/establishments/checkCombinationExists',
+                type: 'GET',
+                data: {
+                    establishmentId: establishmentId,
+                    nationalityId: nationalityId,
+                    categoryId: categoryId
+                },
+                success: function (response) {
+                    if (response.exists) {
+                        Swal.fire({
+                            title: "Error",
+                            text: "Selected combination already exists. Please select another combination.",
+                            icon: "error",
+                            confirmButtonText: "Ok"
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Reset the fields to select new options
+                                $('#nationality').val('');
+                                $('#category').val('');
                             }
                         });
                     }
+                },
+                error: function (xhr) {
+                    console.error("Error checking combination: ", xhr.responseText);
+                }
+            });
+        }
+    });
+
+    // Function to handle the deletion of other fees
+    function confirmDeleteOtherFee(event, otherFeesId) {
+        event.preventDefault();
+        Swal.fire({
+            title: "Are you sure you want to delete this fee?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `/establishments/deleteOtherFees/${otherFeesId}`,
+                    type: 'GET',
+                    success: function (response) {
+                        Swal.fire('Deleted!', 'The fee has been deleted and establishment status updated.', 'success')
+                            .then((result) => {
+                                if (result.isConfirmed) {
+                                    location.reload(); // Reload the page to reflect changes
+                                }
+                            });
+                    },
+                    error: function(xhr, status, error) {
+                        Swal.fire('Error!', 'Failed to delete the fee: ' + error, 'error');
+                    }
                 });
             }
-
-            // Attach the delete event listener
-            $('.table-container').on('click', '.btn-danger', function (event) {
-                var feesId = $(this).closest('tr').data('fees-id');
-                confirmDeleteEntryFee(event, feesId);
-            });
         });
+    }
 
-        //For name and address field not to enter numbers
-        document.addEventListener("DOMContentLoaded", function () {
-            var nameInput = document.querySelector("input[name='name']");
-            var addressInput = document.querySelector("input[name='address']");
+    // Attach the delete event listener for other fees
+    $(document).ready(function() {
+        $('.other-fees-table-container').on('click', '.btn-danger', function(event) {
+            var otherFeesId = $(this).closest('tr').data('other-fees-id');
+            confirmDeleteOtherFee(event, otherFeesId);
+        });
+    });
 
-            // Function to restrict characters
-            function restrictCharacters(event) {
-                var keyCode = event.which || event.keyCode;
-                // Allow control keys and space (space keyCode is 32)
-                if (keyCode === 32 || keyCode === 8 || keyCode === 9 || keyCode === 46 || (keyCode >= 37 && keyCode <= 40)) {
-                    return; // Allow space, backspace, tab, delete, and arrow keys
-                }
+    // Function to handle the deletion of entry fees
+    function confirmDeleteEntryFee(event, feesId) {
+        event.preventDefault();
+        Swal.fire({
+            title: "Are you sure you want to delete this fee?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `/establishments/deleteFees/${feesId}`,
+                    type: 'GET',
+                    success: function (response) {
+                        Swal.fire('Deleted!', 'The fee has been deleted and establishment status updated.', 'success')
+                            .then((result) => {
+                                if (result.isConfirmed) {
+                                    location.reload(); // Reload the page to reflect changes
+                                }
+                            });
+                    },
+                    error: function(xhr, status, error) {
+                        Swal.fire('Error!', 'Failed to delete the fee: ' + error, 'error');
+                    }
+                });
+            }
+        });
+    }
 
-                var character = String.fromCharCode(keyCode);
-                // Regex to test if character is not a letter or space
-                if (!/^[A-Za-z\s]+$/.test(character)) {
-                    event.preventDefault(); // Stop the character from being input
-                }
+    // Attach the delete event listener for entry fees
+    $(document).ready(function() {
+        $('.entry-fees-table-container').on('click', '.btn-danger', function(event) {
+            var feesId = $(this).closest('tr').data('fees-id');
+            confirmDeleteEntryFee(event, feesId);
+        });
+    });
+
+    //For name and address field not to enter numbers
+    document.addEventListener("DOMContentLoaded", function () {
+        var nameInput = document.querySelector("input[name='name']");
+        var addressInput = document.querySelector("input[name='address']");
+
+        // Function to restrict characters
+        function restrictCharacters(event) {
+            var keyCode = event.which || event.keyCode;
+            // Allow control keys and space (space keyCode is 32)
+            if (keyCode === 32 || keyCode === 8 || keyCode === 9 || keyCode === 46 || (keyCode >= 37 && keyCode <= 40)) {
+                return; // Allow space, backspace, tab, delete, and arrow keys
             }
 
-            // Apply the event listeners
-            if (nameInput) {
-                nameInput.addEventListener('keypress', restrictCharacters);
+            var character = String.fromCharCode(keyCode);
+            // Regex to test if character is not a letter or space
+            if (!/^[A-Za-z\s]+$/.test(character)) {
+                event.preventDefault(); // Stop the character from being input
             }
-            if (addressInput) {
-                addressInput.addEventListener('keypress', restrictCharacters);
-            }
-        });
-        $(document).ready(function() {
-            // Sidebar toggle functionality
-            $('#sidebarToggle').on('click', function () {
-                $('#sidebar').toggleClass('collapsed');
-                $('#main').toggleClass('collapsed');
-            });
-        });
+        }
+
+        // Apply the event listeners
+        if (nameInput) {
+            nameInput.addEventListener('keypress', restrictCharacters);
+        }
+        if (addressInput) {
+            addressInput.addEventListener('keypress', restrictCharacters);
+        }
+    });
 
 </script>
 </body>

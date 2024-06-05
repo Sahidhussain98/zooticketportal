@@ -16,6 +16,9 @@ public interface OtherFeesRepo extends JpaRepository<OtherFees,Long> {
 
     @Query("SELECT o FROM OtherFees o WHERE o.feesType = :feesType AND o.establishment.establishmentId = :establishmentId")
     OtherFees findByFeesTypeAndEstablishmentId(@Param("feesType") String feesType, @Param("establishmentId") Long establishmentId);
+    @Query("SELECT COUNT(o) FROM OtherFees o WHERE o.establishment.establishmentId = :establishmentId")
+    long countByEstablishmentId(@Param("establishmentId") Long establishmentId);
+
 }
 
 

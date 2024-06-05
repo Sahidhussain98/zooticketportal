@@ -430,14 +430,32 @@ public class EstablishmentController {
         return "redirect:/establishments";
     }
 
-    @GetMapping("/deleteOtherFee/{otherFeesId}")
-    public ResponseEntity<?> deleteOtherFee(@PathVariable("otherFeesId") Long otherFeesId) {
-        otherFeesService.deleteOtherFee(otherFeesId);
-        return ResponseEntity.ok("Deleted");
+
+    @GetMapping("/deleteOtherFees/{otherFeesId}")
+    public String deleteOtherFee(@PathVariable Long otherFeesId, RedirectAttributes redirectAttributes) {
+        try {
+            OtherFees otherFees = otherFeesRepo.findById(otherFeesId).orElseThrow(() -> new IllegalArgumentException("Invalid fees ID"));
+            Long establishmentId = otherFees.getEstablishment().getEstablishmentId();
+            otherFeesRepo.deleteById(otherFeesId);
+
+            // Check if there are no entry fees left for the establishment
+            if (otherFeesRepo.countByEstablishmentId(establishmentId) == 0) {
+                Establishment establishment = establishmentService.getEstablishmentById(establishmentId);
+                establishment.setStatus(false);
+                establishmentService.updateEstablishment(establishment);
+            }
+
+            redirectAttributes.addFlashAttribute("successMessage", "Other fee deleted successfully.");
+            redirectAttributes.addAttribute("id", establishmentId);
+            return "redirect:/establishments/viewEstablishment/{id}";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Unable to delete other fee at this time.");
+            return "/errorPage/error";
+        }
     }
 
-@GetMapping("/deleteFees/{feesId}")
-public String deleteEntryFee(@PathVariable Long feesId, RedirectAttributes redirectAttributes) {
+    @GetMapping("/deleteFees/{feesId}")
+    public String deleteEntryFee(@PathVariable Long feesId, RedirectAttributes redirectAttributes) {
     try {
         Fees fee = feesRepo.findById(feesId).orElseThrow(() -> new IllegalArgumentException("Invalid fees ID"));
         Long establishmentId = fee.getEstablishment().getEstablishmentId();
